@@ -1,0 +1,10 @@
+import { config } from 'dotenv';
+config();
+export const REPORT_API_KEY = String(process.env.REPORT_API_KEY).trim();
+export const REPORT_ENDPOINT = String(process.env.REPORT_ENDPOINT).trim();
+export const REPORT_LAUNCH = String(process.env.REPORT_LAUNCH).trim();
+export const API_DOMAIN = String(process.env.API_DOMAIN).trim();
+export const PASSWORD = String(process.env.PASSWORD).trim();
+export const SUPER_ADMIN_EMAIL = String(process.env.SUPER_ADMIN_EMAIL).trim();
+export const MAIL_DOMAIN = String(process.env.MAIL_DOMAIN).trim();
+export const BASE_URL = String(process.env.BASE_URL).trim();

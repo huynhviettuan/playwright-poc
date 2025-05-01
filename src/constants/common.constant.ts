@@ -1,0 +1,9 @@
+export const DOWNLOADS_PATH = 'src/downloads/';
+export const FILES_PATH = 'src/data/files/';
+export const IMAGES_PATH = 'src/data/images/';
+export const LONG_TIMEOUT = 35000;
+export const PER_PAGE_DEFAULT = 10;
+export const PAGE_DEFAULT_INDEX = 1;
+export const DATE_FORMAT_DMY = 'DD/MM/YYYY';
+export const DATE_FORMAT_MDY = 'MM/DD/YYYY';
+export const TIME_FORMAT = 'D MMM YYYY HH_mm';

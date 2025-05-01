@@ -1,0 +1,10 @@
+import { test as hookFixtures } from '@fixtures/hook-fixtures';
+import { mergeExpects, mergeTests } from '@playwright/test';
+import { test as commandFixtures } from 'src/fixtures/command-fixtures';
+import { expect as expectFixtures } from 'src/fixtures/expect-fixtures';
+import { test as mailFixtures } from 'src/fixtures/mail-fixtures';
+import { test as pageFixtures } from 'src/fixtures/page-fixtures';
+import { test as serviceFixtures } from 'src/fixtures/service-fixtures';
+
+export const test = mergeTests(serviceFixtures, commandFixtures, mailFixtures, pageFixtures, hookFixtures);
+export const expect = mergeExpects(expectFixtures);

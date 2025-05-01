@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "@pages/*": ["src/pages/*"],
+            "@models/*": ["src/models/*"],
+            "@elements/*": ["src/elements/*"],
+            "@components/*": ["src/components/*"],
+            "@constants/*": ["src/constants/*"],
+            "@enums/*": ["src/enums/*"],
+            "@services/*": ["src/services/*"],
+            "@fixtures/*": ["src/fixtures/*"],
+            "@helpers/*": ["src/helpers/*"],
+            "@mail/*": ["src/mail/*"],
+            "@data/*": ["src/data/*"],
+            "@common/*": ["src/common/*"]
+        },
+        "lib": ["dom", "esnext"],
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true
+    }
+}

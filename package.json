@@ -1,0 +1,54 @@
+{
+    "name": "playwright",
+    "version": "1.0.0",
+    "description": "Playwright",
+    "main": "index.js",
+    "scripts": {
+        "install:all": "npm install --registry=https://registry.npmjs.org",
+        "install:dev": "npm install --only=dev --registry=https://registry.npmjs.org",
+        "install:prod": "npm install --omit=dev --registry=https://registry.npmjs.org",
+        "test:new": "npx playwright test --project=chrome --config=playwright.config.ts --grep @new",
+        "test:api": "npx playwright test --project=api --config=playwright.config.ts",
+        "test:e2e": "npx playwright test --project=e2e --config=playwright.config.ts",
+        "prepare": "husky install",
+        "format": "prettier --write .",
+        "check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "lint": "npx eslint ."
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "8.12.2",
+        "@typescript-eslint/parser": "8.12.2",
+        "eslint-config-prettier": "9.1.0",
+        "eslint-plugin-playwright": "2.0.0",
+        "eslint-plugin-prettier": "5.2.1",
+        "eslint": "9.9.0",
+        "husky": "9.1.6",
+        "prettier": "3.3.3"
+
+    },
+    "dependencies": {
+        "@faker-js/faker": "8.4.1",
+        "@playwright/test": "1.51.1",
+        "@reportportal/agent-js-playwright": "5.1.9",
+        "@types/lodash": "4.17.13",
+        "@types/pluralize": "0.0.29",
+        "ajv": "8.12.0",
+        "ajv-formats": "3.0.1",
+        "chance": "1.1.8",
+        "cheerio": "1.0.0-rc.12",
+        "country-code-lookup": "0.0.20",
+        "dotenv": "16.1.4",
+        "exceljs": "4.3.0",
+        "genson-js": "0.0.8",
+        "html-entities": "2.5.2",
+        "http-status-codes": "2.1.4",
+        "jimp": "0.16.2",
+        "lodash": "4.17.21",
+        "moment": "2.30.1",
+        "playwright-core": "1.51.1",
+        "pluralize": "8.0.0",
+        "qrcode-reader": "1.0.4",
+        "ts-node": "10.9.1",
+         "typescript": "5.8.2"
+    }
+}
