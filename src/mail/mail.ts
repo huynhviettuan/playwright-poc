@@ -1,9 +1,9 @@
 import { BrowserInstance } from '@common/browser';
 import { MAIL_DOMAIN } from '@constants/config.constant';
-import { decodeHTML, generateQueryParamsPath } from '@helpers/helper-functions';
+import { StringHelper } from '@helpers/helper-functions';
 import { IMail, MailResponse } from '@models/mail/mail.interface';
-import { APIResponse, Page } from '@playwright/test';
 import * as cheerio from 'cheerio';
+import { APIResponse, Page } from 'playwright-core';
 
 export class BaseMail implements IMail {
     mailDomain: string;
@@ -19,7 +19,7 @@ export class BaseMail implements IMail {
     async getMails(mail: { to: string; subject?: string }): Promise<MailResponse[]> {
         const response: APIResponse = await (
             await BrowserInstance.getRequest()
-        ).get(`${this.mailDomain}?headers${generateQueryParamsPath(mail, '.')}`);
+        ).get(this.mailDomain, { params: { to: mail.to, subject: mail.subject } });
         return (await response.text()) ? await response.json() : null;
     }
 
@@ -88,7 +88,7 @@ export class BaseMail implements IMail {
 
     async extractToken(email: string): Promise<string> {
         const html: string = await this.getHtml(email, this.subject);
-        return /token=([\w-]+)/g.exec(decodeHTML(html))[1];
+        return /token=([\w-]+)/g.exec(StringHelper.decodeHtml(html))[1];
     }
 
     async getContent(email: string): Promise<string> {

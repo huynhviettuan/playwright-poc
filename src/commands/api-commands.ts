@@ -1,5 +1,5 @@
 import { PASSWORD } from '@constants/config.constant';
-import { fetchJsonResponse } from '@helpers/helper-functions';
+import { ResponseHelper } from '@helpers/helper-functions';
 import { AuthenticationService } from '@services/authentication.service';
 
 export class ApiCommands {
@@ -11,7 +11,7 @@ export class ApiCommands {
 
     async getAuthorizationToken(email: string): Promise<string> {
         return (
-            await fetchJsonResponse<{ token: string }>(
+            await ResponseHelper.toJson<{ token: string }>(
                 await this.authenticationService.postLogin({
                     email,
                     password: PASSWORD

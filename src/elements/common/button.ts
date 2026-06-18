@@ -1,7 +1,7 @@
 import { BrowserInstance } from '@common/browser';
 import { $, $getByText } from '@common/element.function';
 import { IClickable } from '@models/elements/clickable.interface';
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from 'playwright-core';
 import { Clickable } from '../base/clickable';
 
 export class Button extends Clickable implements IClickable {

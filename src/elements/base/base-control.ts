@@ -1,7 +1,7 @@
 import { $getByText } from '@common/element.function';
 import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
 import { IBaseControl } from '@models/elements/base-control.interface';
-import { Locator } from '@playwright/test';
+import { Locator } from 'playwright-core';
 
 export class BaseControl implements IBaseControl {
     private baseLocator: Locator;

@@ -1,6 +1,6 @@
 import { BrowserInstance } from '@common/browser';
 import { $, $getByText } from '@common/element.function';
-import { syncForEach } from '@helpers/helper-functions';
+import { ArrayHelper } from '@helpers/helper-functions';
 import { ISelect } from '@models/elements/multiselect.interface';
 import { Locator, Page } from 'playwright-core';
 import { Label } from './label';
@@ -41,13 +41,14 @@ export class Dropdown implements ISelect {
 
     async getOptions(): Promise<string[]> {
         await this.cpnDropdown.click();
-        return await syncForEach(await this.lblOption.element.all(), async (element) =>
-            (await element.innerText()).trim()
+        return await ArrayHelper.forEachSync(
+            await this.lblOption.element.all(),
+            async (element) => (await element.innerText()).trim() as string
         );
     }
 
     async selectOptions(options: string[], exact?: boolean): Promise<void> {
-        await syncForEach(options, async (option): Promise<void> => {
+        await ArrayHelper.forEachSync(options, async (option): Promise<void> => {
             await this.selectOption(option, exact);
         });
     }

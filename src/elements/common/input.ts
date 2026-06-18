@@ -1,38 +1,59 @@
 import { BrowserInstance } from '@common/browser';
-import { $, $getByText } from '@common/element.function';
-import { ITextBox } from '@models/elements/textbox.interface';
-import { Locator, Page } from '@playwright/test';
+import { $getByText } from '@common/element.function';
+import { IInput } from '@models/elements/input.interface';
+import { Locator, Page } from 'playwright-core';
 import { Editable } from '../base/editable';
 
-export class Input extends Editable implements ITextBox {
+type InputType = 'input' | 'textarea';
+
+export class Input extends Editable implements IInput {
     constructor(option?: {
         parentLocator?: Locator;
         label?: string;
         index?: number;
         locator?: Locator;
         placeholder?: string;
+        id?: string;
+        type?: InputType;
     }) {
-        const baseLocator: Page | Locator = option?.parentLocator || BrowserInstance.currentPage;
-        const locator = option?.locator
-            ? option.locator
-            : option
-              ? option.label
-                  ? (() => {
-                        const base: Locator = baseLocator
-                            .locator('.input', {
-                                has: $getByText(option.label, { exact: true })
-                            })
-                            .locator(option.placeholder ? `input[placeholder="${option.placeholder}"]` : 'input');
-                        return option.index !== undefined ? base.nth(option.index) : base;
-                    })()
-                  : (() => {
-                        const base = baseLocator
-                            .locator('.input')
-                            .locator(option.placeholder ? `input[placeholder="${option.placeholder}"]` : 'input');
-                        return option.index !== undefined ? base.nth(option.index) : base;
-                    })()
-              : $('.input input');
-        super(locator);
+        if (option?.locator) {
+            super(option.locator);
+            return;
+        }
+
+        const baseLocator = option?.parentLocator || BrowserInstance.currentPage;
+        const inputType = option?.type || 'input';
+
+        const locator = Input.buildLocator(baseLocator, inputType, option);
+        super(option?.index !== undefined ? locator.nth(option.index) : locator);
+    }
+
+    private static buildLocator(
+        base: Page | Locator,
+        type: InputType,
+        opt?: {
+            id?: string;
+            label?: string;
+            placeholder?: string;
+        }
+    ): Locator {
+        if (opt?.id) return base.locator(`#${opt.id}`);
+
+        const selector = Input.buildSelector(type, opt?.placeholder);
+
+        if (opt?.label) {
+            return base
+                .locator('.input', {
+                    has: $getByText(opt.label, { exact: true })
+                })
+                .locator(selector);
+        }
+
+        return base.locator(`.input ${selector}`);
+    }
+
+    private static buildSelector(type: InputType, placeholder?: string): string {
+        return placeholder ? `${type}[placeholder="${placeholder}"]` : type;
     }
 
     public async getValue(): Promise<string> {

@@ -50,17 +50,12 @@ export const test = base.extend<
     ],
     autoWorkerFixture: [
         async ({}, use) => {
-            // Create a new page using BrowserInstance (no need to pass the browser directly)
+            // Setup browser and init page
             await BrowserInstance.start();
-            const beforePage: Page = await BrowserInstance.startNewPage(); // This will now create the page
+            const beforePage: Page = await BrowserInstance.startNewPage();
             await beforeHooks();
             await closePage(beforePage);
             await use('autoWorkerFixture');
-            // Create another page after the test
-            await BrowserInstance.start();
-            const afterPage: Page = await BrowserInstance.startNewPage();
-            await afterHooks();
-            await closePage(afterPage);
         },
         { scope: 'worker', auto: true }
     ]
@@ -77,8 +72,6 @@ const closePage: (page: Page) => Promise<void> = async (page: Page): Promise<voi
 const beforeHooks: () => Promise<void> = async (): Promise<void> => {
     createDownloadsFolder();
 };
-
-const afterHooks: () => Promise<void> = async (): Promise<void> => {};
 
 const createDownloadsFolder: () => void = () => {
     if (!existsSync(downloadDir)) {

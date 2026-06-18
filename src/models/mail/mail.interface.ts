@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page } from 'playwright-core';
 
 export interface IMail {
     page: Page;

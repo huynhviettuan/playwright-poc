@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { writeJsonFile } from '@helpers/helper-functions';
-import { expect } from '@playwright/test';
+import { expect } from '@fixtures/expect-fixtures';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import * as fs from 'fs/promises';
 import { createSchema } from 'genson-js';
+import { FileWriter } from './helper-functions';
 
 export async function createJsonSchema(name: string, path: string, json: object): Promise<void> {
     const filePath = `src/data/schemas/${path}`;
@@ -15,7 +15,7 @@ export async function createJsonSchema(name: string, path: string, json: object)
         const schema = createSchema(json);
         const schemaString = JSON.stringify(schema, null, 2);
         const schemaName = `src/data/schemas/${path}/${name}_schema.json`;
-        await writeJsonFile(schemaName, schemaString);
+        await FileWriter.writeJson(schemaName, schemaString);
 
         console.log('JSON Schema created and saved.');
     } catch (err) {

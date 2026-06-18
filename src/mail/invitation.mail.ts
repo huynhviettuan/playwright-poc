@@ -1,4 +1,3 @@
-import { decodeHTML } from 'src/helpers/helper-functions';
 import { BaseMail } from './mail';
 
 export class InvitationMail extends BaseMail {
@@ -8,9 +7,8 @@ export class InvitationMail extends BaseMail {
     }
 
     async goToSignupPage(email: string): Promise<void> {
-        const html: string = await this.getHtml(email, this.subject);
-        const link: string = /https:\/\/.*\/sign-up\?invite-token=[a-f0-9\\-]+/g.exec(decodeHTML(html))[0];
-        await this.page.goto(link);
+        const token = await this.extractToken(email);
+        await this.page.goto(`/sign-up?invite-token=${token}`);
         await this.page.waitForLoadState();
     }
 }

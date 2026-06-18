@@ -1,219 +1,257 @@
-# Project Path Aliases
+# Playwright Test Automation Framework
 
-This project uses TypeScript path aliases to simplify and standardize import paths across the codebase. These aliases
-are defined in the `tsconfig.json` file and help avoid long relative import paths like `../../../components/Button`.
+A scalable, maintainable Playwright-based test automation framework using TypeScript with SOLID principles and container-based architecture.
 
-## Path Aliases Overview
+## 🚀 Quick Start
 
-| Alias           | Maps To            | Description                                                                 |
-| --------------- | ------------------ | --------------------------------------------------------------------------- |
-| `@pages/*`      | `src/pages/*`      | Page-level components, typically route views or screens.                    |
-| `@models/*`     | `src/models/*`     | Data models, TypeScript interfaces, and types.                              |
-| `@elements/*`   | `src/elements/*`   | Reusable UI elements (e.g., Button, Input, etc.) that are atomic in nature. |
-| `@components/*` | `src/components/*` | Composite UI components built from elements, possibly stateful.             |
-| `@constants/*`  | `src/constants/*`  | Static values such as config values, routes, status codes, etc.             |
-| `@enums/*`      | `src/enums/*`      | Enumerations used throughout the application.                               |
-| `@services/*`   | `src/services/*`   | API calls, service handlers, or business logic modules.                     |
-| `@fixtures/*`   | `src/fixtures/*`   | Sample/mock data for testing or local development.                          |
-| `@helpers/*`    | `src/helpers/*`    | Utility functions or pure logic helpers.                                    |
-| `@mail/*`       | `src/mail/*`       | Mail templates, handlers, or email service utilities.                       |
-| `@data/*`       | `src/data/*`       | Static data, JSON files, or datasets used in the app.                       |
-| `@common/*`     | `src/common/*`     | Shared utilities, base components, or cross-cutting modules.                |
+```bash
+# Install dependencies
+npm install
 
-## How to Use
+# Install Playwright browsers
+npx playwright install
 
-Instead of:
+# Run E2E tests
+npm run test:e2e
 
-```ts
-import Button from '../../../components/ui/Button';
+# Run API tests
+npm run test:api
+
+# Run tests in headed mode
+npx playwright test --headed
 ```
 
-Use:
-
-```ts
-import Button from '@components/ui/Button';
-```
-
-## Configuration
-
-These aliases are set up in your `tsconfig.json`:
-
-```json
-{
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@pages/*": ["src/pages/*"],
-            "@models/*": ["src/models/*"],
-            "@elements/*": ["src/elements/*"],
-            "@components/*": ["src/components/*"],
-            "@constants/*": ["src/constants/*"],
-            "@enums/*": ["src/enums/*"],
-            "@services/*": ["src/services/*"],
-            "@fixtures/*": ["src/fixtures/*"],
-            "@helpers/*": ["src/helpers/*"],
-            "@mail/*": ["src/mail/*"],
-            "@data/*": ["src/data/*"],
-            "@common/*": ["src/common/*"]
-        }
-    }
-}
-```
-
-Make sure your build tools (e.g., Webpack, Vite, or Jest) are also configured to recognize these paths.
-
-## Benefits
-
--   Cleaner and more maintainable imports.
--   Easier refactoring.
--   Improved readability and organization.
-
----
-
-## 🧪 Test Fixtures Structure
-
-This project leverages [Playwright test fixtures](https://playwright.dev/docs/test-fixtures) to modularize and manage
-reusable test utilities such as services, page objects, mail handling, and custom commands.
-
-All fixtures are centralized and merged in a single entry point for consistency and reusability.
-
-### `src/fixtures/index.ts`
-
-```ts
-import { test as hookFixtures } from '@fixtures/hook-fixtures';
-import { mergeExpects, mergeTests } from '@playwright/test';
-import { test as commandFixtures } from 'src/fixtures/command-fixtures';
-import { expect as expectFixtures } from 'src/fixtures/expect-fixtures';
-import { test as mailFixtures } from 'src/fixtures/mail-fixtures';
-import { test as pageFixtures } from 'src/fixtures/page-fixtures';
-import { test as serviceFixtures } from 'src/fixtures/service-fixtures';
-
-export const test = mergeTests(serviceFixtures, commandFixtures, mailFixtures, pageFixtures, hookFixtures);
-export const expect = mergeExpects(expectFixtures);
-```
-
-### 🔍 Explanation
-
--   **Modular Fixtures**: Each file (e.g., `page-fixtures.ts`, `service-fixtures.ts`) defines related fixtures in
-    isolation.
--   **Alias Usage**: Fixtures are imported using the `@fixtures/*` alias for consistency and shorter paths.
--   **`mergeTests()`**: Combines all test fixtures into a single `test` object to be used in your Playwright test files.
--   **`mergeExpects()`**: Combines custom `expect` matchers (like soft assertions, extensions) with Playwright’s default
-    `expect`.
-
-### ✅ Usage in Tests
-
-Instead of importing individual fixtures:
-
-```ts
-import { test, expect } from 'src/fixtures/index';
-```
-
-Use the centralized version:
-
-```ts
-import { test, expect } from '@fixtures';
-```
-
-### 📂 Recommended Fixture Structure
+## 📁 Project Structure
 
 ```
-src/
-├── fixtures/
-│   ├── index.ts               # Merges and exports all fixtures
-│   ├── page-fixtures.ts       # Page object fixtures
-│   ├── command-fixtures.ts    # Custom test commands
-│   ├── service-fixtures.ts    # Service/API-related fixtures
-│   ├── mail-fixtures.ts       # Email-related fixtures
-│   ├── hook-fixtures.ts       # Lifecycle hooks (beforeEach, afterEach)
-│   ├── expect-fixtures.ts     # Custom matchers
+playwright-poc/
+├── .claude/
+│   └── skills/              # How-to guides for common tasks
+├── docs/
+│   ├── decisions/           # Architecture Decision Records (ADRs)
+│   ├── examples/            # Code examples
+│   └── troubleshooting/     # Common errors and solutions
+├── examples/                # Markdown examples
+├── src/
+│   ├── pages/              # Page objects (orchestration layer)
+│   ├── components/
+│   │   ├── containers/     # Page section containers (Header, Main, Footer)
+│   │   ├── form.component.ts
+│   │   ├── table.component.ts
+│   │   ├── modal.component.ts
+│   │   └── toast.component.ts
+│   ├── elements/           # Base UI elements
+│   │   ├── base/           # BaseControl, Clickable, Editable
+│   │   └── common/         # Button, Input, Dropdown, etc.
+│   ├── services/           # API service layer
+│   ├── fixtures/           # Test fixtures (merged)
+│   ├── helpers/            # Utility classes
+│   ├── constants/          # Config and constants
+│   └── common/             # Shared utilities
+├── tests/
+│   ├── e2e/               # E2E tests
+│   └── api/               # API tests
+├── CLAUDE.md              # AI assistant context
+├── CONTEXT.md             # Glossary
+└── README.md              # This file
 ```
 
----
+## 🎯 Key Features
 
-## 📄 Page Object Example
+### Container-Based Architecture
+Pages are composed of reusable containers (Header, Main, Footer) that mirror frontend structure:
 
-Here’s an example of how a page object (SignInPage) is implemented using path aliases:
-
-```ts
-import { $ } from '@common/element.function';
-import { PASSWORD } from '@constants/config.constant';
-import { Button } from '@elements/common/button';
-import { FieldError } from '@elements/common/field-error';
-import { Label } from '@elements/common/label';
-import { Notification } from '@elements/common/notification';
-import { TextBox } from '@elements/common/textbox';
-import { Locator } from 'playwright-core';
-
+```typescript
 export class SignInPage {
-    cpnSignInForm: Locator;
-    lblSignInTitle: Label;
-    txtEmailAddress: TextBox;
-    txtPassword: TextBox;
-    btnLogin: Button;
-    fieldError: FieldError;
-    notification: Notification;
+    readonly header: SignInHeaderContainer;
+    readonly main: SignInMainContainer;
+    readonly footer: SignInFooterContainer;
+}
+```
 
+### Path Aliases
+Clean imports without relative paths:
+
+```typescript
+// ✅ Clean
+import { SignInPage } from '@pages/sign-in';
+import { Button } from '@elements/common/button';
+import { Config } from '@constants/config.constant';
+
+// ❌ Avoid
+import { SignInPage } from '../../../pages/sign-in';
+```
+
+### Custom Fixtures
+Type-safe dependency injection for page objects and services:
+
+```typescript
+import { test, expect } from '@fixtures/fixtures';
+
+test('login test', async ({ signInPage, userService }) => {
+    await signInPage.signIn('user@example.com');
+});
+```
+
+### Helper Classes
+Organized utilities with static methods:
+
+```typescript
+import { DateTimeHelper } from '@helpers/date-time-functions';
+import { DataGenerator } from '@helpers/generate-data-functions';
+
+const today = DateTimeHelper.today();
+const email = DataGenerator.randomEmail('test');
+```
+
+## 📖 Path Aliases Reference
+
+| Alias | Maps To | Usage |
+|-------|---------|-------|
+| `@pages/*` | `src/pages/*` | Page objects |
+| `@elements/*` | `src/elements/*` | UI elements |
+| `@components/*` | `src/components/*` | Containers & components |
+| `@services/*` | `src/services/*` | API services |
+| `@fixtures/*` | `src/fixtures/*` | **Always import test/expect from here** |
+| `@helpers/*` | `src/helpers/*` | Utility classes |
+| `@constants/*` | `src/constants/*` | Config & constants |
+| `@common/*` | `src/common/*` | Shared utilities |
+
+## ✅ Critical Rules
+
+### 1. Always Import from Custom Fixtures
+```typescript
+// ✅ Correct
+import { test, expect } from '@fixtures/fixtures';
+
+// ❌ Wrong - Never use
+import { test, expect } from '@playwright/test';
+```
+
+### 2. Follow SOLID Principles
+- Single Responsibility - One class, one purpose
+- Use composition over inheritance
+- Extract complex logic into helper classes
+
+### 3. Use Existing Components
+- `Form` - For form interactions
+- `Table` - For table operations
+- `Modal` - For modal dialogs
+- `Toast` - For notifications
+
+## 📝 Quick Examples
+
+### E2E Test
+```typescript
+import { BrowserInstance } from '@common/browser';
+import { Endpoints } from '@constants/endpoints.constant';
+import { expect, test } from '@fixtures/fixtures';
+
+test.describe('Login', () => {
+    test.beforeEach(async () => {
+        await BrowserInstance.currentPage.goto(Endpoints.auth.signIn);
+    });
+    
+    test('should login successfully', async ({ signInPage }) => {
+        await signInPage.signIn('user@example.com');
+        await expect(await signInPage.getTitle()).toEqual('Dashboard');
+    });
+});
+```
+
+### API Test
+```typescript
+import { expect, test } from '@fixtures/fixtures';
+import { StatusCodes } from 'http-status-codes';
+
+test('should get user', async ({ userService, tokensService }) => {
+    const { response } = await tokensService.getToken();
+    const token = await response.json().then(r => r.token);
+    
+    const { statusCode } = await userService.getUser(token, '123');
+    expect(statusCode).toBe(StatusCodes.OK);
+});
+```
+
+## 📚 Documentation
+
+- **[CLAUDE.md](./CLAUDE.md)** - Project overview and rules
+- **[CONTEXT.md](./CONTEXT.md)** - Glossary of terms
+- **[.claude/skills/](./.claude/skills/)** - How-to guides
+- **[docs/decisions/](./docs/decisions/)** - Architecture decisions (ADRs)
+- **[examples/](./examples/)** - Code examples
+
+## 🛠️ Available Scripts
+
+```bash
+npm run test:e2e          # Run E2E tests
+npm run test:api          # Run API tests
+npm run test:new          # Run tests tagged @new
+npm run format            # Format code with Prettier
+npm run lint              # Lint code with ESLint
+npm run install:all       # Install all dependencies
+```
+
+## 🏗️ Creating New Components
+
+### Page Object with Containers
+```bash
+# 1. Create containers
+src/components/containers/my-page/
+├── header.container.ts
+├── main.container.ts
+└── footer.container.ts
+
+# 2. Create page object
+src/pages/my-page.ts
+
+# 3. Register in fixtures
+src/fixtures/page-fixtures.ts
+```
+
+See [.claude/skills/create-page-object.md](./.claude/skills/create-page-object.md) for details.
+
+### API Service
+```typescript
+// src/services/my-service.ts
+import { BaseService } from '@services/base.service';
+
+export class MyService extends BaseService {
     constructor() {
-        this.cpnSignInForm = $('div.sign-in form');
-        this.lblSignInTitle = new Label($('h2.sign-in__title'));
-        this.txtEmailAddress = new TextBox({
-            parentLocator: this.cpnSignInForm,
-            label: 'Email address'
-        });
-        this.txtPassword = new TextBox({
-            parentLocator: this.cpnSignInForm,
-            label: 'Password'
-        });
-        this.btnLogin = new Button({
-            parentLocator: this.cpnSignInForm,
-            label: 'Log in'
-        });
-        this.fieldError = new FieldError();
-        this.notification = new Notification();
+        super('/api/my-resource');
     }
-
-    async signIn(email: string, password = PASSWORD): Promise<void> {
-        await this.txtEmailAddress.fill(email);
-        await this.txtPassword.fill(password);
-        await this.btnLogin.click();
+    
+    async getResource(token: string, id: string) {
+        return await this.get({ token, id });
     }
 }
 ```
 
-### 🔑 Highlights
+See [.claude/skills/create-api-service.md](./.claude/skills/create-api-service.md) for details.
 
--   This pattern promotes **encapsulation** of page interactions.
--   The `@elements` and `@common` aliases provide a clean way to reference reusable UI logic.
--   Ensures a consistent and scalable test architecture.
+## 🐛 Troubleshooting
 
----
+- **[Common Errors](./docs/troubleshooting/common-errors.md)**
+- **[Debugging Tips](./docs/troubleshooting/debugging-tips.md)**
+- **[FAQ](./docs/troubleshooting/faq.md)**
 
-## 📗 Registering Page Object Fixtures
+## 📋 Coding Standards
 
-Here's how to register the `SignInPage` as a fixture using `page-fixtures.ts`:
+- **SOLID** - Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **YAGNI** - You Aren't Gonna Need It (don't over-engineer)
+- **KISS** - Keep It Simple, Stupid (prefer simplicity)
+- **DRY** - Don't Repeat Yourself (reuse code)
 
-```ts
-import { SignInPage } from '@pages/sign-in';
-import { test as base } from '@playwright/test';
+See [docs/decisions/ADR-004-yagni-kiss-dry-principles.md](./docs/decisions/ADR-004-yagni-kiss-dry-principles.md)
 
-type PageObjects = {
-    signInPage: SignInPage;
-};
+## 🤝 Contributing
 
-export const test = base.extend<PageObjects>({
-    signInPage: async ({}, use) => {
-        await use(new SignInPage());
-    }
-});
-```
+1. Read [CLAUDE.md](./CLAUDE.md) and [CONTEXT.md](./CONTEXT.md)
+2. Check [docs/decisions/](./docs/decisions/) for architectural patterns
+3. Follow existing code style and patterns
+4. Run tests and linting before committing
+5. Update documentation if adding new patterns
 
-This makes `signInPage` available in your tests:
+## 📄 License
 
-```ts
-import { test } from '@fixtures';
-
-test('user can sign in', async ({ signInPage }) => {
-    await signInPage.signIn('test@example.com');
-});
-```
+MIT

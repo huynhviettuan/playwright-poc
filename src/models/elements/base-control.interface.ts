@@ -1,5 +1,5 @@
 import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
-import { Locator } from '@playwright/test';
+import { Locator } from 'playwright-core';
 
 export interface IBaseControl {
     get element(): Locator;

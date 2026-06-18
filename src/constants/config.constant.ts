@@ -1,10 +1,35 @@
 import { config } from 'dotenv';
+
 config();
-export const REPORT_API_KEY = String(process.env.REPORT_API_KEY).trim();
-export const REPORT_ENDPOINT = String(process.env.REPORT_ENDPOINT).trim();
-export const REPORT_LAUNCH = String(process.env.REPORT_LAUNCH).trim();
-export const API_DOMAIN = String(process.env.API_DOMAIN).trim();
-export const PASSWORD = String(process.env.PASSWORD).trim();
-export const SUPER_ADMIN_EMAIL = String(process.env.SUPER_ADMIN_EMAIL).trim();
-export const MAIL_DOMAIN = String(process.env.MAIL_DOMAIN).trim();
-export const BASE_URL = String(process.env.BASE_URL).trim();
+
+const getEnv = (key: string, defaultValue: string = ''): string => {
+    return (process.env[key] || defaultValue).trim();
+};
+
+export const Config = {
+    report: {
+        apiKey: getEnv('REPORT_API_KEY'),
+        endpoint: getEnv('REPORT_ENDPOINT'),
+        launch: getEnv('REPORT_LAUNCH')
+    },
+    api: {
+        domain: getEnv('API_DOMAIN')
+    },
+    auth: {
+        password: getEnv('PASSWORD'),
+        superAdminEmail: getEnv('SUPER_ADMIN_EMAIL')
+    },
+    app: {
+        baseUrl: getEnv('BASE_URL'),
+        mailDomain: getEnv('MAIL_DOMAIN')
+    }
+} as const;
+
+export const REPORT_API_KEY = Config.report.apiKey;
+export const REPORT_ENDPOINT = Config.report.endpoint;
+export const REPORT_LAUNCH = Config.report.launch;
+export const API_DOMAIN = Config.api.domain;
+export const PASSWORD = Config.auth.password;
+export const SUPER_ADMIN_EMAIL = Config.auth.superAdminEmail;
+export const MAIL_DOMAIN = Config.app.mailDomain;
+export const BASE_URL = Config.app.baseUrl;

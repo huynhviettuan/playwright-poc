@@ -1,7 +1,7 @@
 import { BrowserInstance } from '@common/browser';
 import { DOWNLOADS_PATH, LONG_TIMEOUT } from '@constants/common.constant';
 import { IClickable } from '@models/elements/clickable.interface';
-import { Download, Locator } from '@playwright/test';
+import { Download, Locator } from 'playwright-core';
 import { BaseControl } from './base-control';
 
 export class Clickable extends BaseControl implements IClickable {

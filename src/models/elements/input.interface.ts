@@ -1,3 +1,3 @@
-export interface ITextArea {
+export interface IInput {
     getValue(): Promise<string>;
 }

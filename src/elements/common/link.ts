@@ -1,6 +1,6 @@
 import { BrowserInstance } from '@common/browser';
 import { ILink } from '@models/elements/link.interface';
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from 'playwright-core';
 import { Clickable } from '../base/clickable';
 
 export class Link extends Clickable implements ILink {

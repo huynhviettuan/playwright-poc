@@ -2,33 +2,57 @@ import { faker } from '@faker-js/faker';
 import * as fs from 'fs';
 import _ from 'lodash';
 import * as path from 'path';
-import { getRandomTimeStamp } from './date-time-functions';
+import { DateTimeHelper } from './date-time-functions';
 
-export function generateRandomString(length = 10): string {
-    return faker.string.alpha(length);
+export class DataGenerator {
+    static randomString(length: number = 10): string {
+        return faker.string.alpha(length);
+    }
+
+    static randomNumber(min: number = 1, max: number = 100000): number {
+        return _.random(min, max);
+    }
+
+    static randomEmail(prefix: string = 'automation'): string {
+        return `${prefix}+${DateTimeHelper.randomTimestamp()}@gmail.com`;
+    }
+
+    static randomName(): string {
+        return faker.person.fullName();
+    }
+
+    static randomPhone(): string {
+        return faker.phone.number();
+    }
+
+    static randomAddress(): string {
+        return faker.location.streetAddress();
+    }
 }
 
-export function generateRandomNumber(min = 1, max = 100000): number {
-    return _.random(min, max);
-}
-
-export function generateRandomEmail(): string {
-    return `automation+${getRandomTimeStamp()}@gmail.com`;
-}
-
-export function cloneFile(
-    fileName: string,
-    folderPath: string = 'src/data/files',
-    destinationFolder: string = 'src/downloads'
-): void {
-    try {
-        const sourcePath = path.resolve(folderPath, fileName);
+export class FileHelper {
+    static clone(
+        fileName: string,
+        sourceFolder: string = 'src/data/files',
+        destinationFolder: string = 'src/downloads'
+    ): void {
+        const sourcePath = path.resolve(sourceFolder, fileName);
         const destinationPath = path.resolve(destinationFolder, fileName);
+
         if (!fs.existsSync(destinationFolder)) {
             fs.mkdirSync(destinationFolder, { recursive: true });
         }
+
         fs.copyFileSync(sourcePath, destinationPath);
-    } catch (error) {
-        console.error(`Failed to clone file: ${error}`);
+    }
+
+    static exists(filePath: string): boolean {
+        return fs.existsSync(filePath);
+    }
+
+    static delete(filePath: string): void {
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
     }
 }

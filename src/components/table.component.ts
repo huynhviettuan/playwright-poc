@@ -1,4 +1,4 @@
-import { $, $getByText } from '@common/element.function';
+import { $ } from '@common/element.function';
 import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
 import { Locator } from 'playwright-core';
 
@@ -7,7 +7,6 @@ export class Table {
     tableBody: Locator;
     tableHeader: Locator;
     tableRow: Locator;
-    tableParentHeaderXpath?: string;
 
     constructor(parent?: Locator) {
         const baseLocator = parent ? parent.locator('table') : $('table');
@@ -23,10 +22,6 @@ export class Table {
 
     withParentLocator(parentLocator: Locator): void {
         this.initializeTable(parentLocator.locator('table'));
-    }
-
-    setTableParentHeaderXpath(tableParentHeaderXpath: string): void {
-        this.tableParentHeaderXpath = tableParentHeaderXpath;
     }
 
     async waitForTableVisible(): Promise<void> {
@@ -45,118 +40,112 @@ export class Table {
         return this.tableBody.locator('td', { hasText: value });
     }
 
-    getCellByIndex(rowIndex = 0, columnIndex = 0): Locator {
+    getCellByIndex(rowIndex: number = 0, columnIndex: number = 0): Locator {
         return this.tableBody.locator('tr').nth(rowIndex).locator('td').nth(columnIndex);
     }
 
-    getButtonInRow(
-        cellValue: string,
-        option: {
-            name?: string;
-            index?: number;
-        }
-    ): Locator {
-        const { index, name } = option;
-        const baseLocator: Locator = this.getCellByValue(cellValue).locator('..');
-        return index
-            ? baseLocator.getByRole(ElementRoleEnum.BUTTON).nth(index)
-            : baseLocator.getByRole(ElementRoleEnum.BUTTON, { name });
-    }
-
-    getColumnTitle(columnTitle: string): Locator {
-        return this.tableHeader.locator('th', { hasText: columnTitle });
-    }
-
-    getCellsByColumn(column: string): Locator {
-        return this.tableBody.locator(
-            `//td[count(//table//th[normalize-space()="${column}"]/preceding-sibling::th)+1]`
-        );
+    getButtonInRow(cellValue: string, option: { name?: string; index?: number }): Locator {
+        const row = this.getCellByValue(cellValue).locator('..');
+        return option.index !== undefined
+            ? row.getByRole(ElementRoleEnum.BUTTON).nth(option.index)
+            : row.getByRole(ElementRoleEnum.BUTTON, { name: option.name });
     }
 
     getMenuIconInRow(cellValue: string): Locator {
         return this.getCellByValue(cellValue).locator('..').locator('.font-icon--three-dot');
     }
 
-    getRowWithData(data: Record<string, string | string[]>): Locator {
-        let expectedRow: Locator = this.tableBody;
-        for (const [key, value] of Object.entries(data)) {
-            const values: string[] = Array.isArray(value) ? value : [value];
-            for (const item of values) {
-                if (key === '') {
-                    const emptyColumnIndexXpath = `count(${this.tableParentHeaderXpath ?? ''}//table//th[normalize-space()]/preceding-sibling::th)+2`;
-                    expectedRow = expectedRow
-                        .locator(`//td[${emptyColumnIndexXpath}]`)
-                        .filter({
-                            has: $getByText(item, { exact: true })
-                        })
-                        .locator('..');
-                } else {
-                    const columnIndexXpath = `count(${this.tableParentHeaderXpath ?? ''}//table//th[normalize-space()="${key}"]/preceding-sibling::th)+1`;
-                    expectedRow = expectedRow
-                        .locator(`//td[${columnIndexXpath}]`)
-                        .filter({
-                            has: $getByText(item, { exact: true })
-                        })
-                        .locator('..');
+    async getCellsByColumn(columnName: string): Promise<Locator[]> {
+        const columnIndex = await this.getColumnIndexByHeader(columnName);
+        const rows = await this.tableBody.locator('tr').all();
+        return rows.map((row) => row.locator('td').nth(columnIndex));
+    }
+
+    async getRowWithData(data: Record<string, string | string[]>): Promise<Locator> {
+        const rows = await this.tableBody.locator('tr').all();
+        const headers = await this.getHeaders();
+
+        for (const row of rows) {
+            const cells = await row.locator('td').all();
+            let isMatch = true;
+
+            for (const [columnName, expectedValue] of Object.entries(data)) {
+                const values = Array.isArray(expectedValue) ? expectedValue : [expectedValue];
+                const columnIndex =
+                    columnName === ''
+                        ? headers.findIndex((h) => h.trim() === '')
+                        : headers.findIndex((h) => h.trim() === columnName);
+
+                if (columnIndex === -1) continue;
+
+                const cellText = await cells[columnIndex]?.innerText();
+                if (!values.some((v) => cellText?.includes(v))) {
+                    isMatch = false;
+                    break;
                 }
             }
+
+            if (isMatch) return row;
         }
-        return expectedRow;
+
+        return this.tableBody.locator('tr').first();
     }
 
     async getLengthOfRows(): Promise<number> {
-        return (await this.tableBody.locator('tr').all()).length;
+        return await this.tableBody.locator('tr').count();
     }
 
     async sortColumn(column: string): Promise<void> {
-        await this.tableHeader.locator('th', { hasText: column }).locator('..').click();
+        await this.getHeaderByValue(column).click();
         await this.waitForTableDataDisplayed();
     }
 
     async getColumnIndexByHeader(column: string): Promise<number> {
-        return this.getHeaderByValue(column).evaluate((th) => {
-            const thElements = Array.from(th.parentElement.children);
-            return thElements.indexOf(th);
-        });
+        const headers = await this.getHeaders();
+        return headers.findIndex((h) => h.trim() === column);
     }
 
     async getRowIndexByValue(value: string): Promise<number> {
         return this.getCellByValue(value)
             .locator('..')
-            .evaluate((tr) => {
-                const trElements = Array.from(tr.parentElement.children);
-                return trElements.indexOf(tr);
-            });
+            .evaluate((tr) => Array.from(tr.parentElement.children).indexOf(tr));
     }
 
     async getColumnDataByHeader(column: string): Promise<string[]> {
         const columnIndex = await this.getColumnIndexByHeader(column);
+        const rows = await this.tableBody.locator('tr').all();
 
-        const columnData = await this.tableBody.locator('tr').evaluateAll((rows, columnIndex) => {
-            return rows.map((row) => row.children[columnIndex]?.textContent.trim() || '');
-        }, columnIndex);
+        const data: string[] = [];
+        for (const row of rows) {
+            const cell = row.locator('td').nth(columnIndex);
+            const text = await cell.innerText();
+            data.push(text.trim());
+        }
 
-        return columnData;
+        return data;
     }
 
     async waitForTableDataDisplayed(): Promise<void> {
         await this.tableBody.first().waitFor({ state: ElementStateEnum.VISIBLE });
-        const isValueOfCellDisplayed: (retry?: number) => Promise<void> = async (retry = 0): Promise<void> => {
-            const retryNumber = 100;
-            const tds: Locator[] = await this.tableBody.first().locator('td').all();
-            for (let i = 0; i < tds.length; i++) {
-                const textContent = await tds[i].innerText();
-                if (textContent.trim() !== '') {
-                    return;
-                }
+
+        const hasCellData = async (retry: number = 0): Promise<void> => {
+            const MAX_RETRIES = 100;
+            const firstRow = this.tableBody.locator('tr').first();
+            const cells = await firstRow.locator('td').all();
+
+            for (const cell of cells) {
+                const text = await cell.innerText();
+                if (text.trim() !== '') return;
             }
-            if (retry === retryNumber) {
+
+            if (retry >= MAX_RETRIES) {
                 throw new Error('Timed out waiting for table cell to have data');
             }
-            retry++;
+
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            await isValueOfCellDisplayed(retry);
+            await hasCellData(retry + 1);
         };
-        await isValueOfCellDisplayed();
+
+        await hasCellData();
     }
 }

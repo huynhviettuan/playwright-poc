@@ -1,7 +1,7 @@
 import { BrowserInstance } from '@common/browser';
 import { $ } from '@common/element.function';
 import { ICheckBox } from '@models/elements/checkbox.interface';
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page } from 'playwright-core';
 import { Clickable } from '../base/clickable';
 
 export class CheckBox extends Clickable implements ICheckBox {

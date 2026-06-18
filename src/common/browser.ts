@@ -36,6 +36,7 @@ export class Context {
     private context: BrowserContext;
     private _pages: Page[] = [];
     private _previousPage: Page | undefined;
+    private _pageStack: Page[] = [];
     private _isMobile = false;
 
     constructor(context: BrowserContext) {
@@ -59,6 +60,18 @@ export class Context {
 
     set previousPage(page: Page | undefined) {
         this._previousPage = page;
+    }
+
+    get pageStack(): Page[] {
+        return this._pageStack;
+    }
+
+    pushPage(page: Page): void {
+        this._pageStack.push(page);
+    }
+
+    popPage(): Page | undefined {
+        return this._pageStack.pop();
     }
 
     get isMobile(): boolean {
@@ -183,9 +196,28 @@ export class BrowserInstance {
 
     public static async startNewPage(options?: BrowserContextOptions): Promise<Page> {
         if (!this._currentContext) await this.startNewContext(options);
-        if (this._currentPage) this.context.previousPage = this.currentPage;
+        if (this._currentPage) {
+            this.context.previousPage = this.currentPage;
+            this.context.pushPage(this.currentPage);
+        }
         this.currentPage = await this.currentContext.newPage();
         return this.currentPage;
+    }
+
+    public static switchToPage(page: Page): void {
+        if (this._currentPage && this._currentPage !== page) {
+            this.context.pushPage(this.currentPage);
+        }
+        this.currentPage = page;
+    }
+
+    public static async switchToPreviousPage(): Promise<void> {
+        const previousPage = this.context.popPage();
+        if (!previousPage) {
+            throw new Error('No previous page in stack');
+        }
+        this.currentPage = previousPage;
+        await this.currentPage.bringToFront();
     }
 
     public static async close(): Promise<void> {
