@@ -194,3 +194,4 @@ docs/
 -   `write-e2e-test.md` - E2E test writing
 -   `write-api-test.md` - API test writing
 -   `use-helper-functions.md` - Helper utilities reference
+-   `work-with-email.md` - Email verification and mail testing

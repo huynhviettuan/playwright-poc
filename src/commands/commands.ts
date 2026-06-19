@@ -13,6 +13,5 @@ export class Commands {
     async loginWithUser(email: string, password = PASSWORD): Promise<void> {
         await BrowserInstance.currentPage.goto(ENDPOINTS.SIGN_IN);
         await this.signInPage.signIn(email, password);
-        await this.signInPage.notification.btnClose.click();
     }
 }

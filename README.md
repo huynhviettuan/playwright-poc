@@ -29,6 +29,7 @@ playwright-poc/
 │   └── skills/              # How-to guides for common tasks
 ├── docs/
 │   ├── decisions/           # Architecture Decision Records (ADRs)
+│   ├── guidance/            # Practical framework guidance
 │   ├── examples/            # Code examples
 │   └── troubleshooting/     # Common errors and solutions
 ├── examples/                # Markdown examples
@@ -179,6 +180,8 @@ test('should get user', async ({ userService, tokensService }) => {
 - **[CONTEXT.md](./CONTEXT.md)** - Glossary of terms
 - **[.claude/skills/](./.claude/skills/)** - How-to guides
 - **[docs/decisions/](./docs/decisions/)** - Architecture decisions (ADRs)
+- **[docs/guidance/](./docs/guidance/)** - Framework guidance for expect, messages, notifications, sections, and skeletons
+- **[docs/ci/](./docs/ci/)** - GitHub Actions and GitLab CI templates
 - **[examples/](./examples/)** - Code examples
 
 ## 🛠️ Available Scripts

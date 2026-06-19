@@ -1,19 +1,16 @@
-import { Page } from 'playwright-core';
-
 export interface IMail {
-    page: Page;
     mailDomain: string;
-    subject: string;
     getMails(mail: { to: string; subject?: string }): Promise<MailResponse[]>;
     waitForMail(to: string, subject: string): Promise<void>;
-    getMailBox(to: string): Promise<MailResponse[]>;
+    getMailBox(to: string, subject?: string): Promise<MailResponse[]>;
     getLatestMail(to: string, subject: string): Promise<MailResponse>;
     getHeaderMailInformation(to: string, subject: string): Promise<{ subject: string; from: string; to: string }>;
     getHtml(to: string, subject: string): Promise<string>;
-    deleteMailByUser(to: string): Promise<void>;
-    extractToken(subject: string, email: string): Promise<string>;
-    getContent(email: string): Promise<string>;
+    deleteMailByUser(to: string, subject?: string): Promise<void>;
+    extractToken(email: string, subject: string): Promise<string>;
+    getContent(email: string, subject: string): Promise<string>;
     deleteAllMails(): Promise<void>;
+    getMailContent(to: string, subject: string): Promise<MailResponse>;
 }
 
 export type MailResponse = {

@@ -136,13 +136,126 @@ export class UsersMainContainer {
     }
 }
 ```
-    
-    async fillCredentials(email: string, password: string): Promise<void> {
-        await this.txtEmail.fill(email);
-        await this.txtPassword.fill(password);
+
+### Multiple Dynamic Sections Pattern
+
+Use this pattern when one page/container has repeated or dynamic sections, and inputs depend on which section is selected.
+
+**Rule:** Define stable elements in the constructor. Create section-dependent elements through factory methods.
+
+**Do not use singleton for section containers.** Each section container needs its own scoped `Locator`.
+
+**Example Structure:**
+```text
+src/components/containers/profile/
+├── header.container.ts
+├── main.container.ts
+├── form-section.container.ts
+└── footer.container.ts
+```
+
+**Section Container** (`src/components/containers/profile/form-section.container.ts`):
+```ts
+import { Form } from '@components/form.component';
+import { Button } from '@elements/common/button';
+import { Input } from '@elements/common/input';
+import { Locator } from '@playwright/test';
+
+export class FormSectionContainer {
+    private readonly form: Form;
+
+    constructor(private readonly container: Locator) {
+        this.form = new Form(this.container);
+    }
+
+    getInput(option: { label?: string; placeholder?: string; id?: string }): Input {
+        return this.form.getInput(option);
+    }
+
+    getButton(option: { label?: string; index?: number }): Button {
+        return this.form.getButton(option);
+    }
+
+    async fillInput(label: string, value: string): Promise<void> {
+        await this.getInput({ label }).fill(value);
     }
 }
 ```
+
+**Main Container with Section Factory** (`src/components/containers/profile/main.container.ts`):
+```ts
+import { $ } from '@common/element.function';
+import { Button } from '@elements/common/button';
+import { Locator } from '@playwright/test';
+import { FormSectionContainer } from './form-section.container';
+
+export class ProfileMainContainer {
+    private readonly container: Locator;
+
+    readonly btnSave: Button;
+
+    constructor() {
+        this.container = $('.profile-main');
+        this.btnSave = new Button({ parentLocator: this.container, label: 'Save' });
+    }
+
+    getSection(sectionName: string): FormSectionContainer {
+        const section = this.container.locator('section', {
+            hasText: sectionName
+        });
+
+        return new FormSectionContainer(section);
+    }
+}
+```
+
+**Page Object Hides Section Details** (`src/pages/profile/index.ts`):
+```ts
+export class ProfilePage {
+    readonly main: ProfileMainContainer;
+
+    constructor() {
+        this.main = new ProfileMainContainer();
+    }
+
+    async updatePersonalInfo(data: { firstName: string; lastName: string }): Promise<void> {
+        const section = this.main.getSection('Personal Information');
+
+        await section.fillInput('First Name', data.firstName);
+        await section.fillInput('Last Name', data.lastName);
+        await this.main.btnSave.click();
+    }
+
+    async updateBillingAddress(data: { address: string; city: string }): Promise<void> {
+        const section = this.main.getSection('Billing Address');
+
+        await section.fillInput('Address', data.address);
+        await section.fillInput('City', data.city);
+        await this.main.btnSave.click();
+    }
+}
+```
+
+**Usage:**
+```ts
+await profilePage.updatePersonalInfo({
+    firstName: 'John',
+    lastName: 'Doe'
+});
+
+await profilePage.updateBillingAddress({
+    address: '123 Main Street',
+    city: 'New York'
+});
+```
+
+**Why not singleton?**
+- Each section has a different parent locator.
+- Singleton would share state between sections.
+- Shared locator state can cause flaky tests and hard debugging.
+- Section containers represent repeated UI, so they should be normal instances.
+
+**Use singleton only for global UI/services**, like `BrowserInstance` or global notification.
 
 **Footer Container** (`src/components/containers/sign-in/footer.container.ts`):
 ```ts
@@ -236,10 +349,12 @@ test.describe('Sign In', () => {
         // Using composed containers
         await signInPage.signIn('user@example.com');
         
-        // Direct access to container elements if needed
-        await expect(await signInPage.main.btnLogin.isVisible()).toBeTruthy();
-        await expect(await signInPage.header.lblTitle.getTextContent())
-            .toEqual('Sign In');
+        // ✅ Custom expect matchers - work directly with elements
+        await expect(signInPage.main.btnLogin).toBeVisible();
+        await expect(signInPage.header.lblTitle).toHaveText('Sign In');
+        
+        // ❌ Old way - had to use .element
+        // await expect(signInPage.main.btnLogin.element).toBeVisible();
     });
     
     test('should navigate to forgot password', async ({ signInPage }) => {
@@ -269,7 +384,7 @@ test.describe('Sign In', () => {
 
 ### ✅ Critical Rule: Use Existing Components
 
-**When containers have Form, Table, or Modal elements, ALWAYS use the existing component classes.**
+**When containers have Form, Table, Modal, or Skeleton elements, ALWAYS use the existing component/element classes.**
 
 ### Form Component
 Use `Form` component when container has form elements:
@@ -305,6 +420,39 @@ export class UsersMainContainer {
     
     async getUserByEmail(email: string): Promise<Locator> {
         return await this.tblUsers.getRowWithData({ Email: email });
+    }
+}
+```
+
+### Skeleton Element
+Use `Skeleton` element when container has loading placeholders:
+
+```ts
+import { Skeleton } from '@elements/common/skeleton';
+
+export class UsersMainContainer {
+    private readonly container: Locator;
+    readonly skeleton: Skeleton;
+
+    constructor() {
+        this.container = $('.users-main');
+        this.skeleton = new Skeleton({ parentLocator: this.container });
+    }
+
+    async waitForLoad(timeout?: number): Promise<void> {
+        await this.skeleton.waitForAllHidden(timeout);
+    }
+}
+```
+
+Page objects should expose a high-level loading method:
+
+```ts
+export class UsersPage {
+    readonly main: UsersMainContainer;
+
+    async waitForPageLoad(timeout?: number): Promise<void> {
+        await this.main.waitForLoad(timeout);
     }
 }
 ```

@@ -34,6 +34,7 @@ import { expect, test } from '@fixtures/fixtures';
     ```ts
     import { BrowserInstance } from '@common/browser';
     import { Endpoints } from '@constants/endpoints.constant';
+    import { NotificationMessages } from '@constants/messages.constant';
     import { expect, test } from '@fixtures/fixtures';
 
     test.describe('[Feature Name]', () => {
@@ -41,7 +42,7 @@ import { expect, test } from '@fixtures/fixtures';
             await BrowserInstance.currentPage.goto(Endpoints.auth.signIn);
         });
 
-        test('[Test description]', async ({ signInPage }) => {
+        test('[Test description]', async ({ signInPage, notification }) => {
             // Arrange
             const email = 'test@example.com';
 
@@ -49,7 +50,9 @@ import { expect, test } from '@fixtures/fixtures';
             await signInPage.signIn(email);
 
             // Assert
-            await expect(await signInPage.notification.getMessage()).toEqual('Login successful');
+            await expect(signInPage.main.txtEmail).toBeVisible();
+            await expect(signInPage.main.btnLogin).toBeEnabled();
+            expect(await notification.getMessage()).toEqual(NotificationMessages.auth.loginSuccess);
         });
     });
     ```
@@ -67,9 +70,25 @@ import { expect, test } from '@fixtures/fixtures';
     ```
 
 4. **Assertions** using custom expect:
+
     ```ts
-    await expect(await element.isVisible()).toBeTruthy();
-    await expect(await element.getTextContent()).toEqual('text');
+    // ✅ Custom element assertions - no `.element` needed
+    await expect(signInPage.main.txtEmail).toBeVisible();
+    await expect(signInPage.main.btnLogin).toBeEnabled();
+    await expect(signInPage.header.lblTitle).toHaveText('Sign In');
+    await expect(signInPage.main.lblError).toContainText('Invalid');
+
+    // ✅ Regular value assertions still work
+    expect(await notification.getMessage()).toEqual(NotificationMessages.auth.loginSuccess);
+    ```
+
+5. **Messages** using constants:
+
+    ```ts
+    import { NotificationMessages } from '@constants/messages.constant';
+
+    expect(await notification.getMessage()).toEqual(NotificationMessages.auth.loginSuccess);
+    expect(await notification.getMessage()).toEqual(NotificationMessages.payment.success);
     ```
 
 ## Test Structure Best Practices
@@ -107,3 +126,10 @@ import { DataGenerator } from '@helpers/generate-data-functions';
 const email = DataGenerator.randomEmail('test');
 const name = DataGenerator.randomName();
 ```
+
+## Related Documentation
+
+- `docs/guidance/expect/README.md` - Custom assertions for Button, Input, Label, etc.
+- `docs/guidance/messages/README.md` - Centralized notification and validation messages
+- `docs/guidance/notifications/README.md` - Shared notification fixture and component
+- `.claude/skills/create-page-object.md` - Container-based page object pattern
