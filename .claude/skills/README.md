@@ -5,9 +5,10 @@ How-to guides for common framework tasks. Each skill is self-contained; open the
 ## By purpose
 
 ### Discovery
-Find what's on a screen before you build anything for it.
+Find what's on a screen, then turn requirements + observations into test cases.
 
--   [`explore-screens.md`](./explore-screens.md) — inspect a live screen, capture locators, hand off to `create-page-object`
+-   [`explore-screens.md`](./explore-screens.md) — inspect a live screen, capture UI locators + API endpoints in one pass
+-   [`generate-test-cases.md`](./generate-test-cases.md) — read the user story, explore the screen, produce `docs/test-cases/<feature>.md`
 
 ### Creation
 Build new framework artifacts.
@@ -38,11 +39,18 @@ Use throughout the framework, not tied to one artifact type.
 ## Typical flow
 
 ```
-explore-screens  →  create-page-object  →  write-e2e-test
-                          ↑
-                   create-custom-element   (when the screen needs a primitive that doesn't exist yet)
-
-create-api-service  →  write-api-test
+user story  →  generate-test-cases  →  docs/test-cases/<feature>.md
+                       │
+                       ▼ (delegates exploration)
+              explore-screens
+                ├──────────────┐
+                ▼              ▼
+       create-page-object   create-api-service
+                │              │
+                ▼              ▼
+       write-e2e-test       write-api-test
+              ↑
+       create-custom-element   (when the screen needs a primitive that doesn't exist)
 
 Setup once per suite:  use-auth-state              (fast, deterministic login)
 Per-test, as needed:   manage-test-data            (factories + cleanup)

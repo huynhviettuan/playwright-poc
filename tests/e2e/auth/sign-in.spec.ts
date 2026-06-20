@@ -9,11 +9,11 @@ import { DataGenerator } from '@helpers/generate-data-functions';
  * E2E coverage for the sign-in flow.
  * Test cases: docs/test-cases/sign-in.md
  *
- * All user-facing messages (success, error, validation) are read from the centralized
- * `Toast` component on the page — see docs/guidance/notifications.md.
+ * Notifications come from the centralized `notification` fixture
+ * (docs/guidance/notifications.md).
  *
  * VERIFY ON FIRST RUN:
- *   - Exact toast/message strings vs NotificationMessages copy
+ *   - Exact notification copy vs NotificationMessages strings
  *   - Post-login redirect target
  */
 test.describe('Sign In', () => {
@@ -31,44 +31,46 @@ test.describe('Sign In', () => {
         await expect(BrowserInstance.currentPage).not.toHaveURL(new RegExp(Endpoints.auth.signIn));
     });
 
-    test('TC-SI-E2E-002 — should reject wrong password', async ({ signInPage }) => {
+    test('TC-SI-E2E-002 — should reject wrong password', async ({ signInPage, notification }) => {
         await signInPage.signIn(Config.auth.superAdminEmail, 'WrongPassword!');
 
         await expect(BrowserInstance.currentPage).toHaveURL(new RegExp(Endpoints.auth.signIn));
-        expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.auth.loginFailed);
+        expect(await notification.getMessage()).toContain(NotificationMessages.auth.loginFailed);
     });
 
-    test('TC-SI-E2E-003 — should reject non-existent email with generic error', async ({ signInPage }) => {
+    test('TC-SI-E2E-003 — should reject non-existent email with generic error', async ({
+        signInPage,
+        notification
+    }) => {
         const randomEmail = DataGenerator.randomEmail('does-not-exist');
 
         await signInPage.signIn(randomEmail, 'AnyPassword1!');
 
-        // Security: same message as wrong-password — different copy would enumerate users.
         await expect(BrowserInstance.currentPage).toHaveURL(new RegExp(Endpoints.auth.signIn));
-        expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.auth.loginFailed);
+        expect(await notification.getMessage()).toContain(NotificationMessages.auth.loginFailed);
     });
 
-    test('TC-SI-E2E-004 — should require email', async ({ signInPage }) => {
+    test('TC-SI-E2E-004 — should require email', async ({ signInPage, notification }) => {
         await signInPage.main.txtPassword.fill(Config.auth.password);
         await signInPage.main.btnLogin.click();
 
         await expect(BrowserInstance.currentPage).toHaveURL(new RegExp(Endpoints.auth.signIn));
-        expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.validation.required);
+        expect(await notification.getMessage()).toContain(NotificationMessages.validation.required);
     });
 
-    test('TC-SI-E2E-005 — should require password', async ({ signInPage }) => {
+    test('TC-SI-E2E-005 — should require password', async ({ signInPage, notification }) => {
         await signInPage.main.txtEmail.fill(Config.auth.superAdminEmail);
         await signInPage.main.btnLogin.click();
 
         await expect(BrowserInstance.currentPage).toHaveURL(new RegExp(Endpoints.auth.signIn));
-        expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.validation.required);
+        expect(await notification.getMessage()).toContain(NotificationMessages.validation.required);
     });
 
-    test('TC-SI-E2E-006 — should reject malformed email', async ({ signInPage }) => {
+    test('TC-SI-E2E-006 — should reject malformed email', async ({ signInPage, notification }) => {
         await signInPage.signIn('not-an-email', Config.auth.password);
 
         await expect(BrowserInstance.currentPage).toHaveURL(new RegExp(Endpoints.auth.signIn));
-        expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.validation.invalidEmail);
+        expect(await notification.getMessage()).toContain(NotificationMessages.validation.invalidEmail);
     });
 
     test('TC-SI-E2E-007 — should navigate to forgot password', async ({ signInPage }) => {

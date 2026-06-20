@@ -42,7 +42,7 @@ playwright-poc/
 │   │   ├── form.component.ts
 │   │   ├── table.component.ts
 │   │   ├── modal.component.ts
-│   │   └── toast.component.ts
+│   │   └── notification.component.ts
 │   ├── elements/           # Base UI elements
 │   │   ├── base/           # BaseControl, Clickable, Editable
 │   │   └── common/         # Button, Input, Dropdown, etc.
@@ -140,7 +140,7 @@ import { test, expect } from '@playwright/test';
 - `Form` - For form interactions
 - `Table` - For table operations
 - `Modal` - For modal dialogs
-- `Toast` - For notifications
+- `Notification` - For toast / notification messages (use via the `notification` fixture)
 
 ## 📝 Quick Examples
 
