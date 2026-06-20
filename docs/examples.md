@@ -82,22 +82,22 @@ test('should search and select user from table', async ({ usersPage }) => {
 import { DataGenerator } from '@helpers/generate-data-functions';
 import { expect, test } from '@fixtures/fixtures';
 
-test('should create new user', async ({ createUserPage }) => {
+test('should create new user', async ({ createUserPage, notification }) => {
     // Arrange
     const userData = {
         name: DataGenerator.randomName(),
         email: DataGenerator.randomEmail('test'),
         phone: DataGenerator.randomPhone()
     };
-    
+
     // Act
     await createUserPage.main.form.getInput({ label: 'Name' }).fill(userData.name);
     await createUserPage.main.form.getInput({ label: 'Email' }).fill(userData.email);
     await createUserPage.main.form.getInput({ label: 'Phone' }).fill(userData.phone);
     await createUserPage.main.form.getButton({ label: 'Submit' }).click();
-    
+
     // Assert
-    await expect(await createUserPage.main.toast.getMessage()).toContain('User created');
+    expect(await notification.getMessage()).toContain('User created');
 });
 ```
 

@@ -202,7 +202,7 @@ const [response] = await Promise.all([
 ]);
 
 expect(response.status()).toBe(401);
-expect(await signInPage.toast.getMessage()).toContain(NotificationMessages.auth.loginFailed);
+expect(await notification.getMessage()).toContain(NotificationMessages.auth.loginFailed);
 ```
 
 ##### When NOT to use `waitFor`

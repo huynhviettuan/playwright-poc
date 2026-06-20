@@ -56,3 +56,9 @@ Each test case should include:
 ## Current Test Cases
 
 - [`sign-in.md`](./sign-in.md) — Sign-In flow (UI + API), feature `Authentication`
+
+## How to add a new test case file
+
+Use the [`generate-test-cases` skill](../../.claude/skills/generate-test-cases.md) — it
+reads the user story (if available), delegates exploration to `explore-screens`, and
+emits the markdown in the format above.

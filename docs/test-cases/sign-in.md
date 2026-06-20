@@ -1,7 +1,9 @@
 # Sign In — Test Cases
 
-**Feature:** Authentication / Sign In **API Endpoint:** `POST /user-organization/auth/signin` **Last updated:**
-2026-06-20
+**Feature:** Authentication / Sign In
+**API Endpoint:** `POST /user-organization/auth/signin`
+**User Story:** [docs/user-stories/sign-in.md](../user-stories/sign-in.md)
+**Last updated:** 2026-06-20
 
 ## Test Data
 
@@ -291,8 +293,7 @@ confirmed during the first execution and the spec/page-object updated accordingl
 -   [ ] Exact route path (`/sign-in` vs `/login` vs `/`)
 -   [ ] DOM selectors for email input, password input, log-in button (the current page object uses `.input` + label
         match — confirm against the real DOM)
--   [ ] Exact toast selector — `Toast` defaults to `.toast, .notification, .alert`; confirm one of these matches the
-        toast component, otherwise pass a custom selector to the `Toast` constructor
+-   [ ] Exact notification selector — `Notification` defaults to `.toast, .notification, .alert, [role="alert"], [role="status"]`; confirm one matches the live notification, otherwise pass a custom `containerSelector` to the `Notification` constructor
 -   [ ] Exact error message text vs the placeholders in `NotificationMessages.auth.loginFailed`
 -   [ ] Whether a success toast appears, and its text
 -   [ ] Post-login redirect URL

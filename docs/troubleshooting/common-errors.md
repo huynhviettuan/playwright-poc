@@ -144,27 +144,26 @@ await expect(BrowserInstance.currentPage).not.toHaveURL(/\/sign-in/);
 
 ---
 
-### Pattern: Toast missed — appears and disappears too fast
+### Pattern: Notification missed — appears and disappears too fast
 
 **Symptom:**
 ```ts
-expect(await page.toast.getMessage()).toEqual('Login successful');
+expect(await notification.getMessage()).toEqual('Login successful');
 // → Received: '' (empty)
 ```
 
-**Root cause:** Toast auto-dismissed (often 3–5 seconds) before the assertion read it.
+**Root cause:** Notification auto-dismissed (often 3–5 seconds) before the assertion read it.
 
-**Fix:** Wait for the toast visible, then read.
+**Fix:** `Notification.getMessage()` already calls `waitForVisible()` internally, so
+the common case is covered. For an explicit pre-wait (e.g. when asserting against a
+specific message), use `waitForMessage`:
 
 ```ts
-await signInPage.toast.waitForVisible();
-expect(await signInPage.toast.getMessage()).toContain(
-    NotificationMessages.auth.loginSuccess
-);
+await notification.waitForMessage(NotificationMessages.auth.loginSuccess);
 ```
 
-If still flaky, the toast may be racing the next page navigation — combine with
-`ResponseHelper.waitFor` so you assert before the app moves on.
+If still flaky, the notification may be racing the next page navigation — combine
+with `ResponseHelper.waitFor` so you assert before the app moves on.
 
 ---
 

@@ -12,6 +12,14 @@ import {
     webkit
 } from 'playwright-core';
 
+// Statics are safe: each Playwright worker is a separate Node process, and tests
+// within a worker run sequentially. An AsyncLocalStorage refactor was attempted
+// to make this provably safe under hypothetical intra-worker test concurrency —
+// it doesn't work because Playwright's fixture `use()` callback runs the test
+// body in a different async context than the fixture setup, so ALS state set in
+// the fixture is invisible to the test. If true per-test isolation is ever
+// required, inject BrowserInstance via a per-test Playwright fixture instead.
+
 const customUserPage: AsyncLocalStorage<Page> = new AsyncLocalStorage();
 
 // Function to use a specific page in an async context
@@ -41,11 +49,10 @@ export class Context {
 
     constructor(context: BrowserContext) {
         this.context = context;
-        this._pages = this.context.pages(); // Initialize pages
-        this.context.on('page', (page) => this._pages.push(page)); // Handle new pages
+        this._pages = this.context.pages();
+        this.context.on('page', (page) => this._pages.push(page));
     }
 
-    // Getter for the context
     get browserContext(): BrowserContext {
         return this.context;
     }
@@ -127,7 +134,7 @@ export class BrowserInstance {
     }
 
     static get currentContext(): BrowserContext {
-        return this.context.browserContext; // Use the getter method
+        return this.context.browserContext;
     }
 
     static set currentContext(context: BrowserContext | undefined) {

@@ -27,6 +27,7 @@ toast vs inline error, Form component usage).
 | Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                 |
 | Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                 |
 | Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)               |
+| Turn a user story into test cases | [generate-test-cases.md](.claude/skills/generate-test-cases.md)       |
 | Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)               |
 | Authentication / session reuse    | [use-auth-state.md](.claude/skills/use-auth-state.md)                 |
 | Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                     |
@@ -41,10 +42,9 @@ toast vs inline error, Form component usage).
 -   **`Form` component** — when a container has form elements, use
     `new Form(this.container)` + `form.getInput()` / `form.getButton()`. Never wire
     inputs page-globally.
--   **Centralized `Toast` / notification** — error and success messages are read from
-    the page's `Toast` (or `notification` fixture per
-    [docs/guidance/notifications.md](docs/guidance/notifications.md)). Do **not** add
-    per-page `lblError` elements that duplicate this.
+-   **Centralized `notification` fixture** — error and success messages are read from
+    the `notification` fixture (see [docs/guidance/notifications.md](docs/guidance/notifications.md)).
+    Do **not** add per-page `toast` properties or `lblError` elements that duplicate this.
 -   **Custom fixtures** — import `test`/`expect` from `@fixtures/fixtures`, never from
     `@playwright/test`.
 
@@ -224,7 +224,8 @@ docs/
 │   ├── sections.md        # Multi-section container pattern
 │   └── skeleton.md        # Skeleton loading element
 ├── examples.md            # Quick-reference code snippets
-├── test-cases/            # Manual test cases (README + one .md per feature)
+├── user-stories/          # User stories (one .md per feature; source for generate-test-cases)
+├── test-cases/            # Manual test cases (traces back to AC IDs in user-stories/)
 ├── ci/                    # CI templates (GitHub Actions, GitLab CI)
 └── troubleshooting/       # common-errors.md, debugging-tips.md, faq.md
 ```
@@ -246,7 +247,8 @@ docs/
 Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills index grouped by purpose.
 
 **Discovery**
--   `explore-screens.md` - Inspect a live screen, capture locators, hand off to create-page-object
+-   `explore-screens.md` - Inspect a live screen, capture UI locators + API endpoints in one pass
+-   `generate-test-cases.md` - User story → exploration → `docs/test-cases/<feature>.md`
 
 **Creation**
 -   `create-page-object.md` - Container-based page object (Header/Main/Footer)
