@@ -110,6 +110,29 @@ import { ElementStateEnum } from '@enums/element.enum';
 await element.waitFor({ state: ElementStateEnum.VISIBLE });
 ```
 
+### Wait for a Network Response (race-free navigation / data capture)
+
+When a UI action triggers a request and the next assertion depends on the response
+(redirect target, returned id, refreshed data), gate the assertion on the network —
+not a timer. Set up the wait **before** the action using `Promise.all`:
+
+```ts
+import { ResponseHelper } from '@helpers/helper-functions';
+
+const [response] = await Promise.all([
+    ResponseHelper.waitFor('/user-organization/auth/signin'),
+    signInPage.main.btnLogin.click()
+]);
+
+expect(response.status()).toBe(200);
+
+// Read data from the response for the next step
+const body = await ResponseHelper.interceptedToJson<SignInResponse>(response);
+expect(body.token).toBeTruthy();
+```
+
+See [`use-helper-functions.md`](./use-helper-functions.md#responsehelperwaitfor--synchronize-on-a-network-response) for the four patterns (gate assertion, capture data, refresh-after-action, negative path) and when **not** to use `waitFor`.
+
 ### Multiple Assertions
 
 ```ts
@@ -129,7 +152,7 @@ const name = DataGenerator.randomName();
 
 ## Related Documentation
 
-- `docs/guidance/expect/README.md` - Custom assertions for Button, Input, Label, etc.
-- `docs/guidance/messages/README.md` - Centralized notification and validation messages
-- `docs/guidance/notifications/README.md` - Shared notification fixture and component
+- `docs/guidance/expect.md` - Custom assertions for Button, Input, Label, etc.
+- `docs/guidance/messages.md` - Centralized notification and validation messages
+- `docs/guidance/notifications.md` - Shared notification fixture and component
 - `.claude/skills/create-page-object.md` - Container-based page object pattern

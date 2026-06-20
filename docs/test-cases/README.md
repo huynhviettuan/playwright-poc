@@ -52,3 +52,7 @@ Each test case should include:
 - Document edge cases and boundary conditions
 - Keep test cases atomic and focused
 - Reference test case IDs in automated test specs
+
+## Current Test Cases
+
+- [`sign-in.md`](./sign-in.md) — Sign-In flow (UI + API), feature `Authentication`

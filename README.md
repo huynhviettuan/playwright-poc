@@ -28,11 +28,13 @@ playwright-poc/
 ├── .claude/
 │   └── skills/              # How-to guides for common tasks
 ├── docs/
+│   ├── README.md            # Documentation index
 │   ├── decisions/           # Architecture Decision Records (ADRs)
-│   ├── guidance/            # Practical framework guidance
-│   ├── examples/            # Code examples
-│   └── troubleshooting/     # Common errors and solutions
-├── examples/                # Markdown examples
+│   ├── guidance/            # Practical framework guidance per pattern
+│   ├── ci/                  # CI templates (GitHub Actions, GitLab CI)
+│   ├── troubleshooting/     # Common errors, debugging, FAQ
+│   ├── examples.md          # Quick-reference code examples
+│   └── test-cases/          # Manual test cases (README + per-feature files)
 ├── src/
 │   ├── pages/              # Page objects (orchestration layer)
 │   ├── components/
@@ -178,11 +180,12 @@ test('should get user', async ({ userService, tokensService }) => {
 
 - **[CLAUDE.md](./CLAUDE.md)** - Project overview and rules
 - **[CONTEXT.md](./CONTEXT.md)** - Glossary of terms
-- **[.claude/skills/](./.claude/skills/)** - How-to guides
+- **[docs/](./docs/README.md)** - Documentation index
+- **[.claude/skills/](./.claude/skills/README.md)** - How-to skills (creation, testing, workflows)
 - **[docs/decisions/](./docs/decisions/)** - Architecture decisions (ADRs)
-- **[docs/guidance/](./docs/guidance/)** - Framework guidance for expect, messages, notifications, sections, and skeletons
+- **[docs/guidance/](./docs/guidance/)** - Framework guidance per pattern (expect, messages, notifications, sections, skeleton)
+- **[docs/examples.md](./docs/examples.md)** - Quick-reference code examples
 - **[docs/ci/](./docs/ci/)** - GitHub Actions and GitLab CI templates
-- **[examples/](./examples/)** - Code examples
 
 ## 🛠️ Available Scripts
 

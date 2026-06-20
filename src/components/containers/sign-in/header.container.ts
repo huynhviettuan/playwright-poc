@@ -8,9 +8,9 @@ export class SignInHeaderContainer {
     readonly lblTitle: Label;
 
     constructor() {
-        this.container = $('.sign-in-header');
+        this.container = $('header');
         this.lblTitle = new Label({
-            locator: this.container.locator('h2.sign-in__title')
+            locator: this.container.getByRole('heading').first()
         });
     }
 }

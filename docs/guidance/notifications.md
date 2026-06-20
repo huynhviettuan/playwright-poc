@@ -32,5 +32,5 @@ await notification.waitForMessage(NotificationMessages.auth.loginSuccess);
 
 ## Related
 
-- [Message Constants](../messages/README.md)
-- [Custom Expect Matchers](../expect/README.md)
+- [Message Constants](./messages.md)
+- [Custom Expect Matchers](./expect.md)

@@ -17,10 +17,6 @@ export class SignInPage {
         this.toast = new Toast();
     }
 
-    async waitForPageLoad(timeout?: number): Promise<void> {
-        await this.main.waitForLoad(timeout);
-    }
-
     async signIn(email: string, password: string = Config.auth.password): Promise<void> {
         await this.main.fillCredentials(email, password);
         await this.main.btnLogin.click();
@@ -28,5 +24,9 @@ export class SignInPage {
 
     async getTitle(): Promise<string> {
         return await this.header.lblTitle.getTextContent();
+    }
+
+    async goToForgotPassword(): Promise<void> {
+        await this.main.lnkForgotPassword.click();
     }
 }

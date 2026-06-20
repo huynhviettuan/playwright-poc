@@ -74,5 +74,5 @@ expect(message).toContain(NotificationMessages.user.created);
 
 ## Related
 
-- [Centralized Notification](../notifications/README.md)
-- [Custom Expect Matchers](../expect/README.md)
+- [Centralized Notification](./notifications.md)
+- [Custom Expect Matchers](./expect.md)
