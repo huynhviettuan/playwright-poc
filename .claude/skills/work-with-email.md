@@ -5,8 +5,20 @@ Use this skill when writing tests that involve email verification (registration,
 
 ## Critical Rules
 
-### ✅ Use Mail Directly
-No need to create separate mail classes for each email type. Use `Mail` with centralized subjects.
+### ✅ Use `Mail` Directly
+No need to create separate mail classes per email type. Instantiate `Mail` directly and pass the
+subject from `MailSubjects` to every method.
+
+```ts
+import { Mail } from '@mail/mail';
+import { MailSubjects } from '@constants/mail-subjects.constant';
+
+const mail = new Mail();
+await mail.waitForMail(email, MailSubjects.auth.verifyEmail);
+```
+
+> ℹ️ There is **no** `BaseMail` class — only the `Mail` class and the `IMail` interface. Never
+> write `new BaseMail()`.
 
 ### ✅ Centralize Subjects
 All email subjects are managed in `@constants/mail-subjects.constant`.
@@ -85,7 +97,7 @@ test('should receive password reset email', async () => {
 ```typescript
 test('should verify email headers', async () => {
     const email = 'user@example.com';
-    const mail = new BaseMail();
+    const mail = new Mail();
     
     await requestPasswordReset(email);
     
@@ -103,13 +115,13 @@ test('should verify email headers', async () => {
 
 ```typescript
 test.afterEach(async () => {
-    const mail = new BaseMail();
+    const mail = new Mail();
     await mail.deleteAllMails();
 });
 
 // Or delete emails for specific user
 test.afterEach(async () => {
-    const mail = new BaseMail();
+    const mail = new Mail();
     await mail.deleteMailByUser(testEmail, MailSubjects.auth.verifyEmail);
 });
 ```
@@ -181,10 +193,10 @@ import { Endpoints } from '@constants/endpoints.constant';
 import { MailSubjects } from '@constants/mail-subjects.constant';
 import { expect, test } from '@fixtures/fixtures';
 import { DataGenerator } from '@helpers/generate-data-functions';
-import { BaseMail } from '@mail/mail';
+import { Mail } from '@mail/mail';
 
 test.describe('User Registration with Email Verification', () => {
-    const mail = new BaseMail();
+    const mail = new Mail();
     const testEmail = DataGenerator.randomEmail('test');
     
     test.afterEach(async () => {
@@ -216,7 +228,7 @@ test.describe('User Registration with Email Verification', () => {
 
 ## Best Practices
 
-✅ **Use BaseMail directly** - No need for separate mail classes
+✅ **Use `Mail` directly** - No need for separate mail classes per email type
 ✅ **Use subject constants** - Never hardcode email subjects
 ✅ **Clean up emails** - Delete test emails after each test
 ✅ **Use random emails** - `DataGenerator.randomEmail()` for unique addresses

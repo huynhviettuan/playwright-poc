@@ -2,29 +2,30 @@ import { $ } from '@common/element.function';
 import { Form } from '@components/form.component';
 import { Button } from '@elements/common/button';
 import { Input } from '@elements/common/input';
-import { Skeleton } from '@elements/common/skeleton';
+import { Link } from '@elements/common/link';
 import { Locator } from '@playwright/test';
 
 export class SignInMainContainer {
     private readonly container: Locator;
     private readonly form: Form;
 
-    readonly skeleton: Skeleton;
     readonly txtEmail: Input;
     readonly txtPassword: Input;
     readonly btnLogin: Button;
+    readonly lnkForgotPassword: Link;
 
     constructor() {
-        this.container = $('div.sign-in');
+        this.container = $('main');
         this.form = new Form(this.container);
-        this.skeleton = new Skeleton({ parentLocator: this.container });
-        this.txtEmail = this.form.getInput({ label: 'Email address' });
+
+        this.txtEmail = this.form.getInput({ label: 'Email' });
         this.txtPassword = this.form.getInput({ label: 'Password' });
         this.btnLogin = this.form.getButton({ label: 'Log in' });
-    }
 
-    async waitForLoad(timeout?: number): Promise<void> {
-        await this.skeleton.waitForAllHidden(timeout);
+        this.lnkForgotPassword = new Link({
+            parentLocator: this.container,
+            label: 'Forgot password?'
+        });
     }
 
     async fillCredentials(email: string, password: string): Promise<void> {

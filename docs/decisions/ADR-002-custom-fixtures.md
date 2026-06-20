@@ -40,13 +40,14 @@ All fixtures are merged in `src/fixtures/fixtures.ts` using `mergeTests()` and `
 // src/fixtures/fixtures.ts
 export const test = mergeTests(
     serviceFixtures,
-    pageFixtures,
     commandFixtures,
-    mailFixtures,
+    pageFixtures,
     hookFixtures
 );
 export const expect = mergeExpects(expectFixtures);
 ```
+
+> ℹ️ There is **no** `mailFixtures` — `Mail` is instantiated directly (see [work-with-email.md](../../.claude/skills/work-with-email.md)). Add new fixture modules to the `mergeTests()` call only when you create them.
 
 ## Alternatives Considered
 

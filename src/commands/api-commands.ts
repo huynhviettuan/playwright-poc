@@ -1,22 +1,18 @@
 import { PASSWORD } from '@constants/config.constant';
 import { ResponseHelper } from '@helpers/helper-functions';
-import { AuthenticationService } from '@services/authentication.service';
+import { SignInResponse } from '@models/auth/user-organization.interface';
+import { UserOrganizationService } from '@services/user-organization.service';
 
 export class ApiCommands {
-    authenticationService: AuthenticationService;
+    private readonly userOrganizationService: UserOrganizationService;
 
     constructor() {
-        this.authenticationService = new AuthenticationService();
+        this.userOrganizationService = new UserOrganizationService();
     }
 
-    async getAuthorizationToken(email: string): Promise<string> {
-        return (
-            await ResponseHelper.toJson<{ token: string }>(
-                await this.authenticationService.postLogin({
-                    email,
-                    password: PASSWORD
-                })
-            )
-        ).token;
+    async getAuthorizationToken(email: string, password: string = PASSWORD): Promise<string> {
+        const response = await this.userOrganizationService.signIn({ email, password });
+        const body = await ResponseHelper.toJson<SignInResponse>(response);
+        return body.token;
     }
 }

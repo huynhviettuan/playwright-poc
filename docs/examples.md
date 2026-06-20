@@ -104,14 +104,14 @@ test('should create new user', async ({ createUserPage }) => {
 ## Using Helper Functions
 
 ```typescript
-import { DateCalculation, DateFormatting } from '@helpers/date-time';
+import { DateTimeHelper } from '@helpers/date-time-functions';
 import { DataGenerator } from '@helpers/generate-data-functions';
 import { ArrayHelper } from '@helpers/helper-functions';
 
 test('helper functions demo', async () => {
     // Date helpers
-    const today = DateFormatting.today('YYYY-MM-DD');
-    const lastWeek = DateCalculation.subtractDays(7);
+    const today = DateTimeHelper.today('YYYY-MM-DD');
+    const lastWeek = DateTimeHelper.subtractDays(7);
     
     // Data generation
     const email = DataGenerator.randomEmail('test');

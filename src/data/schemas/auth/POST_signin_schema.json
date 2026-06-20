@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "POST /user-organization/auth/signin — success response",
+    "type": "object",
+    "required": ["token"],
+    "properties": {
+        "token": {
+            "type": "string",
+            "minLength": 1
+        },
+        "refreshToken": {
+            "type": "string"
+        },
+        "expiresIn": {
+            "type": "number"
+        },
+        "user": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "string" },
+                "email": { "type": "string", "format": "email" }
+            }
+        }
+    },
+    "additionalProperties": true
+}

@@ -282,7 +282,11 @@ export class SignInFooterContainer {
 
 ### Step 3: Compose Page Object
 
-**Page Object** (`src/pages/sign-in.page.ts`):
+Create the page object as **`src/pages/[page-name]/index.ts`** (a folder + `index.ts`, **not** a
+flat `[page-name].page.ts` file). This is the pattern the existing codebase uses, and it lets you
+co-locate page-specific helpers next to the page object later without renaming.
+
+**Page Object** (`src/pages/sign-in/index.ts`):
 ```ts
 import { Config } from '@constants/config.constant';
 import { SignInFooterContainer } from '@components/containers/sign-in/footer.container';
@@ -319,7 +323,7 @@ export class SignInPage {
 
 **Fixture** (`src/fixtures/page-fixtures.ts`):
 ```ts
-import { SignInPage } from '@pages/sign-in.page';
+import { SignInPage } from '@pages/sign-in';
 import { test as base } from '@playwright/test';
 
 type PageObjects = {

@@ -9,6 +9,47 @@ testing with custom fixtures, reusable elements, and service layers.
 
 ## Critical Rules
 
+### ✅ ALWAYS Read Skills Before Writing Code
+
+Before writing or modifying ANY code in this repo, read the relevant skill(s) under
+[`.claude/skills/`](.claude/skills/README.md) and follow the patterns they document.
+The skills are the source of truth for how this framework is built — they capture
+conventions that don't always show in the existing code (e.g. parent-scoping rules,
+toast vs inline error, Form component usage).
+
+**Quick lookup by task:**
+
+| Task                              | Skill to read first                                                   |
+| --------------------------------- | --------------------------------------------------------------------- |
+| Build / update a page object      | [create-page-object.md](.claude/skills/create-page-object.md)         |
+| Add a new UI element class        | [create-custom-element.md](.claude/skills/create-custom-element.md)   |
+| Add an API service                | [create-api-service.md](.claude/skills/create-api-service.md)         |
+| Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                 |
+| Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                 |
+| Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)               |
+| Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)               |
+| Authentication / session reuse    | [use-auth-state.md](.claude/skills/use-auth-state.md)                 |
+| Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                     |
+| Test data setup / cleanup         | [manage-test-data.md](.claude/skills/manage-test-data.md)             |
+
+**Non-negotiable patterns from skills (highest-impact):**
+
+-   **Parent scoping** — every element must resolve through a parent `Locator`, even
+    when it has a `data-testid`. Same testid can appear elsewhere on the page
+    (modals, hidden tabs, prerendered routes). Page-global `$getByTestId(...)` is a
+    flakiness source.
+-   **`Form` component** — when a container has form elements, use
+    `new Form(this.container)` + `form.getInput()` / `form.getButton()`. Never wire
+    inputs page-globally.
+-   **Centralized `Toast` / notification** — error and success messages are read from
+    the page's `Toast` (or `notification` fixture per
+    [docs/guidance/notifications.md](docs/guidance/notifications.md)). Do **not** add
+    per-page `lblError` elements that duplicate this.
+-   **Custom fixtures** — import `test`/`expect` from `@fixtures/fixtures`, never from
+    `@playwright/test`.
+
+If a skill is silent on what you need, do not invent a pattern — flag it and ask.
+
 ### ✅ ALWAYS Use Custom Fixtures
 
 ```ts
@@ -154,8 +195,9 @@ await BrowserInstance.switchToTabByIndex(0); // Switch by index
 ## When Working on This Project
 
 1. **Read docs first** - Check `docs/` before making changes:
-   - `docs/test-cases/` - Manual test cases (read before writing specs)
+   - `docs/test-cases/` - Manual test cases per feature (read before writing specs)
    - `docs/decisions/` - ADRs (read before changing patterns)
+   - `docs/guidance/` - Pattern guidance (read before applying a pattern)
 2. **Use skills files** - Reference `.claude/skills/*.md` for detailed guidance
 3. **Match existing patterns** - Follow established conventions
 4. **Use path aliases** - Never use relative imports
@@ -165,33 +207,61 @@ await BrowserInstance.switchToTabByIndex(0); // Switch by index
 
 ## Documentation Structure
 
+Start at [docs/README.md](docs/README.md) for the documentation index.
+
 ```
 docs/
-├── test-cases/          # Manual test cases in Markdown
-│   └── README.md        # Test case format and guidelines
-└── decisions/           # Architecture Decision Records (ADRs)
-    ├── README.md        # ADR format and guidelines
-    ├── ADR-001-container-based-page-objects.md
-    ├── ADR-002-custom-fixtures.md
-    └── ADR-003-solid-principles-complex-elements.md
+├── README.md              # Documentation landing page
+├── decisions/             # Architecture Decision Records (immutable)
+│   ├── ADR-001-container-based-page-objects.md
+│   ├── ADR-002-custom-fixtures.md
+│   ├── ADR-003-solid-principles-complex-elements.md
+│   └── ADR-004-yagni-kiss-dry-principles.md
+├── guidance/              # Practical pattern guidance (one file per topic)
+│   ├── expect.md          # Custom expect matchers
+│   ├── messages.md        # NotificationMessages constants
+│   ├── notifications.md   # Centralized notification fixture
+│   ├── sections.md        # Multi-section container pattern
+│   └── skeleton.md        # Skeleton loading element
+├── examples.md            # Quick-reference code snippets
+├── test-cases/            # Manual test cases (README + one .md per feature)
+├── ci/                    # CI templates (GitHub Actions, GitLab CI)
+└── troubleshooting/       # common-errors.md, debugging-tips.md, faq.md
 ```
 
-### Test Cases
-- Read before automating to understand business requirements
-- Reference test case IDs in automated specs
-- Include preconditions, steps, expected results
+### When to read what
+- **Before changing architecture** → `decisions/` (ADRs document the why behind patterns)
+- **Before using a pattern** → `guidance/<topic>.md` (what the pattern is and when to apply it)
+- **Need a starting snippet** → `examples.md`
+- **Need a step-by-step recipe** → [`.claude/skills/`](.claude/skills/README.md) (skills are how-to, guidance is what/why)
+- **Test is failing or behaving oddly** → `troubleshooting/`
 
-### Architecture Decision Records (ADRs)
-- Read before changing architectural patterns
-- Document context, decision, consequences, alternatives
-- Keep immutable - create new ADRs to supersede old ones
+### Rules
+- ADRs are append-only. Supersede with a new ADR; never edit an accepted one.
+- Guidance files are one-pattern-per-file. Link siblings in `## Related`; don't duplicate content.
+- Skills vs guidance: skills tell you _how_ to build something, guidance explains _what_ a pattern is and _when_ to use it.
 
 ## Available Skills
 
--   `create-page-object.md` - Page Object creation guide
--   `create-custom-element.md` - Custom element extension
--   `create-api-service.md` - API service creation
--   `write-e2e-test.md` - E2E test writing
--   `write-api-test.md` - API test writing
--   `use-helper-functions.md` - Helper utilities reference
--   `work-with-email.md` - Email verification and mail testing
+Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills index grouped by purpose.
+
+**Discovery**
+-   `explore-screens.md` - Inspect a live screen, capture locators, hand off to create-page-object
+
+**Creation**
+-   `create-page-object.md` - Container-based page object (Header/Main/Footer)
+-   `create-custom-element.md` - Extend BaseControl / Clickable / Editable
+-   `create-api-service.md` - Service class extending BaseService
+
+**Writing tests**
+-   `write-e2e-test.md` - E2E test with custom fixtures
+-   `write-api-test.md` - API test with custom fixtures
+
+**Test infrastructure**
+-   `use-auth-state.md` - Log in once, reuse session via Playwright `storageState`
+-   `mock-network.md` - Intercept HTTP with `page.route()` for edge-case coverage
+-   `manage-test-data.md` - Factories + auto-cleanup fixture for isolated state
+
+**Cross-cutting workflows**
+-   `use-helper-functions.md` - DateTimeHelper, DataGenerator, ExcelHelper, etc.
+-   `work-with-email.md` - Email verification via `Mail` and `MailSubjects`

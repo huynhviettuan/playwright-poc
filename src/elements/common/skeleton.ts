@@ -1,6 +1,6 @@
 import { $ } from '@common/element.function';
 import { ISkeleton } from '@models/elements/skeleton.interface';
-import { Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import { BaseControl } from '../base/base-control';
 
 const DEFAULT_SKELETON_SELECTOR = [
@@ -23,8 +23,7 @@ export class Skeleton extends BaseControl implements ISkeleton {
     }
 
     async waitForAllHidden(timeout: number = 30000): Promise<void> {
-        const skeletons = await this.element.all();
-        await Promise.all(skeletons.map((skeleton) => skeleton.waitFor({ state: 'hidden', timeout })));
+        await expect(this.element).toHaveCount(0, { timeout });
     }
 
     async hasVisibleSkeleton(): Promise<boolean> {
