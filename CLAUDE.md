@@ -29,6 +29,7 @@ toast vs inline error, Form component usage).
 | Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)               |
 | Turn a user story into test cases | [generate-test-cases.md](.claude/skills/generate-test-cases.md)       |
 | Refactor existing code            | [refactor-code.md](.claude/skills/refactor-code.md)                   |
+| Migrate legacy code to skills     | [refactor-code-follow-skills.md](.claude/skills/refactor-code-follow-skills.md) |
 | Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)               |
 | Authentication / session reuse    | [use-auth-state.md](.claude/skills/use-auth-state.md)                 |
 | Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                     |
@@ -271,3 +272,4 @@ Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills i
 
 **Maintenance**
 -   `refactor-code.md` - Repo-agnostic refactoring methodology + playwright-poc-specific recipes
+-   `refactor-code-follow-skills.md` - Systematic checklist to migrate legacy code to follow all skills
