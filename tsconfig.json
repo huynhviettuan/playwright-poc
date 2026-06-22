@@ -16,6 +16,7 @@
             "@common/*": ["src/common/*"]
         },
         "lib": ["dom", "esnext"],
+        "skipLibCheck": true,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true
     }

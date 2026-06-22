@@ -82,6 +82,6 @@ test.describe('Sign In', () => {
     test('TC-SI-E2E-008 — password field should be masked', async ({ signInPage }) => {
         await signInPage.main.txtPassword.fill('secret');
 
-        expect(await signInPage.main.txtPassword.getAttribute('type')).toBe('password');
+        await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
     });
 });

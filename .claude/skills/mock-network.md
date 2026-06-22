@@ -117,7 +117,7 @@ test('should show loading skeleton until data arrives', async ({ usersPage }) =>
     });
 
     await BrowserInstance.currentPage.goto(Endpoints.app.users);
-    await expect(usersPage.main.skeleton.element).toBeVisible();
+    await expect(usersPage.main.skeleton).toBeVisible();
 });
 ```
 

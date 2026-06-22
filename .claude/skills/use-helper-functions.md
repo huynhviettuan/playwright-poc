@@ -6,32 +6,49 @@ Use this skill when you need common utilities like data generation, validation, 
 ## Available Helper Classes
 
 ### DateTimeHelper (`@helpers/date-time-functions`)
+
+Powered by `date-fns`. Accepts moment-style format strings (e.g. `DD/MM/YYYY`) — they are
+converted internally. Default format is `DD/MM/YYYY`.
+
 ```ts
 import { DateTimeHelper } from '@helpers/date-time-functions';
 
-DateTimeHelper.today()                    // Current date
-DateTimeHelper.addDays(7, 'YYYY-MM-DD')  // Future date
-DateTimeHelper.subtractDays(30)           // Past date
-DateTimeHelper.todayUnix()                // Unix timestamp
-DateTimeHelper.toUnix('2024-01-01')      // Date to Unix
-DateTimeHelper.fromUnix(1704067200)       // Unix to date
-DateTimeHelper.isValidFormat(date, 'DD/MM/YYYY')
-DateTimeHelper.randomTimestamp()
+DateTimeHelper.today()                          // Current date (DD/MM/YYYY)
+DateTimeHelper.today('YYYY-MM-DD')              // Current date (custom format)
+DateTimeHelper.addDays(7)                       // 7 days from now
+DateTimeHelper.addDays(7, 'YYYY-MM-DD')         // 7 days from now (custom format)
+DateTimeHelper.subtractDays(30)                 // 30 days ago
+DateTimeHelper.todayUnix()                      // Current Unix timestamp
+DateTimeHelper.toUnix('2024-01-01')             // Date to Unix
+DateTimeHelper.fromUnix(1704067200)             // Unix to date
+DateTimeHelper.endOfDayUnix('2024-01-01')       // End of day as Unix
+DateTimeHelper.subtractDaysUnix(7)              // 7 days ago as Unix
+DateTimeHelper.isValidFormat('01/01/2024', 'DD/MM/YYYY')
+DateTimeHelper.getMonth('01/06/2024')           // '06'
+DateTimeHelper.getYear('01/06/2024')            // '2024'
+DateTimeHelper.randomTimestamp()                // Unique timestamp string
 ```
 
 ### ExcelHelper (`@helpers/excel.helper`)
+
+Workbooks are cached after first load — repeated reads on the same instance are fast.
+Call `invalidateCache()` after external writes if needed.
+
 ```ts
 import { ExcelHelper } from '@helpers/excel.helper';
 
 const excel = ExcelHelper.open('data.xlsx', 'Sheet1');
 await excel.readCell('A1');
 await excel.readCells(['A1', 'B1', 'C1']);
-await excel.getRowAsJson(2);              // Row to JSON
+await excel.getRowAsJson(2);              // Row to JSON (header row = 1)
 await excel.getRowsAsJson(2, 10);         // Multiple rows
-await excel.getColumnAsJson('B');         // Column to JSON
+await excel.getColumnAsJson('B');          // Column to JSON
 await excel.getColumnsAsJson(['B', 'C']); // Multiple columns
 await excel.writeCell(1, 'A', 'Value');
 await excel.writeCells(1, [['A', 'Name'], ['B', 'Age']]);
+await excel.getSheetNames();              // List all sheets
+excel.withSheet('Sheet2');                 // Switch sheet
+excel.invalidateCache();                   // Force reload from disk
 ```
 
 ### DataGenerator (`@helpers/generate-data-functions`)
@@ -39,8 +56,8 @@ await excel.writeCells(1, [['A', 'Name'], ['B', 'Age']]);
 import { DataGenerator } from '@helpers/generate-data-functions';
 
 DataGenerator.randomString(10)
-DataGenerator.randomNumber(1, 100)
-DataGenerator.randomEmail('test')         // test+timestamp@gmail.com
+DataGenerator.randomNumber(1, 100)         // Uses faker.number.int()
+DataGenerator.randomEmail('test')          // test+timestamp@gmail.com
 DataGenerator.randomName()
 DataGenerator.randomPhone()
 DataGenerator.randomAddress()
@@ -59,12 +76,12 @@ FileHelper.delete('path/to/file');
 ```ts
 import { ArrayHelper } from '@helpers/helper-functions';
 
-// Sequential execution
+// Sequential execution (ordered)
 await ArrayHelper.forEachSync(items, async (item, index) => {
     await processItem(item);
 });
 
-// Parallel execution
+// Parallel execution (unordered)
 await ArrayHelper.forEachAsync(items, async (item, index) => {
     await processItem(item);
 });
@@ -80,21 +97,19 @@ StringHelper.normalizeParams({ tags: ['a', 'b'] }); // { tags: 'a,b' }
 
 ### ResponseHelper (`@helpers/helper-functions`)
 
-Three responsibilities — one per method:
+> **For API tests**: prefer `ServiceResponse<T>` from `send<T>()` — data is already typed.
+> `ResponseHelper` is mainly for **E2E network synchronization** and **legacy code**.
 
-| Method                                       | Use when                                                          |
-| -------------------------------------------- | ----------------------------------------------------------------- |
-| `toJson<T>({ response })`                    | Parsing an **API call** response from a service (`APIResponse`)   |
-| `interceptedToJson<T>(response)`             | Parsing a **browser-intercepted** response (`Response`)           |
-| `waitFor(url, timeout?)`                     | Synchronizing on a network response triggered by a UI action      |
+| Method | Use when |
+| --- | --- |
+| `toJson<T>({ response })` | Parsing a legacy service response (`{ statusCode, response }`) |
+| `interceptedToJson<T>(response)` | Parsing a browser-intercepted response (`Response`) |
+| `waitFor(url, timeout?)` | Synchronizing on a network response triggered by a UI action |
 
 ```ts
 import { ResponseHelper } from '@helpers/helper-functions';
 
-// API service response → typed object
-const user = await ResponseHelper.toJson<User>(await userService.getUser(token, id));
-
-// Browser-intercepted response → typed object (use with waitFor below)
+// Browser-intercepted response → typed object
 const data = await ResponseHelper.interceptedToJson<User>(response);
 ```
 
@@ -110,7 +125,6 @@ const response = await ResponseHelper.waitFor('/api/users', 5000);
 
 // RegExp pattern — full control (e.g. dynamic ids, multiple endpoints)
 const response = await ResponseHelper.waitFor(/\/api\/users\/\d+/, 5000);
-const response = await ResponseHelper.waitFor(/\.(json|xml)$/, 5000);
 ```
 
 ##### ⚠️ Set up the wait BEFORE the action that triggers it
@@ -133,9 +147,6 @@ const response = await ResponseHelper.waitFor('/api/auth/signin'); // race
 
 ##### Pattern 1 — Gate an assertion on a real response
 
-Use when the assertion depends on something the network call produced (a redirect,
-a toast, a new row appearing).
-
 ```ts
 test('should redirect after sign-in', async ({ signInPage }) => {
     await signInPage.main.fillCredentials(email, password);
@@ -152,57 +163,14 @@ test('should redirect after sign-in', async ({ signInPage }) => {
 
 ##### Pattern 2 — Capture data from the response for the next step
 
-Use when the test needs an id, token, or other field returned by the API to
-proceed with later steps.
-
-```ts
-test('should sign in and use the issued token', async ({ signInPage }) => {
-    await signInPage.main.fillCredentials(email, password);
-
-    const [response] = await Promise.all([
-        ResponseHelper.waitFor('/user-organization/auth/signin'),
-        signInPage.main.btnLogin.click()
-    ]);
-
-    const body = await ResponseHelper.interceptedToJson<SignInResponse>(response);
-    expect(body.token).toBeTruthy();
-
-    // Use `body.token` for follow-up API calls, set up auth state, etc.
-});
-```
-
-##### Pattern 3 — Wait for a refresh response after an action
-
-Use when an action (delete, save) triggers a follow-up GET, and the next assertion
-depends on the refreshed list/data.
-
-```ts
-test('should remove user from list after delete', async ({ usersPage }) => {
-    await usersPage.main.openDeleteDialog(userEmail);
-
-    const [refreshResponse] = await Promise.all([
-        ResponseHelper.waitFor(/\/api\/users(\?|$)/),
-        usersPage.modal.confirmDelete()
-    ]);
-
-    expect(refreshResponse.status()).toBe(200);
-    await expect(await usersPage.main.getUserByEmail(userEmail)).toBeHidden();
-});
-```
-
-##### Pattern 4 — Negative path (API rejects)
-
-`waitFor` doesn't care about status code — it resolves on any matching response.
-Use this to assert error paths reliably.
-
 ```ts
 const [response] = await Promise.all([
     ResponseHelper.waitFor('/user-organization/auth/signin'),
-    signInPage.signIn(email, 'wrong-password')
+    signInPage.main.btnLogin.click()
 ]);
 
-expect(response.status()).toBe(401);
-expect(await notification.getMessage()).toContain(NotificationMessages.auth.loginFailed);
+const body = await ResponseHelper.interceptedToJson<SignInResponse>(response);
+expect(body.token).toBeTruthy();
 ```
 
 ##### When NOT to use `waitFor`
@@ -220,23 +188,16 @@ await FileWriter.writeJson('output.json', jsonString);
 
 ### Schema Validation
 ```ts
-import { validateSchema } from '@helpers/validate-schema.helper';
+import { validateJsonSchema } from '@helpers/validate-schema.helper';
 
-const isValid = await validateSchema(responseData, expectedSchema);
-expect(isValid).toBeTruthy();
+// Validate against existing schema file (src/data/schemas/<path>/<name>_schema.json)
+await validateJsonSchema('GET_users', 'users', responseData);
+
+// Create schema from response, then validate
+await validateJsonSchema('GET_users', 'users', responseData, true);
 ```
 
 ## Common Patterns
-
-### Parallel Assertions
-```ts
-import { resolveAll } from '@helpers/helper-functions';
-
-await resolveAll([
-    expect(await element1.isVisible()).toBeTruthy(),
-    expect(await element2.getTextContent()).toEqual('text')
-]);
-```
 
 ### Generate Test Data
 ```ts
@@ -251,7 +212,7 @@ const testUser = {
 ### Process Excel Data
 ```ts
 const rows = await ExcelHelper.open('users.xlsx', 'Sheet1')
-    .getRowsAsJson(2, 50); // Rows 2-50 with row 1 as headers
+    .getRowsAsJson(2, 50);
 
 await ArrayHelper.forEachSync(rows, async (row) => {
     await createUser(row);

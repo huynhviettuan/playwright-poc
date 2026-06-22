@@ -1,8 +1,8 @@
 import { BrowserInstance } from '@common/browser';
 import { $getByText } from '@common/element.function';
-import { IInput } from '@models/elements/input.interface';
-import { Locator, Page } from 'playwright-core';
-import { Editable } from '../base/editable';
+import { Editable } from '@elements/base/editable';
+import { type IInput } from '@models/elements/input.interface';
+import { type Locator, type Page } from '@playwright/test';
 
 type InputType = 'input' | 'textarea';
 

@@ -202,12 +202,12 @@ Translate the captured requests into the project's service shape:
 | You observe in the network                              | Use service shape                                            |
 | ------------------------------------------------------- | ------------------------------------------------------------ |
 | All endpoints share a path prefix (`/user-organization/...`) | One service class with `super('/<prefix>')`             |
-| Multi-level paths under one module                      | `super('/<prefix>'); createEndpoint('/<sub-resource>')` per call |
-| RESTful CRUD (`GET /users`, `POST /users`, `DELETE /users/:id`) | `get/post/delete({ token, id?, body? })` directly        |
-| Multipart upload                                        | `post({ multipart: {...} })`                                 |
-| Query params                                            | `get({ params: {...} })` — auto-normalized                   |
-| Auth-required endpoints                                 | Pass `token` — `Authorization: Bearer` header is auto-added  |
-| Public endpoints (login, forgot-password)               | Omit `token` — no auth header                                |
+| Multi-level paths under one module                      | `super('/<prefix>')` + `this.endpoint('/<sub>')` per method  |
+| RESTful CRUD (`GET /users`, `POST /users`, `DELETE /users/:id`) | Controller methods: `getAll()`, `create(body)`, `deleteById(id)` |
+| Multipart upload                                        | `send('post', { multipart: {...} })`                         |
+| Query params                                            | `send('get', { params: {...} })` — auto-normalized           |
+| Auth-required endpoints                                 | `service.setToken(token)` — `Authorization: Bearer` header is auto-added |
+| Public endpoints (login, forgot-password)               | Don't call `setToken()` — no auth header                     |
 
 **Request/response types live in `@models/<module>/<module>.interface.ts`** (per
 [create-api-service](create-api-service.md)'s Critical Rule). Don't co-locate them

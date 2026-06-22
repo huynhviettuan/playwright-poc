@@ -1,5 +1,5 @@
 import { BrowserInstance } from '@common/browser';
-import { Page, Response, test as base } from '@playwright/test';
+import { type Page, type Response, test as base } from '@playwright/test';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

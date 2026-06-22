@@ -15,7 +15,8 @@ Build new framework artifacts.
 
 -   [`create-page-object.md`](./create-page-object.md) — container-based page object (Header / Main / Footer)
 -   [`create-custom-element.md`](./create-custom-element.md) — extend `BaseControl` / `Clickable` / `Editable` for new UI primitives
--   [`create-api-service.md`](./create-api-service.md) — service class extending `BaseService` for HTTP operations
+-   [`create-api-service.md`](./create-api-service.md) — service class extending `BaseService` for HTTP operations (controller pattern)
+-   [`create-service-from-swagger.md`](./create-service-from-swagger.md) — generate service + types + fixtures from a Swagger/OpenAPI spec
 
 ### Writing tests
 Author the test files themselves.

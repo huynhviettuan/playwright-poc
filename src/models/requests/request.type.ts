@@ -1,6 +1,8 @@
-import { JSONObject } from '@models/requests/json-object.type';
-import { ReadStream } from 'node:fs';
-import { URLSearchParams } from 'node:url';
+import { type ReadStream } from 'node:fs';
+import { type URLSearchParams } from 'node:url';
+
+import { type JSONObject } from '@models/requests/json-object.type';
+import { type APIResponse } from '@playwright/test';
 
 export type RequestArgs = {
     url?: string;
@@ -55,4 +57,10 @@ export type RequestOptions = {
           };
     timeout: number;
     params: string | URLSearchParams | Record<string, string | number | boolean>;
+};
+
+export type ServiceResponse<T = unknown> = {
+    statusCode: number;
+    data: T;
+    response: APIResponse;
 };

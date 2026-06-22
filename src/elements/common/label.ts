@@ -1,10 +1,22 @@
 import { BrowserInstance } from '@common/browser';
-import { Locator, Page } from 'playwright-core';
-import { Clickable } from '../base/clickable';
+import { Clickable } from '@elements/base/clickable';
+import { type Locator, type Page } from '@playwright/test';
 
 export class Label extends Clickable {
-    constructor(option: { locator?: string | Locator; parentLocator?: Locator; text?: string; exact?: boolean }) {
+    constructor(option: {
+        locator?: string | Locator;
+        parentLocator?: Locator;
+        text?: string;
+        exact?: boolean;
+        id?: string;
+    }) {
         const baseLocator: Page | Locator = option.parentLocator || BrowserInstance.currentPage;
+
+        if (option.id) {
+            super(baseLocator.locator(`#${option.id}`));
+            return;
+        }
+
         let resolvedLocator: Locator;
         if (option.locator && option.text) {
             if (typeof option.locator === 'string') {

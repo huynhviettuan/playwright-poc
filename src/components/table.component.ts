@@ -1,6 +1,6 @@
 import { $ } from '@common/element.function';
 import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
-import { Locator } from 'playwright-core';
+import type { Locator } from '@playwright/test';
 
 export class Table {
     table: Locator;
@@ -57,6 +57,9 @@ export class Table {
 
     async getCellsByColumn(columnName: string): Promise<Locator[]> {
         const columnIndex = await this.getColumnIndexByHeader(columnName);
+        if (columnIndex === -1) {
+            throw new Error(`Column "${columnName}" not found in table headers`);
+        }
         const rows = await this.tableBody.locator('tr').all();
         return rows.map((row) => row.locator('td').nth(columnIndex));
     }
@@ -64,6 +67,18 @@ export class Table {
     async getRowWithData(data: Record<string, string | string[]>): Promise<Locator> {
         const rows = await this.tableBody.locator('tr').all();
         const headers = await this.getHeaders();
+
+        for (const [columnName] of Object.entries(data)) {
+            const index =
+                columnName === ''
+                    ? headers.findIndex((h) => h.trim() === '')
+                    : headers.findIndex((h) => h.trim() === columnName);
+            if (index === -1) {
+                throw new Error(
+                    `Column "${columnName}" not found. Available headers: [${headers.map((h) => `"${h.trim()}"`).join(', ')}]`
+                );
+            }
+        }
 
         for (const row of rows) {
             const cells = await row.locator('td').all();
@@ -76,8 +91,6 @@ export class Table {
                         ? headers.findIndex((h) => h.trim() === '')
                         : headers.findIndex((h) => h.trim() === columnName);
 
-                if (columnIndex === -1) continue;
-
                 const cellText = await cells[columnIndex]?.innerText();
                 if (!values.some((v) => cellText?.includes(v))) {
                     isMatch = false;
@@ -88,7 +101,9 @@ export class Table {
             if (isMatch) return row;
         }
 
-        return this.tableBody.locator('tr').first();
+        throw new Error(
+            `No row found matching ${JSON.stringify(data)}. Table has ${rows.length} row(s).`
+        );
     }
 
     async getLengthOfRows(): Promise<number> {
@@ -113,6 +128,9 @@ export class Table {
 
     async getColumnDataByHeader(column: string): Promise<string[]> {
         const columnIndex = await this.getColumnIndexByHeader(column);
+        if (columnIndex === -1) {
+            throw new Error(`Column "${column}" not found in table headers`);
+        }
         const rows = await this.tableBody.locator('tr').all();
 
         const data: string[] = [];
@@ -125,27 +143,12 @@ export class Table {
         return data;
     }
 
-    async waitForTableDataDisplayed(): Promise<void> {
-        await this.tableBody.first().waitFor({ state: ElementStateEnum.VISIBLE });
+    async waitForTableDataDisplayed(timeout: number = 30000): Promise<void> {
+        await this.tableBody.first().waitFor({ state: ElementStateEnum.VISIBLE, timeout });
 
-        const hasCellData = async (retry: number = 0): Promise<void> => {
-            const MAX_RETRIES = 100;
-            const firstRow = this.tableBody.locator('tr').first();
-            const cells = await firstRow.locator('td').all();
+        const firstRow = this.tableBody.locator('tr').first();
+        await firstRow.waitFor({ state: ElementStateEnum.VISIBLE, timeout });
 
-            for (const cell of cells) {
-                const text = await cell.innerText();
-                if (text.trim() !== '') return;
-            }
-
-            if (retry >= MAX_RETRIES) {
-                throw new Error('Timed out waiting for table cell to have data');
-            }
-
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            await hasCellData(retry + 1);
-        };
-
-        await hasCellData();
+        await firstRow.locator('td').first().waitFor({ state: ElementStateEnum.VISIBLE, timeout });
     }
 }

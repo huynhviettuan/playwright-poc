@@ -1,9 +1,10 @@
-import { Workbook, Worksheet } from 'exceljs';
+import { Workbook, type Worksheet } from 'exceljs';
 import path from 'path';
 
 export class ExcelHelper {
-    private filePath: string;
+    private readonly filePath: string;
     private sheetName: string;
+    private cachedWorkbook: Workbook | null = null;
 
     private constructor(filePath: string, sheetName?: string) {
         this.filePath = filePath;
@@ -49,6 +50,7 @@ export class ExcelHelper {
 
         row.commit();
         await workbook.xlsx.writeFile(this.filePath);
+        this.invalidateCache();
     }
 
     async writeCell(rowIndex: number, address: string | number, value: unknown): Promise<void> {
@@ -62,7 +64,8 @@ export class ExcelHelper {
         const result: Record<string, unknown> = {};
 
         headers.eachCell((cell, colNumber) => {
-            const header = cell.value?.toString();
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            const header = cell.value != null ? String(cell.value) : undefined;
             const value = dataRow.getCell(colNumber).value;
             if (header) {
                 result[header] = value;
@@ -91,7 +94,9 @@ export class ExcelHelper {
         const result: Record<string, unknown> = {};
 
         worksheet.getColumn(columnKey).eachCell((cell, rowNumber) => {
-            const header = worksheet.getCell(rowNumber, headerColumn).value?.toString();
+            const cellValue = worksheet.getCell(rowNumber, headerColumn).value;
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            const header = cellValue != null ? String(cellValue) : undefined;
             if (header) {
                 result[header] = cell.value;
             }
@@ -114,9 +119,17 @@ export class ExcelHelper {
         return results;
     }
 
+    invalidateCache(): void {
+        this.cachedWorkbook = null;
+    }
+
     private async loadWorkbook(): Promise<Workbook> {
+        if (this.cachedWorkbook) {
+            return this.cachedWorkbook;
+        }
         const workbook = new Workbook();
         await workbook.xlsx.readFile(this.filePath);
+        this.cachedWorkbook = workbook;
         return workbook;
     }
 

@@ -517,3 +517,24 @@ export class ProductsMainContainer {
 - Action methods: `signIn()`, `fillForm()`, `submitData()`
 - Getter methods: `getTitle()`, `getErrorMessage()`
 - Navigation methods: `goToForgotPassword()`, `navigateToRegister()`
+
+## Locating Elements by ID
+
+All elements support an `id` option that locates by HTML `id` attribute. When an element has a
+stable `id`, prefer it over label/text matching — it's the most resilient locator.
+
+```ts
+// ✅ Preferred — stable id
+this.txtEmail = new Input({ parentLocator: this.container, id: 'email-input' });
+this.btnSubmit = new Button({ parentLocator: this.container, id: 'submit-btn' });
+this.lnkForgot = new Link({ parentLocator: this.container, id: 'forgot-link' });
+
+// ✅ Also fine — label-based when no id exists
+this.txtEmail = this.form.getInput({ label: 'Email address' });
+this.btnSubmit = this.form.getButton({ label: 'Log in' });
+```
+
+Priority order when choosing a locator strategy:
+1. **`id`** — most stable, survives text changes
+2. **`label`** / **`placeholder`** — readable, matches what the user sees
+3. **`index`** — last resort, brittle if DOM order changes

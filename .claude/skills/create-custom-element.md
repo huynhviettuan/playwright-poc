@@ -122,9 +122,38 @@ export class DatePicker extends Editable {
 
 ## Base Classes Reference
 
-- **BaseControl**: `isVisible()`, `isDisabled()`, `getTextContent()`, `getAttribute()`, `waitFor()`, `count()`
+- **BaseControl**: `isVisible()`, `isDisabled()`, `getTextContent()`, `getAttribute()`, `waitFor()`, `count()`, `withText()`, `withIndex()`
 - **Clickable**: All BaseControl methods + `click()`, `doubleClick()`, `hover()`
 - **Editable**: All BaseControl methods + `fill()`, `clear()`, `uploadFile()`
+
+### Immutable filtering
+
+`withText()` and `withIndex()` return a **new instance** — the original element is not modified:
+
+```ts
+const allRows = new Label({ parentLocator: table, locator: 'tr' });
+const activeRow = allRows.withText('Active');   // new Label — allRows unchanged
+const firstRow = allRows.withIndex(0);          // new Label — allRows unchanged
+```
+
+### `id` option
+
+All elements support `{ id: 'html-id' }` which locates via `#id` CSS selector. Include it in
+custom elements when appropriate:
+
+```ts
+export class Toggle extends Clickable {
+    constructor(option?: { parentLocator?: Locator; label?: string; id?: string; locator?: Locator }) {
+        const baseLocator = option?.parentLocator || BrowserInstance.currentPage;
+        const locator = option?.locator
+            ? option.locator
+            : option?.id
+              ? baseLocator.locator(`#${option.id}`)
+              : baseLocator.locator('.toggle', { hasText: option?.label });
+        super(locator);
+    }
+}
+```
 
 ## Benefits of SOLID Approach
 

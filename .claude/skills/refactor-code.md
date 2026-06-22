@@ -173,12 +173,16 @@ Cover:
 | Refactor target                                                | Recipe                                                                   |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Types declared next to a service class                         | Move to `src/models/<module>/<module>.interface.ts`. See [create-api-service](./create-api-service.md). |
+| Service methods take `token` as first param                    | Remove `token` param; use `service.setToken(token)` once. See controller pattern in [create-api-service](./create-api-service.md). |
+| Service uses `this.get()`/`this.post()` (untyped)             | Replace with `this.send<T>(method, args)` returning `ServiceResponse<T>`. |
+| Service uses `createEndpoint('/sub')`                          | Replace with `this.endpoint('/sub')`.                                     |
 | Per-page `Toast` properties                                    | Remove; use `notification` fixture from [`docs/guidance/notifications.md`](../../docs/guidance/notifications.md). |
 | Inline `BrowserInstance.currentPage` reads from helpers        | Pass `Locator` explicitly (parent scoping); avoid hidden global state.   |
 | Login via UI in every spec                                     | Adopt [`use-auth-state`](./use-auth-state.md) + `storageState`.          |
 | Inline `page.route(...)` calls scattered across specs          | Extract via [`mock-network`](./mock-network.md) helper class + fixtures. |
 | Repeated factory-and-cleanup boilerplate in tests              | Convert to auto-cleanup fixture per [`manage-test-data`](./manage-test-data.md). |
 | Page-global `$getByTestId(...)` element lookups                | Re-scope through parent `Locator` per [`create-page-object`](./create-page-object.md). |
+| Elements located without `id` when `id` attribute is available | Add `id` option — all elements support `{ id: 'element-id' }`.          |
 | Skill / guidance docs that contradict the code                 | Update the doc OR the code so they match; don't leave drift.             |
 
 ## Critical Rules

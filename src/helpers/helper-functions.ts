@@ -1,6 +1,6 @@
+import { type APIResponse, type Response } from '@playwright/test';
 import * as fs from 'fs/promises';
 import { decode } from 'html-entities';
-import { APIResponse, Response } from 'playwright-core';
 import { BrowserInstance } from 'src/common/browser';
 
 export class ArrayHelper {

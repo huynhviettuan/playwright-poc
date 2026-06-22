@@ -24,6 +24,7 @@ toast vs inline error, Form component usage).
 | Build / update a page object      | [create-page-object.md](.claude/skills/create-page-object.md)         |
 | Add a new UI element class        | [create-custom-element.md](.claude/skills/create-custom-element.md)   |
 | Add an API service                | [create-api-service.md](.claude/skills/create-api-service.md)         |
+| Generate service from Swagger     | [create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) |
 | Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                 |
 | Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                 |
 | Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)               |
@@ -255,7 +256,8 @@ Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills i
 **Creation**
 -   `create-page-object.md` - Container-based page object (Header/Main/Footer)
 -   `create-custom-element.md` - Extend BaseControl / Clickable / Editable
--   `create-api-service.md` - Service class extending BaseService
+-   `create-api-service.md` - Service class extending BaseService (controller pattern)
+-   `create-service-from-swagger.md` - Generate service + types + fixtures from Swagger/OpenAPI spec
 
 **Writing tests**
 -   `write-e2e-test.md` - E2E test with custom fixtures

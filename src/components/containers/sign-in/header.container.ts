@@ -1,6 +1,6 @@
 import { $ } from '@common/element.function';
 import { Label } from '@elements/common/label';
-import { Locator } from '@playwright/test';
+import { type Locator } from '@playwright/test';
 
 export class SignInHeaderContainer {
     private readonly container: Locator;

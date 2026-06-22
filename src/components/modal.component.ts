@@ -1,6 +1,6 @@
 import { $ } from '@common/element.function';
 import { Button } from '@elements/common/button';
-import { Locator } from '@playwright/test';
+import { type Locator } from '@playwright/test';
 
 export class Modal {
     private readonly modal: Locator;

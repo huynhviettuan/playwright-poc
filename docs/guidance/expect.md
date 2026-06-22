@@ -25,6 +25,14 @@ await expect(signInPage.header.lblTitle).toHaveText('Sign In');
 await expect(signInPage.main.lblError).toContainText('Invalid credentials');
 ```
 
+### Attributes & Values
+
+```ts
+await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
+await expect(signInPage.main.txtEmail).toHaveValue('user@example.com');
+await expect(signInPage.main.chkRememberMe).toBeChecked();
+```
+
 ## Complete Example
 
 ```ts

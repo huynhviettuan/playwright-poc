@@ -1,6 +1,6 @@
 import { $ } from '@common/element.function';
 import { Label } from '@elements/common/label';
-import { Locator } from '@playwright/test';
+import { type Locator } from '@playwright/test';
 
 const DEFAULT_CONTAINER_SELECTOR = '.toast, .notification, .alert, [role="alert"], [role="status"]';
 const DEFAULT_MESSAGE_CHILD_SELECTOR = '.toast__message, .notification__message, .message, [data-testid*="message"]';

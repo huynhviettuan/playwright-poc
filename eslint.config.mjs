@@ -1,86 +1,67 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintPluginPlaywright from 'eslint-plugin-playwright';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default [
+export default tseslint.config(
+    // Global ignores
     {
-        ignores: ['lib/**/*', '**/**.cjs']
+        ignores: ['lib/**/*', '**/*.cjs', 'node_modules/**']
     },
-    ...compat.extends('eslint:recommended', 'plugin:@typescript-eslint/recommended'),
-    {
-        plugins: {
-            '@typescript-eslint': typescriptEslint
-        },
 
+    // ──────────────────────────────────────────────
+    // Base config for ALL TypeScript files (src + tests)
+    // ──────────────────────────────────────────────
+    ...tseslint.configs.recommendedTypeChecked,
+    {
         languageOptions: {
             globals: {
-                window: true,
-                document: true,
-                describe: true,
-                test: true,
-                expect: true,
-                $: true,
-                localStorage: true,
-                sessionStorage: true,
-                Blob: true,
-                Image: true,
-                process: true,
-                FormData: true,
-                Buffer: true,
-                console: true,
-                require: true,
-                setTimeout: true,
-                HTMLElement: true
+                ...globals.node
             },
-
-            parser: tsParser
+            parserOptions: {
+                projectService: {
+                    allowDefaultProject: ['eslint.config.mjs']
+                },
+                tsconfigRootDir: import.meta.dirname
+            }
         },
-
+        plugins: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            'simple-import-sort': simpleImportSort
+        },
         rules: {
-            '@typescript-eslint/consistent-type-imports': [0],
-            '@typescript-eslint/ban-types': [0],
+            // ── Import sorting ──
+            'simple-import-sort/imports': 'error',
+            'simple-import-sort/exports': 'error',
 
-            quotes: [
-                2,
-                'single',
-                {
-                    avoidEscape: false,
-                    allowTemplateLiterals: true
-                }
+            // ── Re-enabled rules (previously disabled) ──
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                { prefer: 'type-imports', fixStyle: 'inline-type-imports' }
             ],
+            '@typescript-eslint/no-empty-function': 'warn',
+            'no-empty-pattern': 'error',
 
-            'template-curly-spacing': ['error', 'never'],
-            'object-curly-spacing': ['error', 'always'],
-            '@typescript-eslint/no-empty-function': [0],
-            'no-empty-pattern': [0],
-            'no-unused-vars': 'error',
-            'no-var': 'error',
-            'no-param-reassign': 'warn',
-            'no-unreachable': 'error',
-            'no-else-return': 'error',
-            'no-lonely-if': 'error',
-            'no-unused-labels': 'error',
-            'no-undef': 'error',
-            'no-self-compare': 'error',
-            'valid-typeof': 'error',
-            'no-duplicate-imports': 'error',
-            'constructor-super': 'error',
-            'no-import-assign': 'error',
-            '@typescript-eslint/no-unused-vars': 'error',
+            // ── Async safety (critical for Playwright) ──
+            '@typescript-eslint/no-floating-promises': 'error',
+            '@typescript-eslint/await-thenable': 'error',
+            '@typescript-eslint/no-misused-promises': 'error',
+
+            // ── Code quality ──
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+            ],
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-empty-object-type': 'error',
-            '@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true, allowShortCircuit: true }],
+            '@typescript-eslint/no-unused-expressions': [
+                'error',
+                { allowTernary: true, allowShortCircuit: true }
+            ],
+            '@typescript-eslint/prefer-readonly': 'warn',
+
+            // ── Naming conventions ──
             '@typescript-eslint/naming-convention': [
                 'error',
                 {
@@ -101,7 +82,83 @@ export default [
                     modifiers: ['exported'],
                     format: ['PascalCase', 'camelCase', 'UPPER_CASE']
                 }
+            ],
+
+            // ── General JS rules ──
+            'no-var': 'error',
+            'no-param-reassign': 'error',
+            'no-unreachable': 'error',
+            'no-else-return': 'error',
+            'no-lonely-if': 'error',
+            'no-unused-labels': 'error',
+            'no-self-compare': 'error',
+            'valid-typeof': 'error',
+            'constructor-super': 'error',
+            'no-import-assign': 'error',
+
+            // ── Disable base rules that conflict with TS versions ──
+            'no-unused-vars': 'off',
+            'no-undef': 'off'
+        }
+    },
+
+    // ──────────────────────────────────────────────
+    // Fixture files — allow empty destructuring (Playwright fixture API convention)
+    // ──────────────────────────────────────────────
+    {
+        files: ['src/fixtures/**/*.ts'],
+        rules: {
+            'no-empty-pattern': 'off'
+        }
+    },
+
+    // ──────────────────────────────────────────────
+    // Source files only (src/) — stricter rules
+    // ──────────────────────────────────────────────
+    {
+        files: ['src/**/*.ts'],
+        rules: {
+            '@typescript-eslint/explicit-function-return-type': [
+                'warn',
+                {
+                    allowExpressions: true,
+                    allowTypedFunctionExpressions: true,
+                    allowHigherOrderFunctions: true
+                }
             ]
         }
-    }
-];
+    },
+
+    // ──────────────────────────────────────────────
+    // Test files — Playwright plugin + relaxed rules
+    // ──────────────────────────────────────────────
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    {
+        ...eslintPluginPlaywright.configs['flat/recommended'],
+        files: ['tests/**/*.ts']
+    },
+    {
+        files: ['tests/**/*.ts'],
+        rules: {
+            // Relax for test code
+            '@typescript-eslint/explicit-function-return-type': 'off',
+            '@typescript-eslint/no-empty-function': 'off',
+
+            // Playwright plugin overrides
+            'playwright/no-skipped-test': 'warn',
+            'playwright/no-focused-test': 'error',
+            'playwright/no-page-pause': 'error',
+            'playwright/no-wait-for-timeout': 'error',
+            'playwright/prefer-web-first-assertions': 'warn',
+            'playwright/expect-expect': 'warn',
+            'playwright/no-force-option': 'warn',
+            'playwright/no-networkidle': 'warn',
+            'playwright/missing-playwright-await': 'error'
+        }
+    },
+
+    // ──────────────────────────────────────────────
+    // Prettier must be last — disables formatting rules
+    // ──────────────────────────────────────────────
+    eslintConfigPrettier
+);

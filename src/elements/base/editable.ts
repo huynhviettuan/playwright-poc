@@ -1,10 +1,11 @@
 import { BrowserInstance } from '@common/browser';
 import { DOWNLOADS_PATH } from '@constants/common.constant';
-import { IEditable } from '@models/elements/editable.interface';
+import { type IEditable } from '@models/elements/editable.interface';
+import { type Locator } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { lookup } from 'mime-types';
 import path from 'path';
-import { Locator } from 'playwright-core';
+
 import { BaseControl } from './base-control';
 
 export class Editable extends BaseControl implements IEditable {
@@ -20,7 +21,7 @@ export class Editable extends BaseControl implements IEditable {
             timeout?: number;
         }
     ): Promise<void> {
-        if (text) await this.element.fill(text.toString(), options);
+        if (text !== null && text !== undefined) await this.element.fill(text.toString(), options);
     }
 
     async clear(): Promise<void> {
