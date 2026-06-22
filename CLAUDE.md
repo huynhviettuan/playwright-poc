@@ -5,7 +5,7 @@
 Playwright-based test automation framework using TypeScript with Page Object Model architecture. Includes E2E and API
 testing with custom fixtures, reusable elements, and service layers.
 
-**Tech Stack:** Playwright 1.51.1, TypeScript 5.8.2, Report Portal, ESLint, Prettier
+**Tech Stack:** Playwright 1.61.0, TypeScript 5.8.2, date-fns, Report Portal, ESLint (typescript-eslint + playwright plugin), Prettier
 
 ## Critical Rules
 

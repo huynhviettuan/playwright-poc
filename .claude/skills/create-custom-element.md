@@ -124,7 +124,7 @@ export class DatePicker extends Editable {
 
 - **BaseControl**: `isVisible()`, `isDisabled()`, `getTextContent()`, `getAttribute()`, `waitFor()`, `count()`, `withText()`, `withIndex()`
 - **Clickable**: All BaseControl methods + `click()`, `doubleClick()`, `hover()`
-- **Editable**: All BaseControl methods + `fill()`, `clear()`, `uploadFile()`
+- **Editable**: All BaseControl methods + `fill()`, `clear()`, `uploadFile()`, `dropFile()`, `dropData()`
 
 ### Immutable filtering
 
