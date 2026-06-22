@@ -36,6 +36,11 @@ Use throughout the framework, not tied to one artifact type.
 -   [`use-helper-functions.md`](./use-helper-functions.md) — `DateTimeHelper`, `DataGenerator`, `ExcelHelper`, etc.
 -   [`work-with-email.md`](./work-with-email.md) — email verification flows using `Mail` and `MailSubjects`
 
+### Maintenance
+Modify existing code without changing what it does.
+
+-   [`refactor-code.md`](./refactor-code.md) — repo-agnostic refactoring methodology with playwright-poc-specific recipes
+
 ## Typical flow
 
 ```
