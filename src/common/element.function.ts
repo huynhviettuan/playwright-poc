@@ -1,4 +1,5 @@
-import { Locator } from 'playwright-core';
+import { type Locator } from '@playwright/test';
+
 import { BrowserInstance } from './browser';
 
 export function $(

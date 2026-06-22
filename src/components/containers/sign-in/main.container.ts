@@ -1,9 +1,9 @@
 import { $ } from '@common/element.function';
 import { Form } from '@components/form.component';
-import { Button } from '@elements/common/button';
-import { Input } from '@elements/common/input';
+import { type Button } from '@elements/common/button';
+import { type Input } from '@elements/common/input';
 import { Link } from '@elements/common/link';
-import { Locator } from '@playwright/test';
+import { type Locator } from '@playwright/test';
 
 export class SignInMainContainer {
     private readonly container: Locator;

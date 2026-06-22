@@ -1,16 +1,16 @@
 import { BrowserInstance } from '@common/browser';
 import { Config } from '@constants/config.constant';
 import { StringHelper } from '@helpers/helper-functions';
-import { IMail, MailResponse } from '@models/mail/mail.interface';
+import { type IMail, type MailResponse } from '@models/mail/mail.interface';
+import { type APIResponse } from '@playwright/test';
 import * as cheerio from 'cheerio';
-import { APIResponse } from 'playwright-core';
 
 class MailApiClient {
     constructor(private readonly mailDomain: string) {}
 
     async getMails(params: { to: string; subject?: string }): Promise<MailResponse[]> {
         const response: APIResponse = await (await BrowserInstance.getRequest()).get(this.mailDomain, { params });
-        return (await response.text()) ? await response.json() : null;
+        return (await response.text()) ? (await response.json()) as MailResponse[] : null;
     }
 
     async deleteMail(id: string): Promise<void> {

@@ -1,11 +1,11 @@
 import { SUPER_ADMIN_EMAIL } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
 import { DataGenerator } from '@helpers/generate-data-functions';
-import { ArrayHelper, ResponseHelper } from '@helpers/helper-functions';
+import { ArrayHelper } from '@helpers/helper-functions';
 import { validateJsonSchema } from '@helpers/validate-schema.helper';
 import { StatusCodes } from 'http-status-codes';
 
-test.describe('Tokens Service', async () => {
+test.describe('Tokens Service', () => {
     let authorizationToken: string;
 
     const schemaFolder = 'tokens';
@@ -15,33 +15,31 @@ test.describe('Tokens Service', async () => {
     });
 
     test('GET /tokens', async ({ tokensService }) => {
-        await tokensService.postTokens(authorizationToken, {
-            name: DataGenerator.randomString()
-        });
-        const { statusCode, response } = await tokensService.getTokens(authorizationToken);
-        await Promise.all([
-            expect(statusCode).toEqual(StatusCodes.OK),
-            validateJsonSchema('GET_tokens', schemaFolder, await ResponseHelper.toJson({ response }))
-        ]);
+        tokensService.setToken(authorizationToken);
+
+        await tokensService.create({ name: DataGenerator.randomString() });
+        const { statusCode, data } = await tokensService.getAll();
+
+        expect(statusCode).toEqual(StatusCodes.OK);
+        await validateJsonSchema('GET_tokens', schemaFolder, data);
     });
 
     test('DELETE /tokens/{id}', async ({ tokensService }) => {
-        await tokensService.postTokens(authorizationToken, {
-            name: DataGenerator.randomString()
-        });
-        const { statusCode } = await tokensService.deleteTokens(
-            authorizationToken,
-            (await ResponseHelper.toJson(await tokensService.getTokens(authorizationToken)))[0].id
-        );
+        tokensService.setToken(authorizationToken);
+
+        await tokensService.create({ name: DataGenerator.randomString() });
+        const { data: tokens } = await tokensService.getAll();
+        const { statusCode } = await tokensService.deleteById(tokens[0].id);
+
         expect(statusCode).toEqual(StatusCodes.NO_CONTENT);
     });
 
     test.afterEach(async ({ tokensService }) => {
-        await ArrayHelper.forEachSync(
-            await ResponseHelper.toJson<{ id: string }[]>(await tokensService.getTokens(authorizationToken)),
-            async ({ id }) => {
-                await tokensService.deleteTokens(authorizationToken, id);
-            }
-        );
+        tokensService.setToken(authorizationToken);
+
+        const { data: tokens } = await tokensService.getAll();
+        await ArrayHelper.forEachSync(tokens, async ({ id }) => {
+            await tokensService.deleteById(id);
+        });
     });
 });

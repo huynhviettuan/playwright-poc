@@ -1,46 +1,73 @@
 import { DATE_FORMAT_DMY } from '@constants/common.constant';
-import moment, { Moment } from 'moment';
+import {
+    addDays as dfnsAddDays,
+    endOfDay,
+    format,
+    fromUnixTime,
+    getUnixTime,
+    isMatch,
+    parse,
+    subDays as dfnsSubDays
+} from 'date-fns';
+
 import { DataGenerator } from './generate-data-functions';
 
+const MOMENT_TO_DATEFNS: Record<string, string> = {
+    DD: 'dd',
+    MM: 'MM',
+    YYYY: 'yyyy',
+    D: 'd',
+    M: 'M',
+    HH: 'HH',
+    mm: 'mm',
+    ss: 'ss',
+    'D MMM YYYY HH_mm': 'd MMM yyyy HH_mm'
+};
+
+function convertFormat(momentFormat: string): string {
+    let result = momentFormat;
+    const sortedKeys = Object.keys(MOMENT_TO_DATEFNS).sort((a, b) => b.length - a.length);
+    for (const key of sortedKeys) {
+        result = result.split(key).join(MOMENT_TO_DATEFNS[key]);
+    }
+    return result;
+}
+
 export class DateTimeHelper {
-    private static now(): Moment {
-        return moment();
+    static addDays(days: number, fmt: string = DATE_FORMAT_DMY): string {
+        return format(dfnsAddDays(new Date(), days), convertFormat(fmt));
     }
 
-    static addDays(days: number, format: string = DATE_FORMAT_DMY): string {
-        return this.now().add(days, 'days').format(format);
+    static subtractDays(days: number, fmt: string = DATE_FORMAT_DMY): string {
+        return format(dfnsSubDays(new Date(), days), convertFormat(fmt));
     }
 
-    static subtractDays(days: number, format: string = DATE_FORMAT_DMY): string {
-        return this.now().subtract(days, 'days').format(format);
+    static today(fmt: string = DATE_FORMAT_DMY): string {
+        return format(new Date(), convertFormat(fmt));
     }
 
-    static today(format: string = DATE_FORMAT_DMY): string {
-        return this.now().format(format);
-    }
-
-    static isValidFormat(date: string, format: string): boolean {
-        return moment(date, format, true).isValid();
+    static isValidFormat(date: string, fmt: string): boolean {
+        return isMatch(date, convertFormat(fmt));
     }
 
     static toUnix(date: string): number {
-        return moment(date).unix();
+        return getUnixTime(new Date(date));
     }
 
-    static fromUnix(timestamp: number, format: string = DATE_FORMAT_DMY): string {
-        return moment.unix(timestamp).format(format);
+    static fromUnix(timestamp: number, fmt: string = DATE_FORMAT_DMY): string {
+        return format(fromUnixTime(timestamp), convertFormat(fmt));
     }
 
     static todayUnix(): number {
-        return this.now().unix();
+        return getUnixTime(new Date());
     }
 
     static endOfDayUnix(date: string): number {
-        return moment(date).endOf('day').unix();
+        return getUnixTime(endOfDay(new Date(date)));
     }
 
     static subtractDaysUnix(days: number): number {
-        return this.now().subtract(days, 'days').unix();
+        return getUnixTime(dfnsSubDays(new Date(), days));
     }
 
     static randomTimestamp(): string {
@@ -48,10 +75,12 @@ export class DateTimeHelper {
     }
 
     static getMonth(date: string, dateFormat: string = DATE_FORMAT_DMY, monthFormat: string = 'MM'): string {
-        return moment(date, dateFormat).format(monthFormat);
+        const parsed = parse(date, convertFormat(dateFormat), new Date());
+        return format(parsed, convertFormat(monthFormat));
     }
 
     static getYear(date: string, dateFormat: string = DATE_FORMAT_DMY): string {
-        return moment(date, dateFormat).format('YYYY');
+        const parsed = parse(date, convertFormat(dateFormat), new Date());
+        return format(parsed, 'yyyy');
     }
 }

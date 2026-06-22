@@ -92,15 +92,19 @@ with mixed concerns.
 ### 4. API Services (`create-api-service`)
 
 **Violation:** Types co-located with service classes. Services not extending `BaseService`. Raw
-`request.get()`/`request.post()` instead of inherited methods.
+`request.get()`/`request.post()` instead of inherited methods. Token passed per-method instead
+of `setToken()`.
 
 **Fix:**
 
 1. Move types to `src/models/<module>/<module>.interface.ts`
 2. Ensure service extends `BaseService`
-3. Replace raw HTTP calls with `this.get()`, `this.post()`, `this.put()`, `this.delete()`
+3. Replace raw HTTP calls with `this.send<T>(method, args)` returning `ServiceResponse<T>`
 4. Use concrete typed interfaces for request bodies, not `any` or untyped objects
-5. Register in `src/fixtures/service-fixtures.ts`
+5. Use controller pattern method names: `getAll()`, `getById(id)`, `create(body)`, `deleteById(id)`
+6. Replace `token` method parameter with `service.setToken(token)` (set once)
+7. Use `this.endpoint('/sub-path')` for sub-resource URLs (not `createEndpoint`)
+8. Register in `src/fixtures/service-fixtures.ts`
 
 ---
 

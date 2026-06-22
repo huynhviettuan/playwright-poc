@@ -1,16 +1,16 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import {
-    APIRequestContext,
-    Browser,
-    BrowserContext,
-    BrowserContextOptions,
+    type APIRequestContext,
+    type Browser,
+    type BrowserContext,
+    type BrowserContextOptions,
     chromium,
     firefox,
-    LaunchOptions,
-    Page,
+    type LaunchOptions,
+    type Page,
     request,
     webkit
-} from 'playwright-core';
+} from '@playwright/test';
+import { AsyncLocalStorage } from 'async_hooks';
 
 // Statics are safe: each Playwright worker is a separate Node process, and tests
 // within a worker run sequentially. An AsyncLocalStorage refactor was attempted
@@ -25,7 +25,7 @@ const customUserPage: AsyncLocalStorage<Page> = new AsyncLocalStorage();
 // Function to use a specific page in an async context
 export async function usePage<T>(page: Page, callBack: () => Promise<T>): Promise<T> {
     return customUserPage.run(page, async () => {
-        return (await callBack()) as T;
+        return await callBack();
     });
 }
 
@@ -41,10 +41,10 @@ export enum BrowserName {
 }
 
 export class Context {
-    private context: BrowserContext;
-    private _pages: Page[] = [];
+    private readonly context: BrowserContext;
+    private readonly _pages: Page[] = [];
     private _previousPage: Page | undefined;
-    private _pageStack: Page[] = [];
+    private readonly _pageStack: Page[] = [];
     private _isMobile = false;
 
     constructor(context: BrowserContext) {
@@ -102,6 +102,7 @@ export class BrowserInstance {
     private static _currentContext: Context | undefined;
     private static _currentPage: Page | undefined;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     static get isContextMobile(): boolean {

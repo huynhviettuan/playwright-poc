@@ -1,7 +1,7 @@
 import { $ } from '@common/element.function';
 import { Label } from '@elements/common/label';
 import { Link } from '@elements/common/link';
-import { Locator } from '@playwright/test';
+import { type Locator } from '@playwright/test';
 
 export class SignInFooterContainer {
     private readonly container: Locator;

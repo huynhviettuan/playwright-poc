@@ -30,8 +30,8 @@ export default defineConfig({
         ignoreHTTPSErrors: true
     },
     retries: process.env.CI ? 1 : 0,
-    workers: 1,
-    fullyParallel: false,
+    workers: process.env.CI ? 4 : 2,
+    fullyParallel: true,
     forbidOnly: !!process.env.CI,
     projects: [
         {

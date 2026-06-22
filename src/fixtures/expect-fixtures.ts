@@ -1,4 +1,4 @@
-import { BaseControl } from '@elements/base/base-control';
+import { type BaseControl } from '@elements/base/base-control';
 import { expect as baseExpect } from '@playwright/test';
 import * as fs from 'fs/promises';
 import path from 'path';
@@ -57,6 +57,32 @@ export const expect = baseExpect.extend({
         };
     },
 
+    async toHaveAttribute(element: BaseControl, name: string, value: string | RegExp) {
+        const actual = await element.getAttribute(name);
+        const pass = value instanceof RegExp ? value.test(actual) : actual === value;
+        return {
+            message: () => `expected attribute "${name}" to be "${String(value)}" but got "${actual}"`,
+            pass
+        };
+    },
+
+    async toHaveValue(element: BaseControl, expectedValue: string) {
+        const actual = await element.element.inputValue();
+        const pass = actual === expectedValue;
+        return {
+            message: () => `expected value "${expectedValue}" but got "${actual}"`,
+            pass
+        };
+    },
+
+    async toBeChecked(element: BaseControl) {
+        const isChecked = await element.isChecked();
+        return {
+            message: () => `expected element to be checked`,
+            pass: isChecked
+        };
+    },
+
     // Existing custom matchers
     toBeOneOfValues<T>(received: T, array: T[]) {
         const pass = array.includes(received);
@@ -67,7 +93,7 @@ export const expect = baseExpect.extend({
             };
         }
         return {
-            message: () => `toBeOneOfValues() assertion failed.\nYou expected [${array}] to include '${received}'\n`,
+            message: () => `toBeOneOfValues() assertion failed.\nYou expected [${String(array)}] to include '${String(received)}'\n`,
             pass: false
         };
     },
@@ -84,7 +110,7 @@ export const expect = baseExpect.extend({
             };
         }
         return {
-            message: () => `data ${received} not to be sorted`,
+            message: () => `data ${String(received)} not to be sorted`,
             pass: false
         };
     },

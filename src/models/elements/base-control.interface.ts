@@ -1,14 +1,15 @@
-import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
-import { Locator } from 'playwright-core';
+import { type ElementRoleEnum, type ElementStateEnum } from '@enums/element.enum';
+import { type Locator } from '@playwright/test';
 
 export interface IBaseControl {
     get element(): Locator;
-    locator(selector: string): void;
+    locator(selector: string): Locator;
     setElement(locator: Locator): void;
-    withText(text: string): void;
+    withText(text: string): IBaseControl;
+    withIndex(index: number): IBaseControl;
     getParent(): Locator;
     getByTestId(id: string): Locator;
-    getByText(value: string): Locator;
+    getByText(value: string, options?: { exact?: boolean }): Locator;
     getByRole(
         role: ElementRoleEnum,
         options?: {
@@ -36,9 +37,8 @@ export interface IBaseControl {
     count(): Promise<number>;
     getAllElements(): Promise<Locator[]>;
     filter(options?: { has?: Locator; hasText?: string | RegExp }): Locator;
-    scrollIntoView(options?: { timeout?: number }): void;
+    scrollIntoView(options?: { timeout?: number }): Promise<void>;
     allInnerTexts(): Promise<string[]>;
     allTextContents(): Promise<string[]>;
     getAttribute(name: string): Promise<string>;
-    withIndex(index: number): void;
 }

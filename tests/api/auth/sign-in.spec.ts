@@ -1,9 +1,8 @@
 import { Config } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
 import { DataGenerator } from '@helpers/generate-data-functions';
-import { ResponseHelper } from '@helpers/helper-functions';
 import { validateJsonSchema } from '@helpers/validate-schema.helper';
-import { SignInResponse } from '@models/auth/user-organization.interface';
+import { type SignInRequest, type SignInResponse } from '@models/auth/user-organization.interface';
 import { StatusCodes } from 'http-status-codes';
 
 /**
@@ -19,32 +18,24 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     const schemaFolder = 'auth';
 
     test('TC-SI-API-001 — valid credentials return token', async ({ userOrganizationService }) => {
-        const { statusCode, response } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.signIn({
             email: Config.auth.superAdminEmail,
             password: Config.auth.password
         });
 
-        const body = await ResponseHelper.toJson<SignInResponse>({ response });
-
-        await Promise.all([
-            expect(statusCode).toEqual(StatusCodes.OK),
-            expect(body.token).toBeTruthy(),
-            validateJsonSchema('POST_signin', schemaFolder, body)
-        ]);
+        expect(statusCode).toEqual(StatusCodes.OK);
+        expect(data.token).toBeTruthy();
+        await validateJsonSchema('POST_signin', schemaFolder, data);
     });
 
     test('TC-SI-API-002 — wrong password returns 401', async ({ userOrganizationService }) => {
-        const { statusCode, response } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.signIn({
             email: Config.auth.superAdminEmail,
             password: 'WrongPassword!'
         });
 
-        const body = await ResponseHelper.toJson<{ token?: string }>({ response });
-
-        await Promise.all([
-            expect(statusCode).toEqual(StatusCodes.UNAUTHORIZED),
-            expect(body.token).toBeFalsy()
-        ]);
+        expect(statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+        expect((data as Partial<SignInResponse>)?.token).toBeFalsy();
     });
 
     test('TC-SI-API-003 — non-existent email returns 401 (no user enumeration)', async ({
@@ -55,14 +46,13 @@ test.describe('API — POST /user-organization/auth/signin', () => {
             password: 'AnyPassword1!'
         });
 
-        // Must be the same status code as wrong-password — different codes leak whether the email exists.
         expect(statusCode).toEqual(StatusCodes.UNAUTHORIZED);
     });
 
     test('TC-SI-API-004 — missing email returns 400', async ({ userOrganizationService }) => {
         const { statusCode } = await userOrganizationService.signIn({
             password: Config.auth.password
-        } as unknown as Parameters<typeof userOrganizationService.signIn>[0]);
+        } as unknown as SignInRequest);
 
         expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
     });
@@ -70,7 +60,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     test('TC-SI-API-005 — missing password returns 400', async ({ userOrganizationService }) => {
         const { statusCode } = await userOrganizationService.signIn({
             email: Config.auth.superAdminEmail
-        } as unknown as Parameters<typeof userOrganizationService.signIn>[0]);
+        } as unknown as SignInRequest);
 
         expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
     });
@@ -85,9 +75,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-007 — empty body returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn(
-            {} as unknown as Parameters<typeof userOrganizationService.signIn>[0]
-        );
+        const { statusCode } = await userOrganizationService.signIn({} as unknown as SignInRequest);
 
         expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
     });

@@ -1,19 +1,21 @@
 import { BrowserInstance } from '@common/browser';
 import { $ } from '@common/element.function';
-import { ICheckBox } from '@models/elements/checkbox.interface';
-import { Locator, Page } from 'playwright-core';
-import { Clickable } from '../base/clickable';
+import { Clickable } from '@elements/base/clickable';
+import { type ICheckBox } from '@models/elements/checkbox.interface';
+import { type Locator, type Page } from '@playwright/test';
 
 export class CheckBox extends Clickable implements ICheckBox {
-    constructor(option?: { parentLocator?: Locator; label?: string; index?: number; locator?: Locator }) {
+    constructor(option?: { parentLocator?: Locator; label?: string; index?: number; locator?: Locator; id?: string }) {
         const baseLocator: Page | Locator = option.parentLocator || BrowserInstance.currentPage;
         const locator = option?.locator
             ? option.locator
-            : option
-              ? option.label
-                  ? baseLocator.getByLabel(option.label).locator('..').locator('.checkbox')
-                  : baseLocator.locator('.checkbox').nth(option.index ?? 0)
-              : $('.checkbox');
+            : option?.id
+              ? baseLocator.locator(`#${option.id}`)
+              : option
+                ? option.label
+                    ? baseLocator.getByLabel(option.label).locator('..').locator('.checkbox')
+                    : baseLocator.locator('.checkbox').nth(option.index ?? 0)
+                : $('.checkbox');
         super(locator);
     }
 

@@ -3,6 +3,20 @@
 ## When to Use
 Use this skill when creating a new API service for making HTTP requests.
 
+## Design Principle: Controller Pattern
+
+Each service class maps to **one Swagger tag / backend controller**. Each method maps to
+**one endpoint**. This makes Swagger-to-code conversion mechanical:
+
+```
+Swagger tag: "Users"          →  UsersService
+  GET    /users               →  usersService.getAll(params?)
+  GET    /users/{id}          →  usersService.getById(id)
+  POST   /users               →  usersService.create(body)
+  PUT    /users/{id}          →  usersService.update(id, body)
+  DELETE /users/{id}          →  usersService.deleteById(id)
+```
+
 ## Critical Rules
 
 ### ✅ Types Live in `@models`, Not Beside the Service
@@ -13,46 +27,76 @@ Request and response types belong under `src/models/<module>/<module>.interface.
 `@models/requests/*`) and lets consumers (commands, factories, fixtures, tests) import
 types without pulling in service implementations.
 
+### ✅ Token Set Once, Not Per Method
+
+Use `service.setToken(token)` or set it in the fixture/beforeAll — don't pass `token`
+to every method. The service holds auth state.
+
+### ✅ Use `send<T>()` for Typed Responses
+
+The `send<T>()` method returns `ServiceResponse<T>` with parsed `data` — callers don't
+need `ResponseHelper.toJson()`.
+
+### ✅ Method Names Follow CRUD Conventions
+
+| HTTP | Method name | Signature |
+|------|-------------|-----------|
+| `GET /resource` | `getAll()` | `(params?) → ServiceResponse<T[]>` |
+| `GET /resource/{id}` | `getById(id)` | `(id: string) → ServiceResponse<T>` |
+| `POST /resource` | `create(body)` | `(body: CreateRequest) → ServiceResponse<T>` |
+| `PUT /resource/{id}` | `update(id, body)` | `(id: string, body: UpdateRequest) → ServiceResponse<T>` |
+| `PATCH /resource/{id}` | `patch(id, body)` | `(id: string, body: PatchRequest) → ServiceResponse<T>` |
+| `DELETE /resource/{id}` | `deleteById(id)` | `(id: string) → ServiceResponse<void>` |
+
+For non-CRUD endpoints (e.g. `POST /auth/signin`), use a domain-specific name: `signIn(body)`.
+
 ## Instructions
 
 1. **Define request/response types** in `src/models/[module]/[module].interface.ts`:
    ```ts
-   // src/models/user-organization/user-organization.interface.ts
-   export type SignInRequest = {
+   // src/models/users/users.interface.ts
+   export type CreateUserRequest = {
+       name: string;
        email: string;
-       password: string;
    };
 
-   export type SignInResponse = {
-       token: string;
-       refreshToken?: string;
+   export type User = {
+       id: string;
+       name: string;
+       email: string;
+       role: string;
    };
    ```
 
 2. **Create the service class** in `src/services/[service-name].service.ts`:
    ```ts
-   import { SignInRequest } from '@models/[module]/[module].interface';
+   import { type ServiceResponse } from '@models/requests/request.type';
+   import { type CreateUserRequest, type User } from '@models/users/users.interface';
    import { BaseService } from '@services/base.service';
-   
-   export class [ServiceName]Service extends BaseService {
+
+   export class UsersService extends BaseService {
        constructor() {
-           super('/[resource]');
+           super('/users');
        }
-       
-       async get[Resource](token: string, id?: string) {
-           return await this.get({ token, id });
+
+       async getAll(params?: { page?: number; perPage?: number }): Promise<ServiceResponse<User[]>> {
+           return await this.send<User[]>('get', { params });
        }
-       
-       async create[Resource](token: string, body: SignInRequest) {
-           return await this.post({ token, body });
+
+       async getById(id: string): Promise<ServiceResponse<User>> {
+           return await this.send<User>('get', { id });
        }
-       
-       async update[Resource](token: string, id: string, body: SignInRequest) {
-           return await this.put({ token, id, body });
+
+       async create(body: CreateUserRequest): Promise<ServiceResponse<User>> {
+           return await this.send<User>('post', { body });
        }
-       
-       async delete[Resource](token: string, id: string) {
-           return await this.delete({ token, id });
+
+       async update(id: string, body: CreateUserRequest): Promise<ServiceResponse<User>> {
+           return await this.send<User>('put', { id, body });
+       }
+
+       async deleteById(id: string): Promise<ServiceResponse<void>> {
+           return await this.send<void>('delete', { id });
        }
    }
    ```
@@ -63,53 +107,151 @@ types without pulling in service implementations.
 
 3. **Register the service in fixtures** at `src/fixtures/service-fixtures.ts`:
    ```ts
-   import { [ServiceName]Service } from '@services/[service-name].service';
-   
+   import { UsersService } from '@services/users.service';
+
    type Services = {
-       [serviceName]Service: [ServiceName]Service;
+       usersService: UsersService;
    };
-   
+
    export const test = base.extend<Services>({
-       [serviceName]Service: async ({}, use) => {
-           await use(new [ServiceName]Service());
+       usersService: async ({}, use) => {
+           await use(new UsersService());
        }
    });
    ```
 
-## BaseService Methods Available
+## ServiceResponse<T>
 
-- **get(options)**: GET request with token, id, timeout, body
-- **post(options)**: POST request with body, token, id, multipart
-- **put(options)**: PUT request with body, token, id, multipart
-- **patch(options)**: PATCH request with body, token, id, multipart
-- **delete(options)**: DELETE request with token, id, body
+All `send<T>()` calls return:
 
-## Return Format
 ```ts
 {
-    statusCode: number;
-    response: APIResponse;
+    statusCode: number;    // HTTP status code
+    data: T;               // Parsed response body (typed)
+    response: APIResponse; // Raw Playwright response (for headers, etc.)
 }
 ```
 
+## BaseService API
+
+### Token Management
+
+```ts
+// Set token once — used by all subsequent calls
+service.setToken(token);
+
+// Or chain it
+const service = new UsersService().setToken(token);
+```
+
+### Protected Methods
+
+| Method | Usage |
+|--------|-------|
+| `send<T>(method, args?)` | Typed request — returns `ServiceResponse<T>` |
+| `endpoint(subPath?)` | Build URL: `API_DOMAIN + basePath + subPath` |
+
+### Low-Level Methods (for backward compatibility)
+
+| Method | Returns |
+|--------|---------|
+| `get(args)` | `{ statusCode, response }` (untyped) |
+| `post(args)` | `{ statusCode, response }` (untyped) |
+| `put(args)` | `{ statusCode, response }` (untyped) |
+| `patch(args)` | `{ statusCode, response }` (untyped) |
+| `delete(args)` | `{ statusCode, response }` (untyped) |
+
+Prefer `send<T>()` in new code. The low-level methods exist for backward compatibility.
+
 ## Common Patterns
 
-### Multipart Upload
+### Non-CRUD Endpoints
+
 ```ts
-await this.post({
-    token,
-    multipart: {
-        file: {
-            name: 'image.png',
-            mimeType: 'image/png',
-            buffer: Buffer.from(data)
+// POST /user-organization/auth/signin (not a CRUD resource)
+async signIn(body: SignInRequest): Promise<ServiceResponse<SignInResponse>> {
+    return await this.send<SignInResponse>('post', {
+        url: this.endpoint('/signin'),
+        body
+    });
+}
+```
+
+### Sub-Resources
+
+```ts
+// GET /users/{id}/orders
+async getOrders(userId: string): Promise<ServiceResponse<Order[]>> {
+    return await this.send<Order[]>('get', {
+        url: this.endpoint(`/${userId}/orders`)
+    });
+}
+```
+
+### Multipart Upload
+
+```ts
+async uploadAvatar(id: string, file: Buffer): Promise<ServiceResponse<User>> {
+    return await this.send<User>('post', {
+        url: this.endpoint(`/${id}/avatar`),
+        multipart: {
+            file: {
+                name: 'avatar.png',
+                mimeType: 'image/png',
+                buffer: file
+            }
         }
-    }
+    });
+}
+```
+
+### Query Parameters
+
+```ts
+async search(query: string, page: number = 1): Promise<ServiceResponse<User[]>> {
+    return await this.send<User[]>('get', {
+        params: { q: query, page, perPage: 20 }
+    });
+}
+```
+
+## Usage in Tests
+
+```ts
+test.describe('Users API', () => {
+    test.beforeAll(async ({ apiCommands }) => {
+        const token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
+        // Token set per-test via fixture or beforeEach
+    });
+
+    test('should create and retrieve user', async ({ usersService, apiCommands }) => {
+        const token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
+        usersService.setToken(token);
+
+        // Create
+        const { statusCode: createStatus, data: created } = await usersService.create({
+            name: DataGenerator.randomName(),
+            email: DataGenerator.randomEmail('users-test')
+        });
+        expect(createStatus).toEqual(StatusCodes.CREATED);
+
+        // Retrieve — data is already typed as User
+        const { statusCode, data } = await usersService.getById(created.id);
+        expect(statusCode).toEqual(StatusCodes.OK);
+        expect(data.email).toEqual(created.email);
+    });
 });
 ```
 
-### Custom Endpoint
-```ts
-const endpoint = this.createEndpoint('/sub-resource');
-await this.get({ url: endpoint, token });
-```
+## Swagger-to-Code Checklist
+
+When converting a Swagger/OpenAPI spec to a service:
+
+1. **One service per tag** — `tag: "Users"` → `UsersService`
+2. **basePath from server URL** — `servers[0].url + /users` → `super('/users')`
+3. **One method per operation** — `operationId: getUsers` → `getAll()`
+4. **Request body → interface** — `schema: CreateUserRequest` → `src/models/users/users.interface.ts`
+5. **Response body → interface** — `schema: User` → same file
+6. **Path params → method args** — `{id}` → `id: string`
+7. **Query params → optional params object** — `?page=1&perPage=20` → `params?: { page?: number; perPage?: number }`
+8. **Register in fixtures** — add to `src/fixtures/service-fixtures.ts`

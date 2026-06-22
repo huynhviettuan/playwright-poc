@@ -1,7 +1,7 @@
 import { $ } from '@common/element.function';
-import { ISkeleton } from '@models/elements/skeleton.interface';
-import { expect, Locator } from '@playwright/test';
-import { BaseControl } from '../base/base-control';
+import { BaseControl } from '@elements/base/base-control';
+import { type ISkeleton } from '@models/elements/skeleton.interface';
+import { expect, type Locator } from '@playwright/test';
 
 const DEFAULT_SKELETON_SELECTOR = [
     '.skeleton',

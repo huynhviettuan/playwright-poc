@@ -1,31 +1,42 @@
 import { $getByText } from '@common/element.function';
-import { ElementRoleEnum, ElementStateEnum } from '@enums/element.enum';
-import { IBaseControl } from '@models/elements/base-control.interface';
-import { Locator } from 'playwright-core';
+import { type ElementRoleEnum, type ElementStateEnum } from '@enums/element.enum';
+import { type IBaseControl } from '@models/elements/base-control.interface';
+import { type Locator } from '@playwright/test';
 
 export class BaseControl implements IBaseControl {
-    private baseLocator: Locator;
-    private originalLocator: Locator;
+    protected _locator: Locator;
 
     constructor(locator?: Locator) {
-        this.baseLocator = locator;
-        this.originalLocator = locator;
+        this._locator = locator;
     }
 
     get element(): Locator {
-        return this.baseLocator;
+        return this._locator;
     }
 
     setElement(locator: Locator): void {
-        this.baseLocator = locator;
+        this._locator = locator;
     }
 
-    withText(text: string): void {
-        this.setElement(
-            this.originalLocator.filter({
-                has: $getByText(text, { exact: true })
-            })
-        );
+    withText(text: string): this {
+        const filtered = this._locator.filter({
+            has: $getByText(text, { exact: true })
+        });
+        const clone = this.clone();
+        clone._locator = filtered;
+        return clone;
+    }
+
+    withIndex(index: number): this {
+        const clone = this.clone();
+        clone._locator = this._locator.nth(index);
+        return clone;
+    }
+
+    private clone(): this {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const instance: this = Object.create(Object.getPrototypeOf(this) as object);
+        return Object.assign(instance, this);
     }
 
     locator(selector: string): Locator {
@@ -47,10 +58,6 @@ export class BaseControl implements IBaseControl {
         }
     ): Locator {
         return this.element.getByText(value, options);
-    }
-
-    withIndex(index: number): void {
-        this.setElement(this.originalLocator.nth(index));
     }
 
     getByRole(

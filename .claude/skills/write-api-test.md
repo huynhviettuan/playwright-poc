@@ -11,6 +11,11 @@ import { expect, test } from '@fixtures/fixtures';
 // ❌ NEVER: import { expect, test } from '@playwright/test';
 ```
 
+### ✅ Use Controller Pattern Services
+- Services follow the controller pattern — one class per Swagger tag
+- Set token once via `service.setToken(token)`, not per method
+- Methods return `ServiceResponse<T>` with typed `data` — no manual JSON parsing
+
 ### ✅ Follow SOLID Principles
 - Service classes should have single responsibility
 - Use BaseService for common API operations
@@ -28,26 +33,25 @@ import { expect, test } from '@fixtures/fixtures';
    ```ts
    import { expect, test } from '@fixtures/fixtures';
    import { StatusCodes } from 'http-status-codes';
-   
+
    test.describe('API - [Feature Name]', () => {
        let token: string;
-       
-       test.beforeAll(async ({ tokensService }) => {
-           const response = await tokensService.getToken();
-           token = await response.response.json().then(r => r.token);
+
+       test.beforeAll(async ({ apiCommands }) => {
+           token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
        });
-       
-       test('[Test description]', async ({ userService }) => {
+
+       test('[Test description]', async ({ usersService }) => {
            // Arrange
+           usersService.setToken(token);
            const userId = '123';
-           
+
            // Act
-           const { statusCode, response } = await userService.getUser(token, userId);
-           
+           const { statusCode, data } = await usersService.getById(userId);
+
            // Assert
            expect(statusCode).toBe(StatusCodes.OK);
-           const data = await response.json();
-           expect(data).toHaveProperty('id', userId);
+           expect(data.id).toBe(userId);
        });
    });
    ```
@@ -56,44 +60,57 @@ import { expect, test } from '@fixtures/fixtures';
    ```ts
    StatusCodes.OK              // 200
    StatusCodes.CREATED         // 201
+   StatusCodes.NO_CONTENT      // 204
    StatusCodes.BAD_REQUEST     // 400
    StatusCodes.UNAUTHORIZED    // 401
    StatusCodes.NOT_FOUND       // 404
    ```
 
-3. **Response Handling**:
+3. **Response handling** — `send<T>()` returns typed data directly:
    ```ts
-   import { ResponseHelper } from '@helpers/helper-functions';
-   const data = await ResponseHelper.toJson<User>(response);
+   // ✅ New — data is already typed
+   const { statusCode, data } = await usersService.getById(id);
+   expect(data.email).toBe(expected);
+
+   // ❌ Old — manual parsing (avoid in new code)
+   const { statusCode, response } = await service.get({ id });
+   const data = await ResponseHelper.toJson<User>({ response });
    ```
 
 ## Common Patterns
 
 ### Create and Verify Resource
 ```ts
-// Create
-const createResponse = await service.createUser(token, userData);
-expect(createResponse.statusCode).toBe(StatusCodes.CREATED);
-const userId = await createResponse.response.json().then(r => r.id);
+test('should create and retrieve user', async ({ usersService, apiCommands }) => {
+    const token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
+    usersService.setToken(token);
 
-// Verify
-const getResponse = await service.getUser(token, userId);
-expect(getResponse.statusCode).toBe(StatusCodes.OK);
-const user = await getResponse.response.json();
-expect(user.email).toBe(userData.email);
+    // Create
+    const { statusCode: createStatus, data: created } = await usersService.create({
+        name: DataGenerator.randomName(),
+        email: DataGenerator.randomEmail('api-test')
+    });
+    expect(createStatus).toBe(StatusCodes.CREATED);
+
+    // Verify
+    const { statusCode, data } = await usersService.getById(created.id);
+    expect(statusCode).toBe(StatusCodes.OK);
+    expect(data.email).toBe(created.email);
+});
 ```
 
 ### Schema Validation
 ```ts
-import { validateSchema } from '@helpers/validate-schema.helper';
-const data = await response.response.json();
-const isValid = await validateSchema(data, expectedSchema);
-expect(isValid).toBeTruthy();
+import { validateJsonSchema } from '@helpers/validate-schema.helper';
+
+const { data } = await usersService.getAll();
+await validateJsonSchema('GET_users', 'users', data);
 ```
 
 ### Generate Test Data
 ```ts
 import { DataGenerator } from '@helpers/generate-data-functions';
+
 const testUser = {
     name: DataGenerator.randomName(),
     email: DataGenerator.randomEmail('api-test'),
@@ -101,31 +118,42 @@ const testUser = {
 };
 ```
 
+### Cleanup in afterEach
+```ts
+test.afterEach(async ({ tokensService }) => {
+    tokensService.setToken(authorizationToken);
+    const { data: tokens } = await tokensService.getAll();
+    await ArrayHelper.forEachSync(tokens, async ({ id }) => {
+        await tokensService.deleteById(id);
+    });
+});
+```
+
 ## Clean Code Example
 
-### ❌ Bad - Magic numbers, unclear logic
+### ❌ Bad - Magic numbers, token per method, manual parsing
 ```ts
 test('test user', async ({ service }) => {
-    const r = await service.get('123');
+    const r = await service.getUser(token, '123');
     expect(r.statusCode).toBe(200);
     const d = await r.response.json();
     expect(d.status).toBe(1);
 });
 ```
 
-### ✅ Good - Clear, descriptive, uses constants
+### ✅ Good - Clear, descriptive, controller pattern
 ```ts
-test('should return active user when user exists', async ({ userService }) => {
+test('should return active user when user exists', async ({ usersService, apiCommands }) => {
     // Arrange
+    const token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
+    usersService.setToken(token);
     const userId = '123';
-    const expectedStatus = 'active';
-    
+
     // Act
-    const { statusCode, response } = await userService.getUser(token, userId);
-    
+    const { statusCode, data } = await usersService.getById(userId);
+
     // Assert
     expect(statusCode).toBe(StatusCodes.OK);
-    const user = await response.json();
-    expect(user.status).toBe(expectedStatus);
+    expect(data.status).toBe('active');
 });
 ```

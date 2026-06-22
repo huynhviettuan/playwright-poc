@@ -1,3 +1,5 @@
+import { type ServiceResponse } from '@models/requests/request.type';
+import { type CreateTokenRequest, type Token } from '@models/tokens/tokens.interface';
 import { BaseService } from '@services/base.service';
 
 export class TokensService extends BaseService {
@@ -5,28 +7,15 @@ export class TokensService extends BaseService {
         super('/tokens');
     }
 
-    async getTokens(token: string) {
-        return await this.get({
-            token
-        });
+    async getAll(): Promise<ServiceResponse<Token[]>> {
+        return await this.send<Token[]>('get');
     }
 
-    async postTokens(
-        token: string,
-        body: {
-            name: string;
-        }
-    ) {
-        return await this.post({
-            token,
-            body
-        });
+    async create(body: CreateTokenRequest): Promise<ServiceResponse<Token>> {
+        return await this.send<Token>('post', { body });
     }
 
-    async deleteTokens(token: string, id: string) {
-        return await this.delete({
-            token,
-            id
-        });
+    async deleteById(id: string): Promise<ServiceResponse<void>> {
+        return await this.send<void>('delete', { id });
     }
 }

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import * as fs from 'fs';
-import _ from 'lodash';
 import * as path from 'path';
+
 import { DateTimeHelper } from './date-time-functions';
 
 export class DataGenerator {
@@ -10,7 +10,7 @@ export class DataGenerator {
     }
 
     static randomNumber(min: number = 1, max: number = 100000): number {
-        return _.random(min, max);
+        return faker.number.int({ min, max });
     }
 
     static randomEmail(prefix: string = 'automation'): string {

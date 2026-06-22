@@ -70,6 +70,7 @@ Adopt container-based architecture where pages are composed of Header, Main, and
 - ADR-002: Custom Fixtures over Playwright Default
 - ADR-003: SOLID Principles for Complex Elements
 - ADR-004: YAGNI, KISS, DRY Coding Principles
+- ADR-005: BrowserInstance Static Singleton
 
 ## Guidelines
 

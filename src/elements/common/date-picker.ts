@@ -1,8 +1,10 @@
+import { BrowserInstance } from '@common/browser';
 import { $ } from '@common/element.function';
 import { DateFormats } from '@constants/common.constant';
 import { DateTimeHelper } from '@helpers/date-time-functions';
-import { IDatePicker } from '@models/elements/date-picker.interface';
-import { Locator } from 'playwright-core';
+import { type IDatePicker } from '@models/elements/date-picker.interface';
+import { type Locator } from '@playwright/test';
+
 import { Button } from './button';
 import { Image } from './image';
 import { Label } from './label';
@@ -85,8 +87,12 @@ export class DatePicker implements IDatePicker {
     private readonly lblDay: Label;
     private readonly btnToday: Button;
 
-    constructor(label: string, parentLocator?: Locator) {
-        this.datePicker = parentLocator ? parentLocator.locator('.date-picker', { hasText: label }) : $('.date-picker');
+    constructor(label: string, parentLocator?: Locator, id?: string) {
+        this.datePicker = id
+            ? (parentLocator || BrowserInstance.currentPage).locator(`#${id}`)
+            : parentLocator
+              ? parentLocator.locator('.date-picker', { hasText: label })
+              : $('.date-picker');
 
         this.calendar = $('.popup');
 
