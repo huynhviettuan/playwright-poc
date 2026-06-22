@@ -29,7 +29,7 @@
     },
     "dependencies": {
         "@faker-js/faker": "8.4.1",
-        "@playwright/test": "1.51.1",
+        "@playwright/test": "1.61.0",
         "@reportportal/agent-js-playwright": "5.1.9",
         "ajv": "8.12.0",
         "ajv-formats": "3.0.1",

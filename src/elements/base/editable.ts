@@ -53,4 +53,24 @@ export class Editable extends BaseControl implements IEditable {
             await this.element.setInputFiles(filePath);
         }
     }
+
+    async dropFile(
+        fileName: string,
+        options?: {
+            folderPath?: string;
+        }
+    ): Promise<void> {
+        const folderPath = options?.folderPath || DOWNLOADS_PATH;
+        const filePath = path.join(folderPath, fileName);
+        const buffer = readFileSync(filePath);
+        const mimeType = lookup(filePath) || 'application/octet-stream';
+
+        await this.element.drop({
+            files: [{ name: fileName, mimeType, buffer }]
+        });
+    }
+
+    async dropData(data: Record<string, string>): Promise<void> {
+        await this.element.drop({ data });
+    }
 }

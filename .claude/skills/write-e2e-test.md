@@ -142,6 +142,19 @@ await Promise.all([
 ]);
 ```
 
+### File Upload & Drop
+
+```ts
+// Traditional upload (input[type="file"])
+await page.main.txtFile.uploadFile('data.xlsx');
+
+// Drag-and-drop onto upload zone
+await page.main.dropZone.dropFile('document.pdf');
+
+// Drop text/clipboard data
+await page.main.dropZone.dropData({ 'text/plain': 'pasted content' });
+```
+
 ### Generate Test Data
 
 ```ts

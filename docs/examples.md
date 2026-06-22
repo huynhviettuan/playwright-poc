@@ -237,6 +237,26 @@ test('should switch between multiple pages', async () => {
 });
 ```
 
+## File Upload & Drop
+
+```typescript
+// Traditional file upload (input[type="file"])
+await createUserPage.main.txtAvatar.uploadFile('avatar.png');
+await createUserPage.main.txtAvatar.uploadFile('doc.pdf', { folderPath: 'src/data/files' });
+await createUserPage.main.txtAvatar.uploadFile('image.png', { useBuffer: true });
+
+// Drag-and-drop file onto upload zone (Playwright 1.61+ drop API)
+await uploadPage.main.dropZone.dropFile('document.pdf');
+await uploadPage.main.dropZone.dropFile('image.png', { folderPath: 'src/data/files' });
+
+// Drop clipboard/text data
+await uploadPage.main.dropZone.dropData({ 'text/plain': 'hello world' });
+await uploadPage.main.dropZone.dropData({
+    'text/plain': 'hello',
+    'text/uri-list': 'https://example.com'
+});
+```
+
 ## Schema Validation
 
 ```typescript

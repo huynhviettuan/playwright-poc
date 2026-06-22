@@ -29,7 +29,7 @@ npm run format
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| Playwright | 1.51.1 | Browser automation & API testing |
+| Playwright | 1.61.0 | Browser automation & API testing |
 | TypeScript | 5.8.2 | Type safety |
 | date-fns | 4.x | Date/time utilities |
 | ESLint | 9.x | Linting (typescript-eslint flat config + playwright plugin) |
