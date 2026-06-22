@@ -12,6 +12,7 @@ const DEBUG = process.env.DEBUG_API === 'true';
 export class BaseService {
     protected readonly basePath: string;
     private _token?: string;
+    private _headers: Record<string, string> = {};
 
     constructor(basePath: string = '') {
         this.basePath = basePath;
@@ -26,6 +27,15 @@ export class BaseService {
         return this;
     }
 
+    setHeaders(headers: Record<string, string>): this {
+        this._headers = { ...this._headers, ...headers };
+        return this;
+    }
+
+    protected getDefaultHeaders(): Record<string, string> {
+        return {};
+    }
+
     protected endpoint(subPath: string = ''): string {
         return `${API_DOMAIN}${this.basePath}${subPath}`;
     }
@@ -35,27 +45,26 @@ export class BaseService {
         return id ? `${baseUrl}/${id}` : baseUrl;
     }
 
-    private buildHeaders(token?: string): Record<string, string> {
-        const authToken = token ?? this._token;
+    private buildHeaders(args: RequestArgs): Record<string, string> {
+        const authToken = args.token ?? this._token;
         return {
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})
+            ...this.getDefaultHeaders(),
+            ...this._headers,
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            ...args.headers
         };
     }
 
-    private buildRequestOptions({
-        token,
-        body,
-        multipart,
-        timeout = LONG_TIMEOUT,
-        params
-    }: RequestArgs): RequestOptions {
+    private buildRequestOptions(args: RequestArgs): RequestOptions {
+        const { body, multipart, timeout = LONG_TIMEOUT, params } = args;
+
         const normalizedParams: string | URLSearchParams | Record<string, string | number | boolean> =
             typeof params === 'object' && !(params instanceof URLSearchParams)
                 ? StringHelper.normalizeParams(params)
                 : params;
 
         return {
-            headers: this.buildHeaders(token),
+            headers: this.buildHeaders(args),
             failOnStatusCode: false,
             data: body,
             multipart,

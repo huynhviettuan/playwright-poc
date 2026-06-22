@@ -1,8 +1,8 @@
 # Playwright Test Automation Framework
 
-A scalable, maintainable Playwright-based test automation framework using TypeScript with SOLID principles and container-based architecture.
+A scalable, maintainable Playwright-based test automation framework using TypeScript with SOLID principles, container-based architecture, and controller-pattern API services.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -17,247 +17,302 @@ npm run test:e2e
 # Run API tests
 npm run test:api
 
-# Run tests in headed mode
-npx playwright test --headed
+# Run tests tagged @new
+npm run test:new
+
+# Lint & format
+npm run lint
+npm run format
 ```
 
-## 📁 Project Structure
+## Tech Stack
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Playwright | 1.51.1 | Browser automation & API testing |
+| TypeScript | 5.8.2 | Type safety |
+| date-fns | 4.x | Date/time utilities |
+| ESLint | 9.x | Linting (typescript-eslint flat config + playwright plugin) |
+| Prettier | 3.x | Code formatting |
+| Report Portal | 5.x | CI test reporting |
+
+## Project Structure
 
 ```
 playwright-poc/
-├── .claude/
-│   └── skills/              # How-to guides for common tasks
+├── .claude/skills/             # How-to guides for common tasks
 ├── docs/
-│   ├── README.md            # Documentation index
-│   ├── decisions/           # Architecture Decision Records (ADRs)
-│   ├── guidance/            # Practical framework guidance per pattern
-│   ├── ci/                  # CI templates (GitHub Actions, GitLab CI)
-│   ├── troubleshooting/     # Common errors, debugging, FAQ
-│   ├── examples.md          # Quick-reference code examples
-│   └── test-cases/          # Manual test cases (README + per-feature files)
+│   ├── decisions/              # Architecture Decision Records (ADRs)
+│   ├── guidance/               # Pattern guidance (expect, notifications, sections, skeleton)
+│   ├── test-cases/             # Manual test cases per feature
+│   ├── user-stories/           # User stories per feature
+│   ├── ci/                     # CI templates (GitHub Actions, GitLab CI)
+│   ├── troubleshooting/        # Common errors, debugging, FAQ
+│   └── examples.md             # Quick-reference code examples
 ├── src/
-│   ├── pages/              # Page objects (orchestration layer)
+│   ├── pages/                  # Page objects (folder + index.ts per page)
 │   ├── components/
-│   │   ├── containers/     # Page section containers (Header, Main, Footer)
-│   │   ├── form.component.ts
-│   │   ├── table.component.ts
-│   │   ├── modal.component.ts
+│   │   ├── containers/         # Page section containers (Header, Main, Footer)
+│   │   ├── form.component.ts   # Form element factory (cached inputs/buttons)
+│   │   ├── table.component.ts  # Table navigation, sorting, cell access
+│   │   ├── modal.component.ts  # Modal dialog abstraction
 │   │   └── notification.component.ts
-│   ├── elements/           # Base UI elements
-│   │   ├── base/           # BaseControl, Clickable, Editable
-│   │   └── common/         # Button, Input, Dropdown, etc.
-│   ├── services/           # API service layer
-│   ├── fixtures/           # Test fixtures (merged)
-│   ├── helpers/            # Utility classes
-│   ├── constants/          # Config and constants
-│   └── common/             # Shared utilities
+│   ├── elements/
+│   │   ├── base/               # BaseControl, Clickable, Editable
+│   │   └── common/             # Button, Input, Dropdown, Label, Link, etc.
+│   ├── services/               # API services (controller pattern)
+│   ├── models/                 # TypeScript interfaces (per module)
+│   ├── fixtures/               # Test fixtures (merged via mergeTests)
+│   ├── helpers/                # DateTimeHelper, DataGenerator, ExcelHelper, etc.
+│   ├── constants/              # Config, endpoints, messages
+│   ├── enums/                  # ElementState, ElementRole, SortDirection
+│   ├── commands/               # High-level API commands (auth tokens, etc.)
+│   ├── mail/                   # Email verification utilities
+│   ├── common/                 # BrowserInstance, element selector functions
+│   └── data/                   # Test data, JSON schemas, mock fixtures
 ├── tests/
-│   ├── e2e/               # E2E tests
-│   └── api/               # API tests
-├── CLAUDE.md              # AI assistant context
-├── CONTEXT.md             # Glossary
-└── README.md              # This file
+│   ├── e2e/                    # E2E tests
+│   └── api/                    # API tests
+├── CLAUDE.md                   # AI assistant context & project rules
+├── playwright.config.ts        # Playwright config (parallel, multi-browser)
+└── tsconfig.json               # TypeScript config with path aliases
 ```
 
-## 🎯 Key Features
+## Architecture
 
-### Container-Based Architecture
-Pages are composed of reusable containers (Header, Main, Footer) that mirror frontend structure:
+### Container-Based Page Objects
+
+Pages are composed of reusable containers that mirror frontend structure:
 
 ```typescript
 export class SignInPage {
     readonly header: SignInHeaderContainer;
     readonly main: SignInMainContainer;
     readonly footer: SignInFooterContainer;
+
+    async signIn(email: string, password: string): Promise<void> {
+        await this.main.fillCredentials(email, password);
+        await this.main.btnLogin.click();
+    }
 }
 ```
 
-### Path Aliases
-Clean imports without relative paths:
+Each container scopes elements through a parent `Locator` — no page-global selectors.
+
+### Controller-Pattern API Services
+
+Services map 1:1 to backend controllers. Methods return typed `ServiceResponse<T>`:
 
 ```typescript
-// ✅ Clean
-import { SignInPage } from '@pages/sign-in';
-import { Button } from '@elements/common/button';
-import { Config } from '@constants/config.constant';
+export class UsersService extends BaseService {
+    constructor() { super('/users'); }
 
-// ❌ Avoid
-import { SignInPage } from '../../../pages/sign-in';
+    async getAll(): Promise<ServiceResponse<User[]>> {
+        return await this.send<User[]>('get');
+    }
+
+    async create(body: CreateUserRequest): Promise<ServiceResponse<User>> {
+        return await this.send<User>('post', { body });
+    }
+
+    async deleteById(id: string): Promise<ServiceResponse<void>> {
+        return await this.send<void>('delete', { id });
+    }
+}
+```
+
+Token is set once, not per method:
+
+```typescript
+usersService.setToken(token);
+const { statusCode, data } = await usersService.getById(id);
+// data is already typed as User
 ```
 
 ### Custom Fixtures
-Type-safe dependency injection for page objects and services:
+
+Type-safe dependency injection — always import from `@fixtures/fixtures`:
 
 ```typescript
-import { test, expect } from '@fixtures/fixtures';
+import { expect, test } from '@fixtures/fixtures';
 
-test('login test', async ({ signInPage, userService }) => {
+test('login test', async ({ signInPage, notification }) => {
     await signInPage.signIn('user@example.com');
+    await expect(signInPage.main.btnLogin).toBeVisible();
+    expect(await notification.getMessage()).toContain('Welcome');
 });
 ```
 
-### Helper Classes
-Organized utilities with static methods:
+### Element System
+
+All elements extend `BaseControl` → `Clickable` / `Editable`. Every element supports locating by `id`:
 
 ```typescript
-import { DateTimeHelper } from '@helpers/date-time-functions';
-import { DataGenerator } from '@helpers/generate-data-functions';
+// By id (most stable)
+new Button({ parentLocator: container, id: 'submit-btn' });
 
-const today = DateTimeHelper.today();
-const email = DataGenerator.randomEmail('test');
+// By label
+new Input({ parentLocator: container, label: 'Email' });
+
+// Via Form component (cached)
+const form = new Form(container);
+form.getInput({ label: 'Email' });
+form.getButton({ id: 'submit' });
 ```
 
-## 📖 Path Aliases Reference
+Custom expect matchers work directly on elements — no `.element` needed:
+
+```typescript
+await expect(signInPage.main.btnLogin).toBeVisible();
+await expect(signInPage.main.txtEmail).toBeEnabled();
+await expect(signInPage.header.lblTitle).toHaveText('Sign In');
+await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
+```
+
+## Path Aliases
 
 | Alias | Maps To | Usage |
 |-------|---------|-------|
 | `@pages/*` | `src/pages/*` | Page objects |
 | `@elements/*` | `src/elements/*` | UI elements |
 | `@components/*` | `src/components/*` | Containers & components |
+| `@models/*` | `src/models/*` | TypeScript interfaces |
 | `@services/*` | `src/services/*` | API services |
 | `@fixtures/*` | `src/fixtures/*` | **Always import test/expect from here** |
 | `@helpers/*` | `src/helpers/*` | Utility classes |
 | `@constants/*` | `src/constants/*` | Config & constants |
+| `@enums/*` | `src/enums/*` | Enumerations |
 | `@common/*` | `src/common/*` | Shared utilities |
+| `@mail/*` | `src/mail/*` | Email utilities |
+| `@data/*` | `src/data/*` | Test data & schemas |
 
-## ✅ Critical Rules
-
-### 1. Always Import from Custom Fixtures
-```typescript
-// ✅ Correct
-import { test, expect } from '@fixtures/fixtures';
-
-// ❌ Wrong - Never use
-import { test, expect } from '@playwright/test';
-```
-
-### 2. Follow SOLID Principles
-- Single Responsibility - One class, one purpose
-- Use composition over inheritance
-- Extract complex logic into helper classes
-
-### 3. Use Existing Components
-- `Form` - For form interactions
-- `Table` - For table operations
-- `Modal` - For modal dialogs
-- `Notification` - For toast / notification messages (use via the `notification` fixture)
-
-## 📝 Quick Examples
+## Quick Examples
 
 ### E2E Test
+
 ```typescript
 import { BrowserInstance } from '@common/browser';
 import { Endpoints } from '@constants/endpoints.constant';
 import { expect, test } from '@fixtures/fixtures';
 
-test.describe('Login', () => {
+test.describe('Sign In', () => {
     test.beforeEach(async () => {
         await BrowserInstance.currentPage.goto(Endpoints.auth.signIn);
     });
-    
-    test('should login successfully', async ({ signInPage }) => {
+
+    test('should sign in successfully', async ({ signInPage, notification }) => {
         await signInPage.signIn('user@example.com');
-        await expect(await signInPage.getTitle()).toEqual('Dashboard');
+
+        await expect(signInPage.main.btnLogin).toBeVisible();
+        await expect(signInPage.header.lblTitle).toHaveText('Sign In');
     });
 });
 ```
 
 ### API Test
+
 ```typescript
+import { Config } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
 import { StatusCodes } from 'http-status-codes';
 
-test('should get user', async ({ userService, tokensService }) => {
-    const { response } = await tokensService.getToken();
-    const token = await response.json().then(r => r.token);
-    
-    const { statusCode } = await userService.getUser(token, '123');
-    expect(statusCode).toBe(StatusCodes.OK);
+test.describe('Users API', () => {
+    test('should create user', async ({ usersService, apiCommands }) => {
+        const token = await apiCommands.getAuthorizationToken(Config.auth.superAdminEmail);
+        usersService.setToken(token);
+
+        const { statusCode, data } = await usersService.create({
+            name: 'John Doe',
+            email: 'john@example.com'
+        });
+
+        expect(statusCode).toBe(StatusCodes.CREATED);
+        expect(data.email).toBe('john@example.com');
+    });
 });
 ```
 
-## 📚 Documentation
-
-- **[CLAUDE.md](./CLAUDE.md)** - Project overview and rules
-- **[CONTEXT.md](./CONTEXT.md)** - Glossary of terms
-- **[docs/](./docs/README.md)** - Documentation index
-- **[.claude/skills/](./.claude/skills/README.md)** - How-to skills (creation, testing, workflows)
-- **[docs/decisions/](./docs/decisions/)** - Architecture decisions (ADRs)
-- **[docs/guidance/](./docs/guidance/)** - Framework guidance per pattern (expect, messages, notifications, sections, skeleton)
-- **[docs/examples.md](./docs/examples.md)** - Quick-reference code examples
-- **[docs/ci/](./docs/ci/)** - GitHub Actions and GitLab CI templates
-
-## 🛠️ Available Scripts
+## Test Execution
 
 ```bash
-npm run test:e2e          # Run E2E tests
-npm run test:api          # Run API tests
-npm run test:new          # Run tests tagged @new
-npm run format            # Format code with Prettier
-npm run lint              # Lint code with ESLint
-npm run install:all       # Install all dependencies
+# Run all tests (parallel — 2 workers local, 4 in CI)
+npx playwright test
+
+# Run specific project
+npm run test:e2e
+npm run test:api
+npm run test:new          # Tests tagged @new
+
+# Run headed (visible browser)
+npx playwright test --headed
+
+# Run specific file
+npx playwright test tests/e2e/auth/sign-in.spec.ts
+
+# Debug mode
+npx playwright test --debug
+
+# Enable API request logging
+DEBUG_API=true npm run test:api
 ```
 
-## 🏗️ Creating New Components
+## Creating New Components
 
-### Page Object with Containers
-```bash
-# 1. Create containers
+### Page Object
+
+```
 src/components/containers/my-page/
 ├── header.container.ts
 ├── main.container.ts
 └── footer.container.ts
 
-# 2. Create page object
-src/pages/my-page.ts
-
-# 3. Register in fixtures
-src/fixtures/page-fixtures.ts
+src/pages/my-page/index.ts        # Composes containers
+src/fixtures/page-fixtures.ts     # Register fixture
 ```
 
-See [.claude/skills/create-page-object.md](./.claude/skills/create-page-object.md) for details.
+See [.claude/skills/create-page-object.md](.claude/skills/create-page-object.md)
 
 ### API Service
-```typescript
-// src/services/my-service.ts
-import { BaseService } from '@services/base.service';
 
-export class MyService extends BaseService {
-    constructor() {
-        super('/api/my-resource');
-    }
-    
-    async getResource(token: string, id: string) {
-        return await this.get({ token, id });
-    }
-}
+```
+src/models/users/users.interface.ts   # Request/response types
+src/services/users.service.ts         # Extends BaseService
+src/fixtures/service-fixtures.ts      # Register fixture
 ```
 
-See [.claude/skills/create-api-service.md](./.claude/skills/create-api-service.md) for details.
+See [.claude/skills/create-api-service.md](.claude/skills/create-api-service.md) or
+[.claude/skills/create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) if you have a Swagger spec.
 
-## 🐛 Troubleshooting
+## Documentation
 
-- **[Common Errors](./docs/troubleshooting/common-errors.md)**
-- **[Debugging Tips](./docs/troubleshooting/debugging-tips.md)**
-- **[FAQ](./docs/troubleshooting/faq.md)**
+| Resource | Purpose |
+|----------|---------|
+| [CLAUDE.md](CLAUDE.md) | Project rules & AI assistant context |
+| [docs/](docs/README.md) | Documentation index |
+| [.claude/skills/](.claude/skills/README.md) | Step-by-step how-to guides |
+| [docs/decisions/](docs/decisions/) | Architecture Decision Records (ADRs) |
+| [docs/guidance/](docs/guidance/) | Pattern guidance per topic |
+| [docs/examples.md](docs/examples.md) | Quick-reference code snippets |
+| [docs/troubleshooting/](docs/troubleshooting/) | Common errors, debugging tips, FAQ |
+| [docs/ci/](docs/ci/) | GitHub Actions & GitLab CI templates |
 
-## 📋 Coding Standards
+## Coding Standards
 
-- **SOLID** - Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- **YAGNI** - You Aren't Gonna Need It (don't over-engineer)
-- **KISS** - Keep It Simple, Stupid (prefer simplicity)
-- **DRY** - Don't Repeat Yourself (reuse code)
+- **SOLID** — Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **YAGNI** — Don't build what you don't need yet
+- **KISS** — Prefer simple solutions
+- **DRY** — Extract repeated logic into reusable helpers
 
-See [docs/decisions/ADR-004-yagni-kiss-dry-principles.md](./docs/decisions/ADR-004-yagni-kiss-dry-principles.md)
+See [ADR-004](docs/decisions/ADR-004-yagni-kiss-dry-principles.md)
 
-## 🤝 Contributing
+## Contributing
 
-1. Read [CLAUDE.md](./CLAUDE.md) and [CONTEXT.md](./CONTEXT.md)
-2. Check [docs/decisions/](./docs/decisions/) for architectural patterns
-3. Follow existing code style and patterns
-4. Run tests and linting before committing
-5. Update documentation if adding new patterns
+1. Read [CLAUDE.md](CLAUDE.md) for project rules
+2. Check [docs/decisions/](docs/decisions/) before changing patterns
+3. Read the relevant [skill](.claude/skills/README.md) before building
+4. Run `npm run lint` and `npx tsc --noEmit` before committing
+5. Import `test`/`expect` from `@fixtures/fixtures`, never from `@playwright/test`
 
-## 📄 License
+## License
 
 MIT

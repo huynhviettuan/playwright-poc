@@ -16,6 +16,7 @@ await expect(signInPage.main.btnCancel).toBeHidden();
 ```ts
 await expect(signInPage.main.txtEmail).toBeEnabled();
 await expect(signInPage.main.btnSubmit).toBeDisabled();
+await expect(signInPage.main.chkRememberMe).toBeChecked();
 ```
 
 ### Text Content
@@ -30,8 +31,28 @@ await expect(signInPage.main.lblError).toContainText('Invalid credentials');
 ```ts
 await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
 await expect(signInPage.main.txtEmail).toHaveValue('user@example.com');
-await expect(signInPage.main.chkRememberMe).toBeChecked();
 ```
+
+`toHaveAttribute(name, value)` — checks any HTML attribute. `value` can be a string (exact match) or RegExp.
+
+`toHaveValue(expected)` — reads the input's current value via `inputValue()`. Works with all input types including empty strings and `'0'`.
+
+## Full Matcher Reference
+
+| Matcher | Accepts | What it checks |
+|---------|---------|----------------|
+| `toBeVisible()` | `BaseControl` | `element.isVisible()` |
+| `toBeHidden()` | `BaseControl` | `element.isHidden()` |
+| `toBeEnabled()` | `BaseControl` | `element.isEnabled()` |
+| `toBeDisabled()` | `BaseControl` | `element.isDisabled()` |
+| `toBeChecked()` | `BaseControl` | `element.isChecked()` |
+| `toHaveText(expected)` | `BaseControl` | `element.getTextContent() === expected` |
+| `toContainText(expected)` | `BaseControl` | `element.getTextContent().includes(expected)` |
+| `toHaveAttribute(name, value)` | `BaseControl` | `element.getAttribute(name)` matches value (string or RegExp) |
+| `toHaveValue(expected)` | `BaseControl` | `element.inputValue() === expected` |
+| `toBeOneOfValues(array)` | any value | `array.includes(received)` |
+| `toBeSorted(direction)` | `string[]` | Checks ascending/descending order |
+| `toBeExistInDownloadsFolder()` | `string` (filename) | File exists in `src/downloads/` |
 
 ## Complete Example
 
@@ -39,18 +60,24 @@ await expect(signInPage.main.chkRememberMe).toBeChecked();
 import { expect, test } from '@fixtures/fixtures';
 
 test('should validate form elements', async ({ signInPage }) => {
+    // Visibility
     await expect(signInPage.main.btnLogin).toBeVisible();
     await expect(signInPage.main.lnkForgotPassword).toBeVisible();
 
+    // State
     await expect(signInPage.main.txtEmail).toBeEnabled();
     await expect(signInPage.main.btnLogin).toBeDisabled();
 
+    // Text
     await expect(signInPage.header.lblTitle).toHaveText('Sign In');
 
+    // Fill and verify
     await signInPage.main.txtEmail.fill('test@example.com');
     await signInPage.main.txtPassword.fill('password');
 
     await expect(signInPage.main.btnLogin).toBeEnabled();
+    await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
+    await expect(signInPage.main.txtEmail).toHaveValue('test@example.com');
 });
 ```
 
@@ -62,6 +89,7 @@ test('should validate form elements', async ({ signInPage }) => {
 await expect(await signInPage.main.btnLogin.isVisible()).toBeTruthy();
 await expect(signInPage.main.txtEmail.element).toBeVisible();
 await expect(await signInPage.header.lblTitle.getTextContent()).toEqual('Sign In');
+await expect(await signInPage.main.txtPassword.getAttribute('type')).toBe('password');
 ```
 
 ### After
@@ -70,6 +98,7 @@ await expect(await signInPage.header.lblTitle.getTextContent()).toEqual('Sign In
 await expect(signInPage.main.btnLogin).toBeVisible();
 await expect(signInPage.main.txtEmail).toBeVisible();
 await expect(signInPage.header.lblTitle).toHaveText('Sign In');
+await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
 ```
 
 ## Other Custom Matchers
@@ -84,9 +113,7 @@ await expect('report.pdf').toBeExistInDownloadsFolder();
 
 Custom matchers are defined in `src/fixtures/expect-fixtures.ts` and automatically available when importing from `@fixtures/fixtures`.
 
-## Benefits
+## Related
 
-- Cleaner tests: no `.element` or `await isVisible()`
-- Type-safe with BaseControl-based elements
-- Consistent API across elements
-- Tests read like natural language
+- [notifications.md](notifications.md) — centralized notification fixture for toast/error messages
+- [messages.md](messages.md) — `NotificationMessages` constants

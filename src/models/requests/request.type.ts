@@ -11,6 +11,7 @@ export type RequestArgs = {
     id?: string;
     timeout?: number;
     body?: JSONObject;
+    headers?: Record<string, string>;
     multipart?:
         | FormData
         | {
@@ -34,15 +35,7 @@ export type RequestArgs = {
 };
 
 export type RequestOptions = {
-    headers:
-        | {
-              Authorization: string;
-              'Api-Key'?: string;
-              'x-api-token'?: string;
-              'tenant-Url'?: string;
-              'tenant-id'?: string;
-          }
-        | { Authorization?: undefined };
+    headers: Record<string, string>;
     failOnStatusCode: boolean;
     data: JSONObject;
     multipart:
