@@ -40,6 +40,7 @@ Use throughout the framework, not tied to one artifact type.
 Modify existing code without changing what it does.
 
 -   [`refactor-code.md`](./refactor-code.md) — repo-agnostic refactoring methodology with playwright-poc-specific recipes
+-   [`refactor-code-follow-skills.md`](./refactor-code-follow-skills.md) — systematic checklist to migrate legacy automation code to follow all skills
 
 ## Typical flow
 
