@@ -37,8 +37,9 @@ This skill accepts Swagger in any of these forms:
 2. Extract types        → src/models/<module>/<module>.interface.ts
 3. Generate service     → src/services/<module>.service.ts
 4. Update endpoints     → src/constants/endpoints.constant.ts
-5. Register fixture     → src/fixtures/service-fixtures.ts
-6. Verify               → tsc --noEmit + eslint
+5. Update registry      → docs/registry/services.md
+6. Register fixture     → src/fixtures/service-fixtures.ts
+7. Verify               → tsc --noEmit + eslint
 ```
 
 ## Step 1: Parse the Swagger Spec
@@ -282,7 +283,11 @@ export const ApiEndpoints = {
 } as const;
 ```
 
-## Step 5: Register Fixture
+## Step 5: Update Service Registry
+
+Add or update the entry in [`docs/registry/services.md`](../../docs/registry/services.md) with the service class, base path, methods, and models path.
+
+## Step 6: Register Fixture
 
 Add to `src/fixtures/service-fixtures.ts`:
 
@@ -302,7 +307,7 @@ export const test = base.extend<ServiceObjects>({
 });
 ```
 
-## Step 6: Verify
+## Step 7: Verify
 
 - [ ] `npx tsc --noEmit` — zero errors
 - [ ] `npx eslint .` — zero errors

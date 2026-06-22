@@ -105,7 +105,9 @@ For non-CRUD endpoints (e.g. `POST /auth/signin`), use a domain-specific name: `
    > shape is genuinely generic (e.g. passthrough endpoints). Otherwise type the
    > body with a concrete `Request` interface.
 
-3. **Register the service in fixtures** at `src/fixtures/service-fixtures.ts`:
+3. **Update the service registry** — add or update the entry in [`docs/registry/services.md`](../../docs/registry/services.md) with the service class, base path, methods, and models path.
+
+4. **Register the service in fixtures** at `src/fixtures/service-fixtures.ts`:
    ```ts
    import { UsersService } from '@services/users.service';
 
