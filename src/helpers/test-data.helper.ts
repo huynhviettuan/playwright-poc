@@ -15,22 +15,22 @@ export class TestDataHelper {
     }
 
     static getUserByRole(role: string): User | undefined {
-        return testUsers.users.find(user => user.role === role);
+        return testUsers.users.find((user) => user.role === role);
     }
 
     static getUserByEmail(email: string): User | undefined {
-        return testUsers.users.find(user => user.email === email);
+        return testUsers.users.find((user) => user.email === email);
     }
 
     static getActiveUsers(): User[] {
-        return testUsers.users.filter(user => user.status === 'active');
+        return testUsers.users.filter((user) => user.status === 'active');
     }
 
     static getAdminUser(): User {
-        return testUsers.users.find(user => user.role === 'admin');
+        return testUsers.users.find((user) => user.role === 'admin');
     }
 
     static getRegularUser(): User {
-        return testUsers.users.find(user => user.role === 'user');
+        return testUsers.users.find((user) => user.role === 'user');
     }
 }

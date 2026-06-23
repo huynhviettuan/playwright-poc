@@ -1,6 +1,7 @@
 # Custom Expect Matchers
 
-Custom expect matchers that work directly with element classes (Button, Input, etc.) without needing to access `.element`.
+Custom expect matchers that work directly with element classes (Button, Input, etc.) without needing to access
+`.element`.
 
 ## Available Matchers
 
@@ -35,24 +36,25 @@ await expect(signInPage.main.txtEmail).toHaveValue('user@example.com');
 
 `toHaveAttribute(name, value)` — checks any HTML attribute. `value` can be a string (exact match) or RegExp.
 
-`toHaveValue(expected)` — reads the input's current value via `inputValue()`. Works with all input types including empty strings and `'0'`.
+`toHaveValue(expected)` — reads the input's current value via `inputValue()`. Works with all input types including empty
+strings and `'0'`.
 
 ## Full Matcher Reference
 
-| Matcher | Accepts | What it checks |
-|---------|---------|----------------|
-| `toBeVisible()` | `BaseControl` | `element.isVisible()` |
-| `toBeHidden()` | `BaseControl` | `element.isHidden()` |
-| `toBeEnabled()` | `BaseControl` | `element.isEnabled()` |
-| `toBeDisabled()` | `BaseControl` | `element.isDisabled()` |
-| `toBeChecked()` | `BaseControl` | `element.isChecked()` |
-| `toHaveText(expected)` | `BaseControl` | `element.getTextContent() === expected` |
-| `toContainText(expected)` | `BaseControl` | `element.getTextContent().includes(expected)` |
-| `toHaveAttribute(name, value)` | `BaseControl` | `element.getAttribute(name)` matches value (string or RegExp) |
-| `toHaveValue(expected)` | `BaseControl` | `element.inputValue() === expected` |
-| `toBeOneOfValues(array)` | any value | `array.includes(received)` |
-| `toBeSorted(direction)` | `string[]` | Checks ascending/descending order |
-| `toBeExistInDownloadsFolder()` | `string` (filename) | File exists in `src/downloads/` |
+| Matcher                        | Accepts             | What it checks                                                |
+| ------------------------------ | ------------------- | ------------------------------------------------------------- |
+| `toBeVisible()`                | `BaseControl`       | `element.isVisible()`                                         |
+| `toBeHidden()`                 | `BaseControl`       | `element.isHidden()`                                          |
+| `toBeEnabled()`                | `BaseControl`       | `element.isEnabled()`                                         |
+| `toBeDisabled()`               | `BaseControl`       | `element.isDisabled()`                                        |
+| `toBeChecked()`                | `BaseControl`       | `element.isChecked()`                                         |
+| `toHaveText(expected)`         | `BaseControl`       | `element.getTextContent() === expected`                       |
+| `toContainText(expected)`      | `BaseControl`       | `element.getTextContent().includes(expected)`                 |
+| `toHaveAttribute(name, value)` | `BaseControl`       | `element.getAttribute(name)` matches value (string or RegExp) |
+| `toHaveValue(expected)`        | `BaseControl`       | `element.inputValue() === expected`                           |
+| `toBeOneOfValues(array)`       | any value           | `array.includes(received)`                                    |
+| `toBeSorted(direction)`        | `string[]`          | Checks ascending/descending order                             |
+| `toBeExistInDownloadsFolder()` | `string` (filename) | File exists in `src/downloads/`                               |
 
 ## Complete Example
 
@@ -111,9 +113,10 @@ await expect('report.pdf').toBeExistInDownloadsFolder();
 
 ## Implementation
 
-Custom matchers are defined in `src/fixtures/expect-fixtures.ts` and automatically available when importing from `@fixtures/fixtures`.
+Custom matchers are defined in `src/fixtures/expect-fixtures.ts` and automatically available when importing from
+`@fixtures/fixtures`.
 
 ## Related
 
-- [notifications.md](notifications.md) — centralized notification fixture for toast/error messages
-- [messages.md](messages.md) — `NotificationMessages` constants
+-   [notifications.md](notifications.md) — centralized notification fixture for toast/error messages
+-   [messages.md](messages.md) — `NotificationMessages` constants

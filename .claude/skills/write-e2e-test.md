@@ -112,9 +112,9 @@ await element.waitFor({ state: ElementStateEnum.VISIBLE });
 
 ### Wait for a Network Response (race-free navigation / data capture)
 
-When a UI action triggers a request and the next assertion depends on the response
-(redirect target, returned id, refreshed data), gate the assertion on the network —
-not a timer. Set up the wait **before** the action using `Promise.all`:
+When a UI action triggers a request and the next assertion depends on the response (redirect target, returned id,
+refreshed data), gate the assertion on the network — not a timer. Set up the wait **before** the action using
+`Promise.all`:
 
 ```ts
 import { ResponseHelper } from '@helpers/helper-functions';
@@ -131,7 +131,8 @@ const body = await ResponseHelper.interceptedToJson<SignInResponse>(response);
 expect(body.token).toBeTruthy();
 ```
 
-See [`use-helper-functions.md`](./use-helper-functions.md#responsehelperwaitfor--synchronize-on-a-network-response) for the four patterns (gate assertion, capture data, refresh-after-action, negative path) and when **not** to use `waitFor`.
+See [`use-helper-functions.md`](./use-helper-functions.md#responsehelperwaitfor--synchronize-on-a-network-response) for
+the four patterns (gate assertion, capture data, refresh-after-action, negative path) and when **not** to use `waitFor`.
 
 ### Multiple Assertions
 
@@ -165,7 +166,7 @@ const name = DataGenerator.randomName();
 
 ## Related Documentation
 
-- `docs/guidance/expect.md` - Custom assertions for Button, Input, Label, etc.
-- `docs/guidance/messages.md` - Centralized notification and validation messages
-- `docs/guidance/notifications.md` - Shared notification fixture and component
-- `.claude/skills/create-page-object.md` - Container-based page object pattern
+-   `docs/guidance/expect.md` - Custom assertions for Button, Input, Label, etc.
+-   `docs/guidance/messages.md` - Centralized notification and validation messages
+-   `docs/guidance/notifications.md` - Shared notification fixture and component
+-   `.claude/skills/create-page-object.md` - Container-based page object pattern

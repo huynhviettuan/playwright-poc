@@ -4,123 +4,123 @@
 name: Playwright Tests
 
 on:
-  push:
-    branches:
-      - main
-      - master
-      - develop
-  pull_request:
-    branches:
-      - main
-      - master
-      - develop
-  workflow_dispatch:
+    push:
+        branches:
+            - main
+            - master
+            - develop
+    pull_request:
+        branches:
+            - main
+            - master
+            - develop
+    workflow_dispatch:
 
 jobs:
-  quality:
-    name: Lint and Format Check
-    runs-on: ubuntu-latest
+    quality:
+        name: Lint and Format Check
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Check formatting
-        run: npm run check
+            - name: Check formatting
+              run: npm run check
 
-      - name: Run lint
-        run: npm run lint
+            - name: Run lint
+              run: npm run lint
 
-  api-tests:
-    name: API Tests
-    runs-on: ubuntu-latest
-    needs: quality
+    api-tests:
+        name: API Tests
+        runs-on: ubuntu-latest
+        needs: quality
 
-    env:
-      REPORT_API_KEY: ${{ secrets.REPORT_API_KEY }}
-      REPORT_ENDPOINT: ${{ secrets.REPORT_ENDPOINT }}
-      REPORT_LAUNCH: ${{ github.run_id }}-api
-      API_DOMAIN: ${{ secrets.API_DOMAIN }}
-      PASSWORD: ${{ secrets.PASSWORD }}
-      SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
-      MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
-      BASE_URL: ${{ secrets.BASE_URL }}
+        env:
+            REPORT_API_KEY: ${{ secrets.REPORT_API_KEY }}
+            REPORT_ENDPOINT: ${{ secrets.REPORT_ENDPOINT }}
+            REPORT_LAUNCH: ${{ github.run_id }}-api
+            API_DOMAIN: ${{ secrets.API_DOMAIN }}
+            PASSWORD: ${{ secrets.PASSWORD }}
+            SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
+            MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
+            BASE_URL: ${{ secrets.BASE_URL }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Run API tests
-        run: npm run test:api
+            - name: Run API tests
+              run: npm run test:api
 
-      - name: Upload API report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
+            - name: Upload API report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: api-playwright-report
+                  path: |
+                      playwright-report/
+                      test-results/
+                  retention-days: 7
 
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: quality
+    e2e-tests:
+        name: E2E Tests
+        runs-on: ubuntu-latest
+        needs: quality
 
-    env:
-      REPORT_API_KEY: ${{ secrets.REPORT_API_KEY }}
-      REPORT_ENDPOINT: ${{ secrets.REPORT_ENDPOINT }}
-      REPORT_LAUNCH: ${{ github.run_id }}-e2e
-      API_DOMAIN: ${{ secrets.API_DOMAIN }}
-      PASSWORD: ${{ secrets.PASSWORD }}
-      SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
-      MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
-      BASE_URL: ${{ secrets.BASE_URL }}
+        env:
+            REPORT_API_KEY: ${{ secrets.REPORT_API_KEY }}
+            REPORT_ENDPOINT: ${{ secrets.REPORT_ENDPOINT }}
+            REPORT_LAUNCH: ${{ github.run_id }}-e2e
+            API_DOMAIN: ${{ secrets.API_DOMAIN }}
+            PASSWORD: ${{ secrets.PASSWORD }}
+            SUPER_ADMIN_EMAIL: ${{ secrets.SUPER_ADMIN_EMAIL }}
+            MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
+            BASE_URL: ${{ secrets.BASE_URL }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps
 
-      - name: Run E2E tests
-        run: npm run test:e2e
+            - name: Run E2E tests
+              run: npm run test:e2e
 
-      - name: Upload E2E report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
+            - name: Upload E2E report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: e2e-playwright-report
+                  path: |
+                      playwright-report/
+                      test-results/
+                  retention-days: 7

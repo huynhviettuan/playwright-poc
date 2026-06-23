@@ -5,51 +5,49 @@
 Playwright-based test automation framework using TypeScript with Page Object Model architecture. Includes E2E and API
 testing with custom fixtures, reusable elements, and service layers.
 
-**Tech Stack:** Playwright 1.61.0, TypeScript 5.8.2, date-fns, Report Portal, ESLint (typescript-eslint + playwright plugin), Prettier
+**Tech Stack:** Playwright 1.61.0, TypeScript 5.8.2, date-fns, Report Portal, ESLint (typescript-eslint + playwright
+plugin), Prettier
 
 ## Critical Rules
 
 ### ✅ ALWAYS Read Skills Before Writing Code
 
 Before writing or modifying ANY code in this repo, read the relevant skill(s) under
-[`.claude/skills/`](.claude/skills/README.md) and follow the patterns they document.
-The skills are the source of truth for how this framework is built — they capture
-conventions that don't always show in the existing code (e.g. parent-scoping rules,
-toast vs inline error, Form component usage).
+[`.claude/skills/`](.claude/skills/README.md) and follow the patterns they document. The skills are the source of truth
+for how this framework is built — they capture conventions that don't always show in the existing code (e.g.
+parent-scoping rules, toast vs inline error, Form component usage).
 
 **Quick lookup by task:**
 
-| Task                              | Skill to read first                                                   |
-| --------------------------------- | --------------------------------------------------------------------- |
-| Build / update a page object      | [create-page-object.md](.claude/skills/create-page-object.md)         |
-| Add a new UI element class        | [create-custom-element.md](.claude/skills/create-custom-element.md)   |
-| Add an API service                | [create-api-service.md](.claude/skills/create-api-service.md)         |
+| Task                              | Skill to read first                                                             |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| Build / update a page object      | [create-page-object.md](.claude/skills/create-page-object.md)                   |
+| Add a new UI element class        | [create-custom-element.md](.claude/skills/create-custom-element.md)             |
+| Add an API service                | [create-api-service.md](.claude/skills/create-api-service.md)                   |
 | Generate service from Swagger     | [create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) |
-| Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                 |
-| Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                 |
-| Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)               |
-| Turn a user story into test cases | [generate-test-cases.md](.claude/skills/generate-test-cases.md)       |
-| Refactor existing code            | [refactor-code.md](.claude/skills/refactor-code.md)                   |
+| Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                           |
+| Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                           |
+| Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)                         |
+| Turn a user story into test cases | [generate-test-cases.md](.claude/skills/generate-test-cases.md)                 |
+| Refactor existing code            | [refactor-code.md](.claude/skills/refactor-code.md)                             |
 | Migrate legacy code to skills     | [refactor-code-follow-skills.md](.claude/skills/refactor-code-follow-skills.md) |
-| Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)               |
-| Authentication / session reuse    | [use-auth-state.md](.claude/skills/use-auth-state.md)                 |
-| Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                     |
-| Test data setup / cleanup         | [manage-test-data.md](.claude/skills/manage-test-data.md)             |
+| Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)                         |
+| Authentication / session reuse    | [use-auth-state.md](.claude/skills/use-auth-state.md)                           |
+| Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                               |
+| Test data setup / cleanup         | [manage-test-data.md](.claude/skills/manage-test-data.md)                       |
+| CI notification channels          | [configure-notifications.md](.claude/skills/configure-notifications.md)         |
 
 **Non-negotiable patterns from skills (highest-impact):**
 
--   **Parent scoping** — every element must resolve through a parent `Locator`, even
-    when it has a `data-testid`. Same testid can appear elsewhere on the page
-    (modals, hidden tabs, prerendered routes). Page-global `$getByTestId(...)` is a
-    flakiness source.
--   **`Form` component** — when a container has form elements, use
-    `new Form(this.container)` + `form.getInput()` / `form.getButton()`. Never wire
-    inputs page-globally.
--   **Centralized `notification` fixture** — error and success messages are read from
-    the `notification` fixture (see [docs/guidance/notifications.md](docs/guidance/notifications.md)).
-    Do **not** add per-page `toast` properties or `lblError` elements that duplicate this.
--   **Custom fixtures** — import `test`/`expect` from `@fixtures/fixtures`, never from
-    `@playwright/test`.
+-   **Parent scoping** — every element must resolve through a parent `Locator`, even when it has a `data-testid`. Same
+    testid can appear elsewhere on the page (modals, hidden tabs, prerendered routes). Page-global `$getByTestId(...)`
+    is a flakiness source.
+-   **`Form` component** — when a container has form elements, use `new Form(this.container)` + `form.getInput()` /
+    `form.getButton()`. Never wire inputs page-globally.
+-   **Centralized `notification` fixture** — error and success messages are read from the `notification` fixture (see
+    [docs/guidance/notifications.md](docs/guidance/notifications.md)). Do **not** add per-page `toast` properties or
+    `lblError` elements that duplicate this.
+-   **Custom fixtures** — import `test`/`expect` from `@fixtures/fixtures`, never from `@playwright/test`.
 
 If a skill is silent on what you need, do not invent a pattern — flag it and ask.
 
@@ -62,14 +60,14 @@ import { expect, test } from '@fixtures/fixtures';
 
 ### ✅ Follow SOLID & Clean Code
 
-- **SOLID:** Single responsibility, Open/Closed, Liskov substitution, Interface segregation, Dependency inversion
-- **YAGNI:** You Aren't Gonna Need It - write only code needed for current requirements
-- **KISS:** Keep It Simple, Stupid - prefer simple solutions over complex ones
-- **DRY:** Don't Repeat Yourself - extract repeated logic into reusable functions
-- Descriptive names, no magic numbers
-- Keep functions small, avoid deep nesting
-- Use static methods for utilities
-- Prefer composition over inheritance
+-   **SOLID:** Single responsibility, Open/Closed, Liskov substitution, Interface segregation, Dependency inversion
+-   **YAGNI:** You Aren't Gonna Need It - write only code needed for current requirements
+-   **KISS:** Keep It Simple, Stupid - prefer simple solutions over complex ones
+-   **DRY:** Don't Repeat Yourself - extract repeated logic into reusable functions
+-   Descriptive names, no magic numbers
+-   Keep functions small, avoid deep nesting
+-   Use static methods for utilities
+-   Prefer composition over inheritance
 
 ## Project Structure
 
@@ -85,6 +83,7 @@ src/
 ├── constants/       # Config and constants
 ├── enums/           # Enumerations
 ├── mail/            # Email utilities
+├── notifications/   # CI result notifications (Observer pattern)
 └── common/          # Shared utilities
 
 tests/
@@ -94,18 +93,19 @@ tests/
 
 ## Path Aliases
 
-| Alias           | Maps To            | Usage            |
-| --------------- | ------------------ | ---------------- |
-| `@pages/*`      | `src/pages/*`      | Page objects     |
-| `@elements/*`   | `src/elements/*`   | UI elements      |
-| `@components/*` | `src/components/*` | Components       |
-| `@models/*`     | `src/models/*`     | Types/interfaces |
-| `@services/*`   | `src/services/*`   | API services     |
-| `@fixtures/*`   | `src/fixtures/*`   | Test fixtures    |
-| `@helpers/*`    | `src/helpers/*`    | Utilities        |
-| `@constants/*`  | `src/constants/*`  | Config/constants |
-| `@enums/*`      | `src/enums/*`      | Enums            |
-| `@common/*`     | `src/common/*`     | Shared utilities |
+| Alias              | Maps To               | Usage            |
+| ------------------ | --------------------- | ---------------- |
+| `@pages/*`         | `src/pages/*`         | Page objects     |
+| `@elements/*`      | `src/elements/*`      | UI elements      |
+| `@components/*`    | `src/components/*`    | Components       |
+| `@models/*`        | `src/models/*`        | Types/interfaces |
+| `@services/*`      | `src/services/*`      | API services     |
+| `@fixtures/*`      | `src/fixtures/*`      | Test fixtures    |
+| `@helpers/*`       | `src/helpers/*`       | Utilities        |
+| `@constants/*`     | `src/constants/*`     | Config/constants |
+| `@enums/*`         | `src/enums/*`         | Enums            |
+| `@common/*`        | `src/common/*`        | Shared utilities |
+| `@notifications/*` | `src/notifications/*` | CI notifications |
 
 ## Architecture
 
@@ -198,9 +198,9 @@ await BrowserInstance.switchToTabByIndex(0); // Switch by index
 ## When Working on This Project
 
 1. **Read docs first** - Check `docs/` before making changes:
-   - `docs/test-cases/` - Manual test cases per feature (read before writing specs)
-   - `docs/decisions/` - ADRs (read before changing patterns)
-   - `docs/guidance/` - Pattern guidance (read before applying a pattern)
+    - `docs/test-cases/` - Manual test cases per feature (read before writing specs)
+    - `docs/decisions/` - ADRs (read before changing patterns)
+    - `docs/guidance/` - Pattern guidance (read before applying a pattern)
 2. **Use skills files** - Reference `.claude/skills/*.md` for detailed guidance
 3. **Match existing patterns** - Follow established conventions
 4. **Use path aliases** - Never use relative imports
@@ -237,45 +237,56 @@ docs/
 ```
 
 ### When to read what
-- **Before changing architecture** → `decisions/` (ADRs document the why behind patterns)
-- **Before using a pattern** → `guidance/<topic>.md` (what the pattern is and when to apply it)
-- **Before creating a page or service** → `registry/` (check if it already exists)
-- **Need a starting snippet** → `examples.md`
-- **Need a step-by-step recipe** → [`.claude/skills/`](.claude/skills/README.md) (skills are how-to, guidance is what/why)
-- **Test is failing or behaving oddly** → `troubleshooting/`
+
+-   **Before changing architecture** → `decisions/` (ADRs document the why behind patterns)
+-   **Before using a pattern** → `guidance/<topic>.md` (what the pattern is and when to apply it)
+-   **Before creating a page or service** → `registry/` (check if it already exists)
+-   **Need a starting snippet** → `examples.md`
+-   **Need a step-by-step recipe** → [`.claude/skills/`](.claude/skills/README.md) (skills are how-to, guidance is
+    what/why)
+-   **Test is failing or behaving oddly** → `troubleshooting/`
 
 ### Rules
-- ADRs are append-only. Supersede with a new ADR; never edit an accepted one.
-- Guidance files are one-pattern-per-file. Link siblings in `## Related`; don't duplicate content.
-- Skills vs guidance: skills tell you _how_ to build something, guidance explains _what_ a pattern is and _when_ to use it.
+
+-   ADRs are append-only. Supersede with a new ADR; never edit an accepted one.
+-   Guidance files are one-pattern-per-file. Link siblings in `## Related`; don't duplicate content.
+-   Skills vs guidance: skills tell you _how_ to build something, guidance explains _what_ a pattern is and _when_ to
+    use it.
 
 ## Available Skills
 
 Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills index grouped by purpose.
 
 **Discovery**
+
 -   `explore-screens.md` - Inspect a live screen, capture UI locators + API endpoints in one pass
 -   `generate-test-cases.md` - User story → exploration → `docs/test-cases/<feature>.md`
 
 **Creation**
+
 -   `create-page-object.md` - Container-based page object (Header/Main/Footer)
 -   `create-custom-element.md` - Extend BaseControl / Clickable / Editable
 -   `create-api-service.md` - Service class extending BaseService (controller pattern)
 -   `create-service-from-swagger.md` - Generate service + types + fixtures from Swagger/OpenAPI spec
 
 **Writing tests**
+
 -   `write-e2e-test.md` - E2E test with custom fixtures
 -   `write-api-test.md` - API test with custom fixtures
 
 **Test infrastructure**
+
 -   `use-auth-state.md` - Log in once, reuse session via Playwright `storageState`
 -   `mock-network.md` - Intercept HTTP with `page.route()` for edge-case coverage
 -   `manage-test-data.md` - Factories + auto-cleanup fixture for isolated state
+-   `configure-notifications.md` - CI test result notifications via Observer pattern (Slack, Teams, email, webhook)
 
 **Cross-cutting workflows**
+
 -   `use-helper-functions.md` - DateTimeHelper, DataGenerator, ExcelHelper, etc.
 -   `work-with-email.md` - Email verification via `Mail` and `MailSubjects`
 
 **Maintenance**
+
 -   `refactor-code.md` - Repo-agnostic refactoring methodology + playwright-poc-specific recipes
 -   `refactor-code-follow-skills.md` - Systematic checklist to migrate legacy code to follow all skills

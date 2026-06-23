@@ -93,7 +93,8 @@ export const expect = baseExpect.extend({
             };
         }
         return {
-            message: () => `toBeOneOfValues() assertion failed.\nYou expected [${String(array)}] to include '${String(received)}'\n`,
+            message: () =>
+                `toBeOneOfValues() assertion failed.\nYou expected [${String(array)}] to include '${String(received)}'\n`,
             pass: false
         };
     },

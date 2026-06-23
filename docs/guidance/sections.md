@@ -1,12 +1,13 @@
 # Multiple Sections Container Pattern
 
-Use this pattern when a page has multiple repeated or dynamic sections, and elements like inputs depend on the selected section.
+Use this pattern when a page has multiple repeated or dynamic sections, and elements like inputs depend on the selected
+section.
 
 ## Rule
 
-- Define stable elements in the constructor.
-- Create dynamic or section-dependent elements through methods/factories.
-- Do not use singleton for section containers.
+-   Define stable elements in the constructor.
+-   Create dynamic or section-dependent elements through methods/factories.
+-   Do not use singleton for section containers.
 
 ## Structure
 
@@ -87,16 +88,16 @@ Section containers should not be singleton because each instance has a different
 
 Singleton would cause:
 
-- Wrong section being used
-- Shared state bugs
-- Flaky tests
-- Harder debugging
+-   Wrong section being used
+-   Shared state bugs
+-   Flaky tests
+-   Harder debugging
 
 Use singleton only for global UI/services, such as `BrowserInstance` or global notification.
 
 ## Benefits
 
-- YAGNI: inputs are created only when needed
-- KISS: constructors stay small
-- DRY: one reusable section container
-- SOLID: page object, main container, and section container each have one responsibility
+-   YAGNI: inputs are created only when needed
+-   KISS: constructors stay small
+-   DRY: one reusable section container
+-   SOLID: page object, main container, and section container each have one responsibility

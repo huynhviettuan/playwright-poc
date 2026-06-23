@@ -44,9 +44,8 @@ export class Dropdown implements ISelect {
 
     async getOptions(): Promise<string[]> {
         await this.cpnDropdown.click();
-        return await ArrayHelper.forEachSync(
-            await this.lblOption.element.all(),
-            async (element) => (await element.innerText()).trim()
+        return await ArrayHelper.forEachSync(await this.lblOption.element.all(), async (element) =>
+            (await element.innerText()).trim()
         );
     }
 

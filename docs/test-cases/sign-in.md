@@ -1,9 +1,7 @@
 # Sign In — Test Cases
 
-**Feature:** Authentication / Sign In
-**API Endpoint:** `POST /user-organization/auth/signin`
-**User Story:** [docs/user-stories/sign-in.md](../user-stories/sign-in.md)
-**Last updated:** 2026-06-20
+**Feature:** Authentication / Sign In **API Endpoint:** `POST /user-organization/auth/signin` **User Story:**
+[docs/user-stories/sign-in.md](../user-stories/sign-in.md) **Last updated:** 2026-06-20
 
 ## Test Data
 
@@ -291,8 +289,11 @@ This document was authored without driving the live UI (no Chrome MCP available)
 confirmed during the first execution and the spec/page-object updated accordingly:
 
 -   [ ] Exact route path (`/sign-in` vs `/login` vs `/`)
--   [ ] DOM selectors for email input, password input, log-in button (supported strategies: `id` attribute, `.input` + label match, `placeholder` — confirm which fits the real DOM)
--   [ ] Exact notification selector — `Notification` defaults to `.toast, .notification, .alert, [role="alert"], [role="status"]`; confirm one matches the live notification, otherwise pass a custom `containerSelector` to the `Notification` constructor
+-   [ ] DOM selectors for email input, password input, log-in button (supported strategies: `id` attribute, `.input` +
+        label match, `placeholder` — confirm which fits the real DOM)
+-   [ ] Exact notification selector — `Notification` defaults to
+        `.toast, .notification, .alert, [role="alert"], [role="status"]`; confirm one matches the live notification,
+        otherwise pass a custom `containerSelector` to the `Notification` constructor
 -   [ ] Exact error message text vs the placeholders in `NotificationMessages.auth.loginFailed`
 -   [ ] Whether a success toast appears, and its text
 -   [ ] Post-login redirect URL

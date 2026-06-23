@@ -2,33 +2,34 @@
 
 ## When to Use
 
-Use this skill when an E2E test needs an **already-authenticated** user. Logging in through the
-UI on every test is slow (often 3–8s per spec) and brittle. Playwright's `storageState` lets you
-log in **once**, persist cookies + `localStorage` to a file, and start every other test
-already signed in.
+Use this skill when an E2E test needs an **already-authenticated** user. Logging in through the UI on every test is slow
+(often 3–8s per spec) and brittle. Playwright's `storageState` lets you log in **once**, persist cookies +
+`localStorage` to a file, and start every other test already signed in.
 
-Use this for the **majority** of E2E tests. Do **not** use it when the test under test
-*is* the login flow itself.
+Use this for the **majority** of E2E tests. Do **not** use it when the test under test _is_ the login flow itself.
 
 ## Critical Rules
 
 ### ✅ Log in once, reuse everywhere
-- Run authentication in **global setup** (or a worker-scoped fixture) — not in `beforeEach`.
-- Save the resulting `storageState` to a file under a gitignored folder (e.g. `.auth/`).
-- Reference it in `playwright.config.ts` via `use.storageState`.
+
+-   Run authentication in **global setup** (or a worker-scoped fixture) — not in `beforeEach`.
+-   Save the resulting `storageState` to a file under a gitignored folder (e.g. `.auth/`).
+-   Reference it in `playwright.config.ts` via `use.storageState`.
 
 ### ✅ Prefer API login over UI login
-The repo already exposes API login via `ApiCommands.getAuthorizationToken()`. API login is
-~10× faster than driving the UI form and doesn't depend on selectors. Reserve UI login
-for tests that explicitly verify the sign-in flow.
+
+The repo already exposes API login via `ApiCommands.getAuthorizationToken()`. API login is ~10× faster than driving the
+UI form and doesn't depend on selectors. Reserve UI login for tests that explicitly verify the sign-in flow.
 
 ### ✅ One file per role
-If your app has roles (`superAdmin`, `user`, `viewer`), produce **one storage-state file per role**
-and select via Playwright project config — never share one file across roles.
+
+If your app has roles (`superAdmin`, `user`, `viewer`), produce **one storage-state file per role** and select via
+Playwright project config — never share one file across roles.
 
 ### ✅ Refresh policy
-Storage state goes stale (tokens expire, password rotates). Regenerate on every CI run via
-global setup, and `.gitignore` the `.auth/` folder.
+
+Storage state goes stale (tokens expire, password rotates). Regenerate on every CI run via global setup, and
+`.gitignore` the `.auth/` folder.
 
 ## Step 1: Add a Global Setup
 
@@ -71,10 +72,10 @@ async function globalSetup(): Promise<void> {
 export default globalSetup;
 ```
 
-> ⚠️ The `addCookies` / `localStorage` injection above is illustrative. Confirm how your app
-> actually authenticates (HttpOnly cookie set by the server? Bearer token in `localStorage`?)
-> before wiring this up. If the only safe way is via the UI, use `commands.loginWithUser()`
-> and let Playwright record the resulting state via `page.context().storageState()`.
+> ⚠️ The `addCookies` / `localStorage` injection above is illustrative. Confirm how your app actually authenticates
+> (HttpOnly cookie set by the server? Bearer token in `localStorage`?) before wiring this up. If the only safe way is
+> via the UI, use `commands.loginWithUser()` and let Playwright record the resulting state via
+> `page.context().storageState()`.
 
 ## Step 2: Wire it into `playwright.config.ts`
 
@@ -97,7 +98,7 @@ export default defineConfig({
         },
         {
             name: 'e2e-unauthenticated',
-            testDir: './tests/e2e/auth',  // login tests live here
+            testDir: './tests/e2e/auth', // login tests live here
             use: { channel: 'chrome', storageState: undefined }
         }
         // ...other projects
@@ -105,8 +106,8 @@ export default defineConfig({
 });
 ```
 
-The `e2e-unauthenticated` project runs **without** storageState — point it at directories
-holding tests that need a clean browser (login, signup, forgot-password).
+The `e2e-unauthenticated` project runs **without** storageState — point it at directories holding tests that need a
+clean browser (login, signup, forgot-password).
 
 ## Step 3: Gitignore the auth dir
 
@@ -167,29 +168,27 @@ Then in `playwright.config.ts`, define one project per role, each pointing at it
 
 ## ⚠️ Important Caveat — Parallelism
 
-This skill's speed win requires **parallel test execution**. The current
-`playwright.config.ts` has:
+This skill's speed win requires **parallel test execution**. The current `playwright.config.ts` has:
 
 ```ts
 workers: 1,
 fullyParallel: false,
 ```
 
-With one worker, you'll still save the per-test UI-login time, but you won't get the
-suite-level parallelism multiplier. Consider raising `workers` (e.g. `process.env.CI ? 4 : 2`)
-and setting `fullyParallel: true` **once tests are confirmed independent** — auth state
-makes that independence easier to achieve, but doesn't guarantee it.
+With one worker, you'll still save the per-test UI-login time, but you won't get the suite-level parallelism multiplier.
+Consider raising `workers` (e.g. `process.env.CI ? 4 : 2`) and setting `fullyParallel: true` **once tests are confirmed
+independent** — auth state makes that independence easier to achieve, but doesn't guarantee it.
 
 ## Benefits
 
-- ✅ Removes 3–8 seconds per test (UI login overhead gone)
-- ✅ Removes the largest source of flakiness in most suites (the login form)
-- ✅ Cleaner tests — no `beforeEach` boilerplate
-- ✅ Foundation for parallelism
+-   ✅ Removes 3–8 seconds per test (UI login overhead gone)
+-   ✅ Removes the largest source of flakiness in most suites (the login form)
+-   ✅ Cleaner tests — no `beforeEach` boilerplate
+-   ✅ Foundation for parallelism
 
 ## Related
 
-- `src/commands/api-commands.ts` — programmatic login (already implemented)
-- `src/commands/commands.ts` — UI login fallback
-- [ADR-002](../../docs/decisions/ADR-002-custom-fixtures.md) — custom fixtures
-- Playwright docs: [Authentication](https://playwright.dev/docs/auth)
+-   `src/commands/api-commands.ts` — programmatic login (already implemented)
+-   `src/commands/commands.ts` — UI login fallback
+-   [ADR-002](../../docs/decisions/ADR-002-custom-fixtures.md) — custom fixtures
+-   Playwright docs: [Authentication](https://playwright.dev/docs/auth)

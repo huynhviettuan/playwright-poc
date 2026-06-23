@@ -13,7 +13,8 @@
             "@helpers/*": ["src/helpers/*"],
             "@mail/*": ["src/mail/*"],
             "@data/*": ["src/data/*"],
-            "@common/*": ["src/common/*"]
+            "@common/*": ["src/common/*"],
+            "@notifications/*": ["src/notifications/*"]
         },
         "lib": ["dom", "esnext"],
         "skipLibCheck": true,

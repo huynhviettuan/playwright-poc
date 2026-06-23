@@ -101,9 +101,7 @@ export class Table {
             if (isMatch) return row;
         }
 
-        throw new Error(
-            `No row found matching ${JSON.stringify(data)}. Table has ${rows.length} row(s).`
-        );
+        throw new Error(`No row found matching ${JSON.stringify(data)}. Table has ${rows.length} row(s).`);
     }
 
     async getLengthOfRows(): Promise<number> {

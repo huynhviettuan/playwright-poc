@@ -4,13 +4,7 @@ import { type IImage } from '@models/elements/image.interface';
 import { type Locator, type Page } from '@playwright/test';
 
 export class Image extends Clickable implements IImage {
-    constructor(option?: {
-        parentLocator?: Locator;
-        alt?: string;
-        index?: number;
-        locator?: Locator;
-        id?: string;
-    }) {
+    constructor(option?: { parentLocator?: Locator; alt?: string; index?: number; locator?: Locator; id?: string }) {
         const baseLocator: Page | Locator = option?.parentLocator || BrowserInstance.currentPage;
         const locator = option?.locator
             ? option.locator

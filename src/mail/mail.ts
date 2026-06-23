@@ -10,7 +10,7 @@ class MailApiClient {
 
     async getMails(params: { to: string; subject?: string }): Promise<MailResponse[]> {
         const response: APIResponse = await (await BrowserInstance.getRequest()).get(this.mailDomain, { params });
-        return (await response.text()) ? (await response.json()) as MailResponse[] : null;
+        return (await response.text()) ? ((await response.json()) as MailResponse[]) : null;
     }
 
     async deleteMail(id: string): Promise<void> {

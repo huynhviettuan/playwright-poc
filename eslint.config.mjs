@@ -49,16 +49,10 @@ export default tseslint.config(
             '@typescript-eslint/no-misused-promises': 'error',
 
             // ── Code quality ──
-            '@typescript-eslint/no-unused-vars': [
-                'error',
-                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-            ],
+            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-empty-object-type': 'error',
-            '@typescript-eslint/no-unused-expressions': [
-                'error',
-                { allowTernary: true, allowShortCircuit: true }
-            ],
+            '@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true, allowShortCircuit: true }],
             '@typescript-eslint/prefer-readonly': 'warn',
 
             // ── Naming conventions ──

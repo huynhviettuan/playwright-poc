@@ -5,13 +5,7 @@ import { type IClickable } from '@models/elements/clickable.interface';
 import { type Locator, type Page } from '@playwright/test';
 
 export class Button extends Clickable implements IClickable {
-    constructor(option?: {
-        parentLocator?: Locator;
-        label?: string;
-        index?: number;
-        locator?: Locator;
-        id?: string;
-    }) {
+    constructor(option?: { parentLocator?: Locator; label?: string; index?: number; locator?: Locator; id?: string }) {
         const baseLocator: Page | Locator = option.parentLocator || BrowserInstance.currentPage;
         const locator = option?.locator
             ? option.locator

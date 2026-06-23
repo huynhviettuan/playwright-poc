@@ -1,28 +1,28 @@
 {
-  "users": [
-    {
-      "id": "user-001",
-      "email": "admin@example.com",
-      "password": "Admin@123",
-      "role": "admin",
-      "name": "Admin User",
-      "status": "active"
-    },
-    {
-      "id": "user-002",
-      "email": "user@example.com",
-      "password": "User@123",
-      "role": "user",
-      "name": "Regular User",
-      "status": "active"
-    },
-    {
-      "id": "user-003",
-      "email": "inactive@example.com",
-      "password": "Test@123",
-      "role": "user",
-      "name": "Inactive User",
-      "status": "inactive"
-    }
-  ]
+    "users": [
+        {
+            "id": "user-001",
+            "email": "admin@example.com",
+            "password": "Admin@123",
+            "role": "admin",
+            "name": "Admin User",
+            "status": "active"
+        },
+        {
+            "id": "user-002",
+            "email": "user@example.com",
+            "password": "User@123",
+            "role": "user",
+            "name": "Regular User",
+            "status": "active"
+        },
+        {
+            "id": "user-003",
+            "email": "inactive@example.com",
+            "password": "Test@123",
+            "role": "user",
+            "name": "Inactive User",
+            "status": "inactive"
+        }
+    ]
 }

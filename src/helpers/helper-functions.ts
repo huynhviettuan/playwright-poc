@@ -50,13 +50,8 @@ export class ResponseHelper {
     }
 
     static async waitFor(url: string | RegExp, timeout?: number): Promise<Response> {
-        const regex = typeof url === 'string' 
-            ? new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-            : url;
-        return await BrowserInstance.currentPage.waitForResponse(
-            (response) => regex.test(response.url()), 
-            { timeout }
-        );
+        const regex = typeof url === 'string' ? new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) : url;
+        return await BrowserInstance.currentPage.waitForResponse((response) => regex.test(response.url()), { timeout });
     }
 }
 

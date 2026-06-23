@@ -59,9 +59,7 @@ export async function validateJsonSchema(
     const validRes = validate(body);
 
     if (!validRes) {
-        const errorDetails = validate.errors
-            .map((e) => `${e.instancePath || '/'} ${e.message}`)
-            .join('; ');
+        const errorDetails = validate.errors.map((e) => `${e.instancePath || '/'} ${e.message}`).join('; ');
         console.log(`SCHEMA ERRORS: ${errorDetails}\nRESPONSE BODY: ${JSON.stringify(body)}`);
     }
 

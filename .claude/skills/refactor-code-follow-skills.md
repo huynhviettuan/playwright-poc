@@ -2,27 +2,26 @@
 
 ## When to Use
 
-Use this skill when **migrating an existing automation project** (or legacy code within this repo) to
-align with the patterns documented in `.claude/skills/`. The code works but was written before the
-skills existed — it uses raw Playwright calls, flat page objects, inline locators, co-located types,
-and ad-hoc test data.
+Use this skill when **migrating an existing automation project** (or legacy code within this repo) to align with the
+patterns documented in `.claude/skills/`. The code works but was written before the skills existed — it uses raw
+Playwright calls, flat page objects, inline locators, co-located types, and ad-hoc test data.
 
-This skill is a **systematic checklist** of every convention the skills enforce, organized by
-artifact type. Work through the sections that apply; skip the rest.
+This skill is a **systematic checklist** of every convention the skills enforce, organized by artifact type. Work
+through the sections that apply; skip the rest.
 
 ## When NOT to Use
 
-| Situation | Use instead |
-| --- | --- |
-| Writing new code from scratch | Use the specific creation skill directly |
-| Changing behavior while refactoring | Feature first, refactor separately |
-| Code already follows the skills | Nothing to do |
+| Situation                           | Use instead                              |
+| ----------------------------------- | ---------------------------------------- |
+| Writing new code from scratch       | Use the specific creation skill directly |
+| Changing behavior while refactoring | Feature first, refactor separately       |
+| Code already follows the skills     | Nothing to do                            |
 
 ## Prerequisites
 
-Before starting, read [refactor-code.md](./refactor-code.md). That skill defines the **methodology**
-(goal → safety net → smallest steps → verify). This skill defines the **target state** — what
-"follows the skills" actually means, violation by violation.
+Before starting, read [refactor-code.md](./refactor-code.md). That skill defines the **methodology** (goal → safety net
+→ smallest steps → verify). This skill defines the **target state** — what "follows the skills" actually means,
+violation by violation.
 
 ## Refactoring Checklist
 
@@ -50,8 +49,8 @@ import { expect, test } from '@fixtures/fixtures';
 
 ### 2. Page Objects — Container-Based Architecture (`create-page-object`)
 
-**Violation:** Flat page object files (`sign-in.page.ts`) with all elements at class root, no
-containers, no `Form` component usage.
+**Violation:** Flat page object files (`sign-in.page.ts`) with all elements at class root, no containers, no `Form`
+component usage.
 
 **Fix per page:**
 
@@ -64,21 +63,21 @@ containers, no `Form` component usage.
 
 **Key rules to enforce:**
 
-| Rule | What to check |
-| --- | --- |
-| Parent scoping | Every element resolves through a parent `Locator`, never page-global `$getByTestId(...)` |
-| `Form` component | Containers with form elements use `new Form(this.container)` + `form.getInput()` / `form.getButton()` |
-| Folder structure | Page object is `src/pages/<name>/index.ts`, not `src/pages/<name>.page.ts` |
-| Naming | Containers: `[PageName][Section]Container`. Elements: `btn`, `txt`, `lbl`, `lnk`, `chk`, `drp`, `tbl` prefixes |
-| Section pattern | Dynamic/repeated sections use factory methods, not singletons (see `create-page-object.md` § Multiple Dynamic Sections) |
-| Skeleton | Containers with loading states expose `Skeleton` element + `waitForLoad()` |
+| Rule             | What to check                                                                                                           |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Parent scoping   | Every element resolves through a parent `Locator`, never page-global `$getByTestId(...)`                                |
+| `Form` component | Containers with form elements use `new Form(this.container)` + `form.getInput()` / `form.getButton()`                   |
+| Folder structure | Page object is `src/pages/<name>/index.ts`, not `src/pages/<name>.page.ts`                                              |
+| Naming           | Containers: `[PageName][Section]Container`. Elements: `btn`, `txt`, `lbl`, `lnk`, `chk`, `drp`, `tbl` prefixes          |
+| Section pattern  | Dynamic/repeated sections use factory methods, not singletons (see `create-page-object.md` § Multiple Dynamic Sections) |
+| Skeleton         | Containers with loading states expose `Skeleton` element + `waitForLoad()`                                              |
 
 ---
 
 ### 3. Custom Elements (`create-custom-element`)
 
-**Violation:** Raw `Locator` used directly instead of typed element classes, or complex element classes
-with mixed concerns.
+**Violation:** Raw `Locator` used directly instead of typed element classes, or complex element classes with mixed
+concerns.
 
 **Fix:**
 
@@ -92,8 +91,7 @@ with mixed concerns.
 ### 4. API Services (`create-api-service`)
 
 **Violation:** Types co-located with service classes. Services not extending `BaseService`. Raw
-`request.get()`/`request.post()` instead of inherited methods. Token passed per-method instead
-of `setToken()`.
+`request.get()`/`request.post()` instead of inherited methods. Token passed per-method instead of `setToken()`.
 
 **Fix:**
 
@@ -110,8 +108,8 @@ of `setToken()`.
 
 ### 5. Test Structure (`write-e2e-test`, `write-api-test`)
 
-**Violation:** Tests with inline selectors, no Arrange-Act-Assert, magic values, direct element
-interaction instead of page object methods.
+**Violation:** Tests with inline selectors, no Arrange-Act-Assert, magic values, direct element interaction instead of
+page object methods.
 
 **Fix for E2E tests:**
 
@@ -209,14 +207,14 @@ interaction instead of page object methods.
 
 **Fix:** Replace with existing helpers:
 
-| Inline pattern | Replace with |
-| --- | --- |
-| Manual date math | `DateTimeHelper.today()`, `DateTimeHelper.addDays(n)` |
+| Inline pattern                | Replace with                                                |
+| ----------------------------- | ----------------------------------------------------------- |
+| Manual date math              | `DateTimeHelper.today()`, `DateTimeHelper.addDays(n)`       |
 | `Math.random()` for test data | `DataGenerator.randomEmail()`, `DataGenerator.randomName()` |
-| Raw Excel parsing | `ExcelHelper.open(...).getRowAsJson(n)` |
-| Inline array operations | `ArrayHelper.*` |
-| Inline string operations | `StringHelper.*` |
-| Response JSON parsing | `ResponseHelper.toJson<T>(response)` |
+| Raw Excel parsing             | `ExcelHelper.open(...).getRowAsJson(n)`                     |
+| Inline array operations       | `ArrayHelper.*`                                             |
+| Inline string operations      | `StringHelper.*`                                            |
+| Response JSON parsing         | `ResponseHelper.toJson<T>(response)`                        |
 
 ---
 
@@ -243,26 +241,26 @@ Commit after each section. Type-check and run affected tests between sections.
 
 After completing all applicable sections:
 
-- [ ] `npx tsc --noEmit` — zero errors
-- [ ] Lint passes
-- [ ] All existing tests pass with no expectation changes
-- [ ] No `import ... from '@playwright/test'` in test files
-- [ ] No relative imports in `src/` or `tests/`
-- [ ] No page-global `$getByTestId(...)` without parent scoping
-- [ ] No types co-located with service classes
-- [ ] No hardcoded test emails or magic values
-- [ ] No UI login in non-auth test `beforeEach`
-- [ ] No cleanup in test body (must be in `afterEach` or fixture teardown)
+-   [ ] `npx tsc --noEmit` — zero errors
+-   [ ] Lint passes
+-   [ ] All existing tests pass with no expectation changes
+-   [ ] No `import ... from '@playwright/test'` in test files
+-   [ ] No relative imports in `src/` or `tests/`
+-   [ ] No page-global `$getByTestId(...)` without parent scoping
+-   [ ] No types co-located with service classes
+-   [ ] No hardcoded test emails or magic values
+-   [ ] No UI login in non-auth test `beforeEach`
+-   [ ] No cleanup in test body (must be in `afterEach` or fixture teardown)
 
 ## Related
 
-- [refactor-code.md](./refactor-code.md) — the refactoring methodology (goal → safety net → steps → verify)
-- [create-page-object.md](./create-page-object.md) — container-based page object pattern
-- [create-custom-element.md](./create-custom-element.md) — typed element classes
-- [create-api-service.md](./create-api-service.md) — service + types in `@models/`
-- [write-e2e-test.md](./write-e2e-test.md) — E2E test conventions
-- [write-api-test.md](./write-api-test.md) — API test conventions
-- [use-auth-state.md](./use-auth-state.md) — session reuse
-- [manage-test-data.md](./manage-test-data.md) — factories + cleanup
-- [mock-network.md](./mock-network.md) — typed network mocks
-- [work-with-email.md](./work-with-email.md) — email testing
+-   [refactor-code.md](./refactor-code.md) — the refactoring methodology (goal → safety net → steps → verify)
+-   [create-page-object.md](./create-page-object.md) — container-based page object pattern
+-   [create-custom-element.md](./create-custom-element.md) — typed element classes
+-   [create-api-service.md](./create-api-service.md) — service + types in `@models/`
+-   [write-e2e-test.md](./write-e2e-test.md) — E2E test conventions
+-   [write-api-test.md](./write-api-test.md) — API test conventions
+-   [use-auth-state.md](./use-auth-state.md) — session reuse
+-   [manage-test-data.md](./manage-test-data.md) — factories + cleanup
+-   [mock-network.md](./mock-network.md) — typed network mocks
+-   [work-with-email.md](./work-with-email.md) — email testing
