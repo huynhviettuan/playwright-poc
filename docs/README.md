@@ -12,6 +12,7 @@ Welcome to the Playwright POC documentation. Pick the right entry point for what
 | Copy a working snippet to start from                   | [examples.md](./examples.md)                                                          |
 | Build a new page object, service, element, or test     | [`../.claude/skills/`](../.claude/skills/README.md)                                    |
 | Run tests in CI                                        | [ci/](./ci/) — GitHub Actions and GitLab CI templates                                 |
+| See all pages and services at a glance                 | [registry/](./registry/) — living inventory of pages & services                       |
 | Debug a failing test or unclear error                  | [troubleshooting/](./troubleshooting/)                                                |
 | Document a user story                                  | [user-stories/](./user-stories/) — one file per feature                               |
 | Document a manual test case                            | [test-cases/](./test-cases/) — one file per feature, traces back to AC IDs            |
@@ -28,6 +29,9 @@ docs/
 │   ├── notifications.md   # centralized notification fixture
 │   ├── sections.md        # multi-section container pattern
 │   └── skeleton.md        # skeleton loading element
+├── registry/              # living inventory of pages & services
+│   ├── pages.md           # all page objects
+│   └── services.md        # all API services
 ├── examples.md            # quick-reference code snippets
 ├── user-stories/          # user stories (AC tables); source for generate-test-cases
 ├── test-cases/            # manual test cases (one .md per feature, traces to AC IDs)

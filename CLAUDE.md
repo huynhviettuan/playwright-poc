@@ -226,6 +226,9 @@ docs/
 │   ├── notifications.md   # Centralized notification fixture
 │   ├── sections.md        # Multi-section container pattern
 │   └── skeleton.md        # Skeleton loading element
+├── registry/              # Living inventory of pages & services
+│   ├── pages.md           # All page objects
+│   └── services.md        # All API services
 ├── examples.md            # Quick-reference code snippets
 ├── user-stories/          # User stories (one .md per feature; source for generate-test-cases)
 ├── test-cases/            # Manual test cases (traces back to AC IDs in user-stories/)
@@ -236,6 +239,7 @@ docs/
 ### When to read what
 - **Before changing architecture** → `decisions/` (ADRs document the why behind patterns)
 - **Before using a pattern** → `guidance/<topic>.md` (what the pattern is and when to apply it)
+- **Before creating a page or service** → `registry/` (check if it already exists)
 - **Need a starting snippet** → `examples.md`
 - **Need a step-by-step recipe** → [`.claude/skills/`](.claude/skills/README.md) (skills are how-to, guidance is what/why)
 - **Test is failing or behaving oddly** → `troubleshooting/`

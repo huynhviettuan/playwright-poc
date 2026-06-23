@@ -319,7 +319,11 @@ export class SignInPage {
 }
 ```
 
-### Step 4: Register in Fixtures
+### Step 4: Update Page Registry
+
+Add or update the entry in [`docs/registry/pages.md`](../../docs/registry/pages.md) with the page class, path, containers, and key actions.
+
+### Step 5: Register in Fixtures
 
 **Fixture** (`src/fixtures/page-fixtures.ts`):
 ```ts
