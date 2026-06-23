@@ -5,3 +5,5 @@ package-lock.json
 test-results/*
 .qodo
 src/downloads
+.vscode
+dos/articles

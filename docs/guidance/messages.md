@@ -20,10 +20,10 @@ test('should show login success message', async ({ signInPage, notification }) =
 
 ## Why Use Message Constants?
 
-- Single source of truth
-- Type-safe and autocomplete-friendly
-- Avoids typos and inconsistent copy
-- Product text changes are updated in one place
+-   Single source of truth
+-   Type-safe and autocomplete-friendly
+-   Avoids typos and inconsistent copy
+-   Product text changes are updated in one place
 
 ## Examples
 
@@ -37,11 +37,11 @@ expect(error).toEqual(NotificationMessages.validation.invalidEmail);
 
 ## Message Categories
 
-- `auth` - Login, logout, session, password messages
-- `user` - User create, update, delete messages
-- `payment` - Payment status messages
-- `validation` - Field validation messages
-- `general` - Generic save, network, server messages
+-   `auth` - Login, logout, session, password messages
+-   `user` - User create, update, delete messages
+-   `payment` - Payment status messages
+-   `validation` - Field validation messages
+-   `general` - Generic save, network, server messages
 
 ## Adding New Messages
 
@@ -66,13 +66,13 @@ expect(message).toContain(NotificationMessages.user.created);
 
 ## Best Practices
 
-- Always use constants, never hardcode messages in tests
-- Group messages by feature
-- Use `as const` for literal typing
-- Use descriptive names like `loginSuccess`, not `msg1`
-- Update message text in one place when product copy changes
+-   Always use constants, never hardcode messages in tests
+-   Group messages by feature
+-   Use `as const` for literal typing
+-   Use descriptive names like `loginSuccess`, not `msg1`
+-   Update message text in one place when product copy changes
 
 ## Related
 
-- [Centralized Notification](./notifications.md)
-- [Custom Expect Matchers](./expect.md)
+-   [Centralized Notification](./notifications.md)
+-   [Custom Expect Matchers](./expect.md)

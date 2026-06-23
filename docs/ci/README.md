@@ -4,8 +4,8 @@ This folder contains sample CI configurations for future use.
 
 ## Files
 
-- `github.yml` - GitHub Actions template
-- `gitlab.yml` - GitLab CI template
+-   `github.yml` - GitHub Actions template
+-   `gitlab.yml` - GitLab CI template
 
 ## GitHub Actions
 
@@ -25,13 +25,13 @@ cp docs/ci/github.yml .github/workflows/playwright.yml
 
 3. Add repository secrets:
 
-- `REPORT_API_KEY`
-- `REPORT_ENDPOINT`
-- `API_DOMAIN`
-- `PASSWORD`
-- `SUPER_ADMIN_EMAIL`
-- `MAIL_DOMAIN`
-- `BASE_URL`
+-   `REPORT_API_KEY`
+-   `REPORT_ENDPOINT`
+-   `API_DOMAIN`
+-   `PASSWORD`
+-   `SUPER_ADMIN_EMAIL`
+-   `MAIL_DOMAIN`
+-   `BASE_URL`
 
 ## GitLab CI
 
@@ -43,13 +43,13 @@ cp docs/ci/gitlab.yml .gitlab-ci.yml
 
 Then add CI/CD variables in GitLab project settings:
 
-- `REPORT_API_KEY`
-- `REPORT_ENDPOINT`
-- `API_DOMAIN`
-- `PASSWORD`
-- `SUPER_ADMIN_EMAIL`
-- `MAIL_DOMAIN`
-- `BASE_URL`
+-   `REPORT_API_KEY`
+-   `REPORT_ENDPOINT`
+-   `API_DOMAIN`
+-   `PASSWORD`
+-   `SUPER_ADMIN_EMAIL`
+-   `MAIL_DOMAIN`
+-   `BASE_URL`
 
 ## Pipeline Stages
 
@@ -82,11 +82,11 @@ npm run test:e2e
 
 Both templates upload:
 
-- `playwright-report/`
-- `test-results/`
+-   `playwright-report/`
+-   `test-results/`
 
 ## Notes
 
-- Templates are stored under `docs/ci/` so they do not automatically enable CI.
-- Copy the template to the platform-specific location only when ready.
-- Keep secrets in CI variables/secrets, never commit `.env` files.
+-   Templates are stored under `docs/ci/` so they do not automatically enable CI.
+-   Copy the template to the platform-specific location only when ready.
+-   Keep secrets in CI variables/secrets, never commit `.env` files.

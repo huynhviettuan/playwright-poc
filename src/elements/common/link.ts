@@ -4,13 +4,7 @@ import { type ILink } from '@models/elements/link.interface';
 import { type Locator, type Page } from '@playwright/test';
 
 export class Link extends Clickable implements ILink {
-    constructor(option?: {
-        parentLocator?: Locator;
-        label?: string;
-        href?: string;
-        locator?: Locator;
-        id?: string;
-    }) {
+    constructor(option?: { parentLocator?: Locator; label?: string; href?: string; locator?: Locator; id?: string }) {
         const baseLocator: Page | Locator = option?.parentLocator || BrowserInstance.currentPage;
         const locator = option?.locator
             ? option.locator

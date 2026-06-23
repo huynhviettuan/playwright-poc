@@ -28,12 +28,16 @@ test.describe('BrowserInstance — sequential per-test isolation', () => {
     test('usePage overrides currentPage for the duration of the callback', async ({ browser }) => {
         const outer = BrowserInstance.currentPage;
         await outer.goto('about:blank');
-        await outer.evaluate(() => { document.title = 'outer'; });
+        await outer.evaluate(() => {
+            document.title = 'outer';
+        });
 
         const newCtx = await browser.newContext();
         const aliasPage = await newCtx.newPage();
         await aliasPage.goto('about:blank');
-        await aliasPage.evaluate(() => { document.title = 'alias'; });
+        await aliasPage.evaluate(() => {
+            document.title = 'alias';
+        });
 
         await usePage(aliasPage, async () => {
             expect(BrowserInstance.currentPage).toBe(aliasPage);

@@ -68,7 +68,9 @@ test.describe('API - Users', () => {
 ```typescript
 // Multi-tenant service — default headers via subclass
 export class TenantUsersService extends BaseService {
-    constructor() { super('/users'); }
+    constructor() {
+        super('/users');
+    }
 
     protected getDefaultHeaders(): Record<string, string> {
         return { 'x-tenant-id': Config.tenantId };
@@ -76,9 +78,7 @@ export class TenantUsersService extends BaseService {
 }
 
 // Instance-level headers — set once, applied to all calls
-const service = new ExternalService()
-    .setToken(token)
-    .setHeaders({ 'X-API-Key': apiKey });
+const service = new ExternalService().setToken(token).setHeaders({ 'X-API-Key': apiKey });
 
 // Per-request headers — one-off override
 await service.send('get', {
@@ -172,8 +172,8 @@ await expect('report.pdf').toBeExistInDownloadsFolder();
 
 ```typescript
 const allRows = new Label({ parentLocator: table, locator: 'tr' });
-const activeRow = allRows.withText('Active');  // new Label
-const firstRow = allRows.withIndex(0);         // new Label — allRows unchanged
+const activeRow = allRows.withText('Active'); // new Label
+const firstRow = allRows.withIndex(0); // new Label — allRows unchanged
 
 await expect(activeRow).toBeVisible();
 ```

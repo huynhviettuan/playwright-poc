@@ -1,6 +1,7 @@
 # Playwright Test Automation Framework
 
-A scalable, maintainable Playwright-based test automation framework using TypeScript with SOLID principles, container-based architecture, and controller-pattern API services.
+A scalable, maintainable Playwright-based test automation framework using TypeScript with SOLID principles,
+container-based architecture, and controller-pattern API services.
 
 ## Quick Start
 
@@ -27,14 +28,14 @@ npm run format
 
 ## Tech Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Playwright | 1.61.0 | Browser automation & API testing |
-| TypeScript | 5.8.2 | Type safety |
-| date-fns | 4.x | Date/time utilities |
-| ESLint | 9.x | Linting (typescript-eslint flat config + playwright plugin) |
-| Prettier | 3.x | Code formatting |
-| Report Portal | 5.x | CI test reporting |
+| Tool          | Version | Purpose                                                     |
+| ------------- | ------- | ----------------------------------------------------------- |
+| Playwright    | 1.61.0  | Browser automation & API testing                            |
+| TypeScript    | 5.8.2   | Type safety                                                 |
+| date-fns      | 4.x     | Date/time utilities                                         |
+| ESLint        | 9.x     | Linting (typescript-eslint flat config + playwright plugin) |
+| Prettier      | 3.x     | Code formatting                                             |
+| Report Portal | 5.x     | CI test reporting                                           |
 
 ## Project Structure
 
@@ -105,7 +106,9 @@ Services map 1:1 to backend controllers. Methods return typed `ServiceResponse<T
 
 ```typescript
 export class UsersService extends BaseService {
-    constructor() { super('/users'); }
+    constructor() {
+        super('/users');
+    }
 
     async getAll(): Promise<ServiceResponse<User[]>> {
         return await this.send<User[]>('get');
@@ -171,20 +174,20 @@ await expect(signInPage.main.txtPassword).toHaveAttribute('type', 'password');
 
 ## Path Aliases
 
-| Alias | Maps To | Usage |
-|-------|---------|-------|
-| `@pages/*` | `src/pages/*` | Page objects |
-| `@elements/*` | `src/elements/*` | UI elements |
-| `@components/*` | `src/components/*` | Containers & components |
-| `@models/*` | `src/models/*` | TypeScript interfaces |
-| `@services/*` | `src/services/*` | API services |
-| `@fixtures/*` | `src/fixtures/*` | **Always import test/expect from here** |
-| `@helpers/*` | `src/helpers/*` | Utility classes |
-| `@constants/*` | `src/constants/*` | Config & constants |
-| `@enums/*` | `src/enums/*` | Enumerations |
-| `@common/*` | `src/common/*` | Shared utilities |
-| `@mail/*` | `src/mail/*` | Email utilities |
-| `@data/*` | `src/data/*` | Test data & schemas |
+| Alias           | Maps To            | Usage                                   |
+| --------------- | ------------------ | --------------------------------------- |
+| `@pages/*`      | `src/pages/*`      | Page objects                            |
+| `@elements/*`   | `src/elements/*`   | UI elements                             |
+| `@components/*` | `src/components/*` | Containers & components                 |
+| `@models/*`     | `src/models/*`     | TypeScript interfaces                   |
+| `@services/*`   | `src/services/*`   | API services                            |
+| `@fixtures/*`   | `src/fixtures/*`   | **Always import test/expect from here** |
+| `@helpers/*`    | `src/helpers/*`    | Utility classes                         |
+| `@constants/*`  | `src/constants/*`  | Config & constants                      |
+| `@enums/*`      | `src/enums/*`      | Enumerations                            |
+| `@common/*`     | `src/common/*`     | Shared utilities                        |
+| `@mail/*`       | `src/mail/*`       | Email utilities                         |
+| `@data/*`       | `src/data/*`       | Test data & schemas                     |
 
 ## Quick Examples
 
@@ -281,27 +284,28 @@ src/fixtures/service-fixtures.ts      # Register fixture
 ```
 
 See [.claude/skills/create-api-service.md](.claude/skills/create-api-service.md) or
-[.claude/skills/create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) if you have a Swagger spec.
+[.claude/skills/create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) if you have a Swagger
+spec.
 
 ## Documentation
 
-| Resource | Purpose |
-|----------|---------|
-| [CLAUDE.md](CLAUDE.md) | Project rules & AI assistant context |
-| [docs/](docs/README.md) | Documentation index |
-| [.claude/skills/](.claude/skills/README.md) | Step-by-step how-to guides |
-| [docs/decisions/](docs/decisions/) | Architecture Decision Records (ADRs) |
-| [docs/guidance/](docs/guidance/) | Pattern guidance per topic |
-| [docs/examples.md](docs/examples.md) | Quick-reference code snippets |
-| [docs/troubleshooting/](docs/troubleshooting/) | Common errors, debugging tips, FAQ |
-| [docs/ci/](docs/ci/) | GitHub Actions & GitLab CI templates |
+| Resource                                       | Purpose                              |
+| ---------------------------------------------- | ------------------------------------ |
+| [CLAUDE.md](CLAUDE.md)                         | Project rules & AI assistant context |
+| [docs/](docs/README.md)                        | Documentation index                  |
+| [.claude/skills/](.claude/skills/README.md)    | Step-by-step how-to guides           |
+| [docs/decisions/](docs/decisions/)             | Architecture Decision Records (ADRs) |
+| [docs/guidance/](docs/guidance/)               | Pattern guidance per topic           |
+| [docs/examples.md](docs/examples.md)           | Quick-reference code snippets        |
+| [docs/troubleshooting/](docs/troubleshooting/) | Common errors, debugging tips, FAQ   |
+| [docs/ci/](docs/ci/)                           | GitHub Actions & GitLab CI templates |
 
 ## Coding Standards
 
-- **SOLID** — Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- **YAGNI** — Don't build what you don't need yet
-- **KISS** — Prefer simple solutions
-- **DRY** — Extract repeated logic into reusable helpers
+-   **SOLID** — Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+-   **YAGNI** — Don't build what you don't need yet
+-   **KISS** — Prefer simple solutions
+-   **DRY** — Extract repeated logic into reusable helpers
 
 See [ADR-004](docs/decisions/ADR-004-yagni-kiss-dry-principles.md)
 

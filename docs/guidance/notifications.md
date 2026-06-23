@@ -26,11 +26,11 @@ await notification.waitForMessage(NotificationMessages.auth.loginSuccess);
 
 ## Best Practices
 
-- Use the `notification` fixture instead of creating page-specific notification instances
-- Use `NotificationMessages` constants instead of hardcoded strings
-- Keep selectors centralized in `src/components/notification.component.ts`
+-   Use the `notification` fixture instead of creating page-specific notification instances
+-   Use `NotificationMessages` constants instead of hardcoded strings
+-   Keep selectors centralized in `src/components/notification.component.ts`
 
 ## Related
 
-- [Message Constants](./messages.md)
-- [Custom Expect Matchers](./expect.md)
+-   [Message Constants](./messages.md)
+-   [Custom Expect Matchers](./expect.md)

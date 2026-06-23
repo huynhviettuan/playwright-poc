@@ -1,6 +1,7 @@
 # Skeleton Loading Element
 
-Modern frontends often show skeleton placeholders while page data loads. This framework provides a reusable `Skeleton` element to wait until skeletons are hidden before interacting with page elements.
+Modern frontends often show skeleton placeholders while page data loads. This framework provides a reusable `Skeleton`
+element to wait until skeletons are hidden before interacting with page elements.
 
 ## Location
 
@@ -60,11 +61,11 @@ this.skeleton = new Skeleton({
 
 ## Default Selectors
 
-- `.skeleton`
-- `.ant-skeleton`
-- `.MuiSkeleton-root`
-- `[data-testid*="skeleton"]`
-- `[class*="skeleton"]`
+-   `.skeleton`
+-   `.ant-skeleton`
+-   `.MuiSkeleton-root`
+-   `[data-testid*="skeleton"]`
+-   `[class*="skeleton"]`
 
 ## API
 
@@ -77,7 +78,7 @@ await skeleton.count();
 
 ## Best Practices
 
-- Add `Skeleton` to containers, not directly to tests
-- Page objects should expose `waitForPageLoad()`
-- Tests should call `waitForPageLoad()` after navigation or major data refresh
-- Use custom selectors when default skeleton selectors are too broad
+-   Add `Skeleton` to containers, not directly to tests
+-   Page objects should expose `waitForPageLoad()`
+-   Tests should call `waitForPageLoad()` after navigation or major data refresh
+-   Use custom selectors when default skeleton selectors are too broad

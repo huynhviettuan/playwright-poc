@@ -5,13 +5,7 @@ import { type IGroupRadioButton } from '@models/elements/group-radio-button.inte
 import { type Locator, type Page } from '@playwright/test';
 
 export class GroupRadioButton extends Clickable implements IGroupRadioButton {
-    constructor(option?: {
-        parentLocator?: Locator;
-        label?: string;
-        index?: number;
-        locator?: Locator;
-        id?: string;
-    }) {
+    constructor(option?: { parentLocator?: Locator; label?: string; index?: number; locator?: Locator; id?: string }) {
         const baseLocator: Page | Locator = option.parentLocator || BrowserInstance.currentPage;
         const locator = option?.locator
             ? option.locator
