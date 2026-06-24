@@ -182,16 +182,80 @@ async signIn(body: SignInRequest): Promise<ServiceResponse<SignInResponse>> {
 }
 ```
 
-### Sub-Resources
+### Sub-Resources (Inline)
 
 ```ts
-// GET /users/{id}/orders
+// GET /users/{id}/orders — use when there are only 1-2 sub-resource endpoints
 async getOrders(userId: string): Promise<ServiceResponse<Order[]>> {
     return await this.send<Order[]>('get', {
         url: this.endpoint(`/${userId}/orders`)
     });
 }
 ```
+
+### Child Route Services
+
+When a controller has many child routes (e.g. `/user-organization/auth`, `/user-organization/users`,
+`/user-organization/roles`), extract each group into a **child service** instead of cramming everything into one class.
+
+Pass the parent service to the child's constructor — `BaseService` automatically:
+- Composes the base path (`parent.basePath + childPath`)
+- Delegates `token` and `headers` to the parent (set once, shared by all children)
+
+```ts
+// Child service — not exported, only accessed via parent
+class MembersService extends BaseService {
+    constructor(parent: BaseService) {
+        super('/members', parent);
+    }
+
+    async getAll(): Promise<ServiceResponse<Member[]>> {
+        return await this.send<Member[]>('get');
+    }
+}
+
+class SettingsService extends BaseService {
+    constructor(parent: BaseService) {
+        super('/settings', parent);
+    }
+
+    async get(): Promise<ServiceResponse<Settings>> {
+        return await this.send<Settings>('get');
+    }
+}
+
+// Parent service — the only export, exposes children as properties
+export class ProjectsService extends BaseService {
+    readonly members = new MembersService(this);
+    readonly settings = new SettingsService(this);
+
+    constructor() {
+        super('/projects');
+    }
+
+    async getAll(): Promise<ServiceResponse<Project[]>> {
+        return await this.send<Project[]>('get');
+    }
+}
+```
+
+**Usage:**
+
+```ts
+// Token is set once on the parent — children inherit it
+projectsService.setToken(token);
+
+// Access child routes via properties
+const { data: members } = await projectsService.members.getAll();
+const { data: settings } = await projectsService.settings.get();
+
+// Parent methods still work directly
+const { data: projects } = await projectsService.getAll();
+```
+
+**When to use child services vs inline sub-resources:**
+- **1-2 sub-resource endpoints** → inline method with `this.endpoint()`
+- **3+ endpoints under a shared sub-path** → extract a child service class
 
 ### Multipart Upload
 

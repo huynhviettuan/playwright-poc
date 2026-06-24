@@ -13,27 +13,41 @@ export class BaseService {
     protected readonly basePath: string;
     private _token?: string;
     private _headers: Record<string, string> = {};
+    private readonly _parent?: BaseService;
 
-    constructor(basePath: string = '') {
-        this.basePath = basePath;
+    constructor(basePath: string = '', parent?: BaseService) {
+        this.basePath = parent ? `${parent.basePath}${basePath}` : basePath;
+        this._parent = parent;
     }
 
     get token(): string | undefined {
-        return this._token;
+        return this._parent ? this._parent.token : this._token;
     }
 
     setToken(token: string): this {
-        this._token = token;
+        if (this._parent) {
+            this._parent.setToken(token);
+        } else {
+            this._token = token;
+        }
         return this;
     }
 
     setHeaders(headers: Record<string, string>): this {
-        this._headers = { ...this._headers, ...headers };
+        if (this._parent) {
+            this._parent.setHeaders(headers);
+        } else {
+            this._headers = { ...this._headers, ...headers };
+        }
         return this;
     }
 
     protected getDefaultHeaders(): Record<string, string> {
         return {};
+    }
+
+    protected get headers(): Record<string, string> {
+        return this._parent ? { ...this._parent.headers, ...this._headers } : this._headers;
     }
 
     protected endpoint(subPath: string = ''): string {
@@ -46,10 +60,10 @@ export class BaseService {
     }
 
     private buildHeaders(args: RequestArgs): Record<string, string> {
-        const authToken = args.token ?? this._token;
+        const authToken = args.token ?? this.token;
         return {
             ...this.getDefaultHeaders(),
-            ...this._headers,
+            ...this.headers,
             ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             ...args.headers
         };

@@ -7,9 +7,9 @@ import {
 import { type ServiceResponse } from '@models/requests/request.type';
 import { BaseService } from '@services/base.service';
 
-export class UserOrganizationService extends BaseService {
-    constructor() {
-        super('/user-organization/auth');
+class AuthService extends BaseService {
+    constructor(parent: BaseService) {
+        super('/auth', parent);
     }
 
     async signIn(body: SignInRequest): Promise<ServiceResponse<SignInResponse>> {
@@ -37,5 +37,13 @@ export class UserOrganizationService extends BaseService {
             url: this.endpoint('/reset-password'),
             body
         });
+    }
+}
+
+export class UserOrganizationService extends BaseService {
+    readonly auth = new AuthService(this);
+
+    constructor() {
+        super('/user-organization');
     }
 }

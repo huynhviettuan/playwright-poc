@@ -275,7 +275,7 @@ import { expect, test } from '@fixtures/fixtures';
 ```typescript
 test.describe('API — POST /user-organization/auth/signin', () => {
     test('valid credentials return token', async ({ userOrganizationService }) => {
-        const { statusCode, data } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.auth.signIn({
             email: Config.auth.superAdminEmail,
             password: Config.auth.password
         });
@@ -285,7 +285,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('wrong password returns 401', async ({ userOrganizationService }) => {
-        const { statusCode, data } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.auth.signIn({
             email: Config.auth.superAdminEmail,
             password: 'WrongPassword!'
         });
@@ -295,7 +295,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('missing email returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn({
+        const { statusCode } = await userOrganizationService.auth.signIn({
             password: Config.auth.password
         } as unknown as SignInRequest);
 
@@ -404,7 +404,7 @@ const email = 'test@example.com';
 
 ```typescript
 // Testing missing required fields — intentionally invalid
-const { statusCode } = await userOrganizationService.signIn({
+const { statusCode } = await userOrganizationService.auth.signIn({
     password: Config.auth.password
 } as unknown as SignInRequest);
 

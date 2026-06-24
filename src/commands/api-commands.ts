@@ -9,7 +9,7 @@ export class ApiCommands {
     }
 
     async getAuthorizationToken(email: string, password: string = PASSWORD): Promise<string> {
-        const { data } = await this.userOrganizationService.signIn({ email, password });
+        const { data } = await this.userOrganizationService.auth.signIn({ email, password });
         return data.token;
     }
 }

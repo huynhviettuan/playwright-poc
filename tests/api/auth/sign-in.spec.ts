@@ -18,7 +18,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     const schemaFolder = 'auth';
 
     test('TC-SI-API-001 — valid credentials return token', async ({ userOrganizationService }) => {
-        const { statusCode, data } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.auth.signIn({
             email: Config.auth.superAdminEmail,
             password: Config.auth.password
         });
@@ -29,7 +29,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-002 — wrong password returns 401', async ({ userOrganizationService }) => {
-        const { statusCode, data } = await userOrganizationService.signIn({
+        const { statusCode, data } = await userOrganizationService.auth.signIn({
             email: Config.auth.superAdminEmail,
             password: 'WrongPassword!'
         });
@@ -41,7 +41,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     test('TC-SI-API-003 — non-existent email returns 401 (no user enumeration)', async ({
         userOrganizationService
     }) => {
-        const { statusCode } = await userOrganizationService.signIn({
+        const { statusCode } = await userOrganizationService.auth.signIn({
             email: DataGenerator.randomEmail('does-not-exist'),
             password: 'AnyPassword1!'
         });
@@ -50,7 +50,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-004 — missing email returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn({
+        const { statusCode } = await userOrganizationService.auth.signIn({
             password: Config.auth.password
         } as unknown as SignInRequest);
 
@@ -58,7 +58,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-005 — missing password returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn({
+        const { statusCode } = await userOrganizationService.auth.signIn({
             email: Config.auth.superAdminEmail
         } as unknown as SignInRequest);
 
@@ -66,7 +66,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-006 — malformed email returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn({
+        const { statusCode } = await userOrganizationService.auth.signIn({
             email: 'not-an-email',
             password: Config.auth.password
         });
@@ -75,7 +75,7 @@ test.describe('API — POST /user-organization/auth/signin', () => {
     });
 
     test('TC-SI-API-007 — empty body returns 400', async ({ userOrganizationService }) => {
-        const { statusCode } = await userOrganizationService.signIn({} as unknown as SignInRequest);
+        const { statusCode } = await userOrganizationService.auth.signIn({} as unknown as SignInRequest);
 
         expect(statusCode).toEqual(StatusCodes.BAD_REQUEST);
     });
