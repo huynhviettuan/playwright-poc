@@ -1,4 +1,4 @@
-# ADR-005: Observer Pattern for CI Notifications
+# ADR-006: Observer Pattern for CI Notifications
 
 ## Status
 

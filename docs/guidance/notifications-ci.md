@@ -62,4 +62,4 @@ EventBus.publish('suite:finished')   ← fires event
 ## Related
 
 -   [configure-notifications skill](../../.claude/skills/configure-notifications.md) — step-by-step setup guide
--   [ADR-005](../decisions/ADR-005-observer-pattern-notifications.md) — why Observer over alternatives
+-   [ADR-006](../decisions/ADR-006-observer-pattern-notifications.md) — why Observer over alternatives
