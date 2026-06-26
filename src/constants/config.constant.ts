@@ -1,12 +1,18 @@
 import { config } from 'dotenv';
+import path from 'path';
 
-config();
+const env = process.env.TEST_ENV ?? 'dev';
+const envFile = `.env.${env}`;
+
+config({ path: path.resolve(process.cwd(), envFile), override: true });
+config({ override: false });
 
 const getEnv = (key: string, defaultValue: string = ''): string => {
     return (process.env[key] || defaultValue).trim();
 };
 
 export const Config = {
+    env,
     report: {
         apiKey: getEnv('REPORT_API_KEY'),
         endpoint: getEnv('REPORT_ENDPOINT'),
@@ -22,6 +28,14 @@ export const Config = {
     app: {
         baseUrl: getEnv('BASE_URL'),
         mailDomain: getEnv('MAIL_DOMAIN')
+    },
+    db: {
+        host: getEnv('DB_HOST', 'localhost'),
+        port: Number(getEnv('DB_PORT', '5432')),
+        name: getEnv('DB_NAME'),
+        user: getEnv('DB_USER'),
+        password: getEnv('DB_PASSWORD'),
+        ssl: getEnv('DB_SSL', 'false') === 'true'
     }
 } as const;
 

@@ -10,6 +10,12 @@
         "test:new": "npx playwright test --project=chrome --config=playwright.config.ts --grep @new",
         "test:api": "npx playwright test --project=api --config=playwright.config.ts",
         "test:e2e": "npx playwright test --project=e2e --config=playwright.config.ts",
+        "test:e2e:dev": "cross-env TEST_ENV=dev npx playwright test --project=e2e --config=playwright.config.ts",
+        "test:e2e:staging": "cross-env TEST_ENV=staging npx playwright test --project=e2e --config=playwright.config.ts",
+        "test:e2e:production": "cross-env TEST_ENV=production npx playwright test --project=e2e --config=playwright.config.ts",
+        "test:api:dev": "cross-env TEST_ENV=dev npx playwright test --project=api --config=playwright.config.ts",
+        "test:api:staging": "cross-env TEST_ENV=staging npx playwright test --project=api --config=playwright.config.ts",
+        "test:api:production": "cross-env TEST_ENV=production npx playwright test --project=api --config=playwright.config.ts",
         "prepare": "husky install",
         "format": "prettier --write .",
         "check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
@@ -18,6 +24,8 @@
     "devDependencies": {
         "@types/mime-types": "3.0.1",
         "@types/node": "26.0.0",
+        "@types/pg": "8.20.0",
+        "cross-env": "10.1.0",
         "eslint": "9.9.0",
         "eslint-config-prettier": "9.1.0",
         "eslint-plugin-playwright": "2.0.0",
@@ -28,6 +36,7 @@
         "typescript-eslint": "8.61.1"
     },
     "dependencies": {
+        "@axe-core/playwright": "4.12.1",
         "@faker-js/faker": "8.4.1",
         "@playwright/test": "1.61.0",
         "@reportportal/agent-js-playwright": "5.4.1",
@@ -41,6 +50,7 @@
         "html-entities": "2.5.2",
         "http-status-codes": "2.1.4",
         "mime-types": "3.0.2",
+        "pg": "8.22.0",
         "typescript": "5.8.2"
     }
 }
