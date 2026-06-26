@@ -27,8 +27,12 @@ parent-scoping rules, toast vs inline error, Form component usage).
 | Generate service from Swagger     | [create-service-from-swagger.md](.claude/skills/create-service-from-swagger.md) |
 | Write an E2E test                 | [write-e2e-test.md](.claude/skills/write-e2e-test.md)                           |
 | Write an API test                 | [write-api-test.md](.claude/skills/write-api-test.md)                           |
+| Write an accessibility test       | [write-a11y-test.md](.claude/skills/write-a11y-test.md)                         |
+| Write a behavior-style test       | [write-behavior-test.md](.claude/skills/write-behavior-test.md)                 |
+| Write a BDD / Gherkin test        | [write-bdd-test.md](.claude/skills/write-bdd-test.md)                           |
 | Discover locators on a new screen | [explore-screens.md](.claude/skills/explore-screens.md)                         |
 | Turn a user story into test cases | [generate-test-cases.md](.claude/skills/generate-test-cases.md)                 |
+| Review code changes               | [code-review.md](.claude/skills/code-review.md)                                 |
 | Refactor existing code            | [refactor-code.md](.claude/skills/refactor-code.md)                             |
 | Migrate legacy code to skills     | [refactor-code-follow-skills.md](.claude/skills/refactor-code-follow-skills.md) |
 | Email verification flows          | [work-with-email.md](.claude/skills/work-with-email.md)                         |
@@ -36,6 +40,11 @@ parent-scoping rules, toast vs inline error, Form component usage).
 | Network mocking                   | [mock-network.md](.claude/skills/mock-network.md)                               |
 | Test data setup / cleanup         | [manage-test-data.md](.claude/skills/manage-test-data.md)                       |
 | CI notification channels          | [configure-notifications.md](.claude/skills/configure-notifications.md)         |
+| Multi-environment config          | [manage-environments.md](.claude/skills/manage-environments.md)                 |
+| Database setup / cleanup          | [manage-database.md](.claude/skills/manage-database.md)                         |
+| Debug failing / flaky tests       | [debug-tests.md](.claude/skills/debug-tests.md)                                 |
+| Set up CI pipeline                | [setup-ci.md](.claude/skills/setup-ci.md)                                       |
+| Locator health check (RAG)        | [health-locator.md](.claude/skills/health-locator.md)                           |
 
 **Non-negotiable patterns from skills (highest-impact):**
 
@@ -106,6 +115,11 @@ tests/
 | `@enums/*`         | `src/enums/*`         | Enums            |
 | `@common/*`        | `src/common/*`        | Shared utilities |
 | `@notifications/*` | `src/notifications/*` | CI notifications |
+| `@behavior/*`      | `src/behavior/*`      | Behavior DSL (test.step) |
+
+> ℹ️ `@behavior/*` is reserved for the behavior-style testing DSL (see
+> [behavior-testing.md](docs/guidance/behavior-testing.md)). Add it to `tsconfig.json` when `src/behavior/bdd.ts` is
+> first implemented.
 
 ## Architecture
 
@@ -273,6 +287,8 @@ Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills i
 
 -   `write-e2e-test.md` - E2E test with custom fixtures
 -   `write-api-test.md` - API test with custom fixtures
+-   `write-behavior-test.md` - behavior-style `Given/When/Then` specs via built-in `test.step()` + typed DSL (default)
+-   `write-bdd-test.md` - BDD/Gherkin `.feature` scenarios via `playwright-bdd` (conditional; stakeholders author)
 
 **Test infrastructure**
 

@@ -269,3 +269,259 @@ await validateJsonSchema('GET_users', 'users', data);
 // Create schema from response first, then validate (useful for bootstrapping)
 await validateJsonSchema('GET_users', 'users', data, true);
 ```
+
+## Database Fixtures
+
+Seed test data directly in PostgreSQL and auto-cleanup on teardown.
+
+### Seed and Auto-Cleanup
+
+```typescript
+import { expect, test } from '@fixtures/fixtures';
+import { DataGenerator } from '@helpers/generate-data-functions';
+
+test('should display seeded user in the UI', async ({ db, goto, usersPage }) => {
+    // Arrange — seed() auto-queues cleanup
+    const user = await db.seed<{ id: string; email: string }>({
+        table: 'users',
+        data: {
+            email: DataGenerator.randomEmail('test'),
+            name: 'Seeded User',
+            role: 'member',
+            created_at: new Date().toISOString()
+        }
+    });
+
+    // Act
+    await goto('/users');
+
+    // Assert
+    await expect(usersPage.main.table).toContainText(user!.email);
+    // cleanup happens automatically when test ends
+});
+```
+
+### Verify UI Action Persisted to Database
+
+```typescript
+test('should save form data to database', async ({ db, settingsPage }) => {
+    await settingsPage.updateCompanyName('New Corp');
+
+    const company = await db.findOne<{ name: string }>('companies', { id: companyId });
+    expect(company?.name).toBe('New Corp');
+});
+```
+
+### Query Helpers
+
+```typescript
+// Find one
+const user = await db.findOne<User>('users', { email: 'admin@test.com' });
+
+// Find many
+const admins = await db.findMany<User>('users', { role: 'admin' });
+
+// Check existence
+const exists = await db.exists('users', { email: 'test@test.com' });
+
+// Count
+const total = await db.count('users', { role: 'admin' });
+
+// Update
+await db.update('users', { id: userId }, { name: 'Updated Name' });
+
+// Raw SQL with parameterized queries
+const result = await db.query<{ count: string }>(
+    `SELECT COUNT(*) as count FROM users u
+     JOIN organizations o ON u.org_id = o.id
+     WHERE o.name = $1 AND u.role = $2`,
+    ['Acme Corp', 'admin']
+);
+```
+
+### Skip Test Based on DB State
+
+```typescript
+test('admin-only feature', async ({ db }) => {
+    const admin = await db.findOne('users', { role: 'superadmin' });
+    test.skip(!admin, 'No superadmin in database');
+
+    // ... test proceeds only if superadmin exists
+});
+```
+
+## Accessibility Testing
+
+Scan pages for WCAG violations using `@axe-core/playwright`.
+
+### Full Page Audit
+
+```typescript
+import { expect, test } from '@fixtures/fixtures';
+import { AccessibilityHelper } from '@helpers/accessibility.helper';
+
+test('page should have no critical a11y violations', async ({ a11y }) => {
+    const results = await a11y.scan();
+    const critical = AccessibilityHelper.filterByImpact(results, 'serious');
+    expect(critical).toHaveLength(0);
+});
+```
+
+### WCAG 2.1 AA Compliance
+
+```typescript
+test('should meet WCAG 2.1 AA', async ({ a11y }) => {
+    const results = await a11y.scan({ includeTags: ['wcag21aa', 'wcag2aa'] });
+    expect(results.violations).toHaveLength(0);
+});
+```
+
+### Scoped Scan
+
+```typescript
+// Only check the form
+test('form should be accessible', async ({ a11y }) => {
+    const results = await a11y.scan({ include: ['[data-testid="login-form"]'] });
+    expect(results.violations).toHaveLength(0);
+});
+
+// Exclude third-party widgets
+test('page minus ads should be accessible', async ({ a11y }) => {
+    const results = await a11y.scan({ exclude: ['.ad-banner', 'iframe'] });
+    expect(results.violations).toHaveLength(0);
+});
+```
+
+### After User Interaction
+
+```typescript
+test('error state should remain accessible', async ({ signInPage, a11y }) => {
+    await signInPage.main.btnLogin.click();
+    await BrowserInstance.currentPage.waitForLoadState('domcontentloaded');
+
+    const results = await a11y.scan();
+    const critical = AccessibilityHelper.filterByImpact(results, 'serious');
+    expect(critical).toHaveLength(0);
+});
+```
+
+### Debug Failures
+
+```typescript
+const results = await a11y.scan();
+if (results.violations.length > 0) {
+    console.log(AccessibilityHelper.buildReport(results));
+    // Output:
+    // 2 violation(s) found:
+    // [SERIOUS] color-contrast: Elements must have sufficient color contrast (3 instances)
+    // [MODERATE] label: Form elements must have labels (1 instance)
+}
+expect(results.violations).toHaveLength(0);
+```
+
+### Override Options Per File
+
+```typescript
+test.use({
+    a11yOptions: {
+        includeTags: ['wcag21aa'],
+        exclude: ['.cookie-banner']
+    }
+});
+
+test.describe('Dashboard — WCAG 2.1 AA', () => {
+    test('should pass', async ({ a11y }) => {
+        const results = await a11y.scan();
+        expect(results.violations).toHaveLength(0);
+    });
+});
+```
+
+## Multi-Environment Testing
+
+Run tests against different environments using `TEST_ENV`.
+
+### Environment-Aware Tests
+
+```typescript
+import { Config } from '@constants/config.constant';
+import { expect, test } from '@fixtures/fixtures';
+
+// Skip destructive tests in production
+test.describe('User Management', () => {
+    test.skip(() => Config.env === 'production', 'Skip destructive tests in production');
+
+    test('should delete test user', async ({ usersPage }) => {
+        // only runs in dev and staging
+    });
+});
+
+// Run only in production
+test.describe('Production Smoke', () => {
+    test.skip(() => Config.env !== 'production', 'Only runs in production');
+
+    test('should not expose debug info', async () => {
+        const content = await BrowserInstance.currentPage.content();
+        expect(content).not.toContain('stack trace');
+    });
+});
+```
+
+### Environment-Specific Test Data
+
+```typescript
+const testEmail = Config.env === 'production' ? 'readonly-user@example.com' : DataGenerator.randomEmail('test');
+```
+
+### Running Tests
+
+```bash
+# npm scripts
+npm run test:e2e:dev
+npm run test:e2e:staging
+npm run test:e2e:production
+
+# Direct
+npx cross-env TEST_ENV=staging npx playwright test --project=e2e
+```
+
+### Intercept and Verify API Domain
+
+```typescript
+test('should call correct API for environment', async ({ signInPage }) => {
+    const apiRequests: string[] = [];
+
+    await BrowserInstance.currentPage.route('**/auth/**', (route) => {
+        apiRequests.push(route.request().url());
+        return route.continue();
+    });
+
+    await signInPage.signIn(Config.auth.superAdminEmail);
+
+    const authRequest = apiRequests.find((url) => url.includes('auth'));
+    expect(authRequest).toContain(Config.api.domain);
+});
+```
+
+## Code Review
+
+Use the `code-review` skill checklist for consistent reviews. Key checks:
+
+```
+🔴 Block — must fix before merge
+  - Import from @playwright/test instead of @fixtures/fixtures
+  - Page-global locator without parent scoping
+  - Missing await on async operations
+  - Hardcoded waitForTimeout
+  - Inputs wired without Form component
+
+🟡 Warn — should fix
+  - Duplicated logic across files
+  - Missing constant for hardcoded string/number
+  - Vague test name
+
+🟢 Nit — suggestion
+  - Comment explaining "what" instead of "why"
+```
+
+See `.claude/skills/code-review.md` for the full checklist and output format.

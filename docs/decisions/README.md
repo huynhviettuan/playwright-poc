@@ -86,6 +86,7 @@ manages its own section.
 -   ADR-003: SOLID Principles for Complex Elements
 -   ADR-004: YAGNI, KISS, DRY Coding Principles
 -   ADR-005: BrowserInstance Static Singleton
+-   ADR-006: Observer Pattern for CI Notifications
 
 ## Guidelines
 
