@@ -6,12 +6,12 @@ Use this skill when a test is failing, flaky, or behaving unexpectedly — wheth
 
 ## When NOT to Use
 
-| Situation                            | Use instead                          |
-| ------------------------------------ | ------------------------------------ |
-| Writing a new test from scratch      | `write-e2e-test.md` / `write-api-test.md` |
-| Refactoring working code             | `refactor-code.md`                   |
-| Reviewing code for quality           | `code-review.md`                     |
-| Setting up CI pipeline               | `setup-ci.md`                        |
+| Situation                       | Use instead                               |
+| ------------------------------- | ----------------------------------------- |
+| Writing a new test from scratch | `write-e2e-test.md` / `write-api-test.md` |
+| Refactoring working code        | `refactor-code.md`                        |
+| Reviewing code for quality      | `code-review.md`                          |
+| Setting up CI pipeline          | `setup-ci.md`                             |
 
 ## Workflow
 
@@ -68,6 +68,7 @@ Timeout 30000ms exceeded waiting for selector
 **Likely cause:** Element not rendered yet, or locator doesn't match.
 
 **Debug steps:**
+
 1. Run with `--debug` and check if element exists in DOM
 2. Check parent scoping — is the locator resolving to the right container?
 3. Check if a skeleton/loader is covering the element
@@ -85,6 +86,7 @@ strict mode violation: locator(...) resolved to N elements
 **Likely cause:** Locator matches multiple elements (duplicate testid, modal + page, hidden tab).
 
 **Debug steps:**
+
 1. Open browser DevTools and count matches for the selector
 2. Check if a modal or hidden section has the same testid
 
@@ -111,13 +113,14 @@ click intercepted by another element
 **Likely cause:** Skeleton loader, overlay, animation, or scroll position.
 
 **Debug steps:**
+
 1. Take a screenshot right before the click: `await page.screenshot({ path: 'before-click.png' })`
 2. Check if a skeleton is visible: `await skeleton.isVisible()`
 
 **Fix:** Wait for skeleton to hide, or scroll into view.
 
 ```ts
-await page.waitForPageLoad();  // waits for skeletons to hide
+await page.waitForPageLoad(); // waits for skeletons to hide
 await element.scrollIntoView();
 await element.click();
 ```
@@ -134,6 +137,7 @@ Target page, context or browser has been closed
 **Likely cause:** DOM re-rendered between locating and acting.
 
 **Debug steps:**
+
 1. Check if a navigation or AJAX update happened between the locate and the action
 2. Check if a modal was closing while you interacted with the underlying page
 
@@ -151,6 +155,7 @@ Received: ""
 **Likely cause:** Assertion fired before the UI updated (notification dismissed, response not arrived).
 
 **Debug steps:**
+
 1. Add a `console.log` before the assertion to see timing
 2. Check if the notification auto-dismissed before reading
 
@@ -169,12 +174,14 @@ await notification.waitForMessage(NotificationMessages.auth.loginSuccess);
 ### Error: Passes locally, fails in CI
 
 **Likely causes (most common first):**
+
 1. **Headless rendering** — viewport/fonts differ. Match CI viewport locally.
 2. **Slower workers** — timeouts pass locally, fail in CI. Gate on events, not timers.
 3. **Shared test data** — parallel workers collide. Use unique data per test.
 4. **No cached auth** — CI starts cold. Use `storageState` pattern.
 
 **Debug steps:**
+
 1. Download CI trace artifact: `npx playwright show-trace test-results/<path>/trace.zip`
 2. Run locally with CI settings: `npx playwright test --project=e2e --workers=4`
 3. Check if the test depends on execution order
@@ -191,6 +198,7 @@ Received: 401
 **Likely cause:** Token expired or not set.
 
 **Debug steps:**
+
 1. Enable API debug logging: `DEBUG_API=true npx playwright test`
 2. Check token: `console.log(service.token)`
 
@@ -209,9 +217,9 @@ usersService.setToken(token);
 npx playwright test tests/e2e/auth/sign-in.spec.ts --debug
 ```
 
-- Step through each action
-- Inspect element selectors live
-- View locator highlights on the page
+-   Step through each action
+-   Inspect element selectors live
+-   View locator highlights on the page
 
 ### Trace Viewer (post-mortem)
 
@@ -257,7 +265,7 @@ console.log('URL:', BrowserInstance.currentPage.url());
 // playwright.config.ts — temporarily
 use: {
     launchOptions: {
-        slowMo: 500  // 500ms delay between actions
+        slowMo: 500; // 500ms delay between actions
     }
 }
 ```
@@ -287,20 +295,21 @@ BrowserInstance.currentPage.on('pageerror', (error) => {
 
 After identifying the root cause, apply the **targeted** fix:
 
-| Root cause                | Fix                                                   | Skill reference           |
-| ------------------------- | ----------------------------------------------------- | ------------------------- |
-| Missing wait              | `waitForPageLoad()` or `waitForMessage()`              | `docs/guidance/skeleton.md` |
-| Locator too broad         | Scope through parent container                         | `create-page-object.md`   |
-| Data collision            | Use `DataGenerator.randomEmail()` + cleanup fixture    | `manage-test-data.md`     |
-| Network race              | `ResponseHelper.waitFor()` before assertion            | `use-helper-functions.md` |
-| Mock not applied          | Register `page.route()` before `page.goto()`           | `mock-network.md`         |
-| Auth state missing        | Use `storageState` pattern                             | `use-auth-state.md`       |
-| CI-specific               | Match viewport, use events not timers                  | `docs/troubleshooting/`   |
+| Root cause         | Fix                                                 | Skill reference             |
+| ------------------ | --------------------------------------------------- | --------------------------- |
+| Missing wait       | `waitForPageLoad()` or `waitForMessage()`           | `docs/guidance/skeleton.md` |
+| Locator too broad  | Scope through parent container                      | `create-page-object.md`     |
+| Data collision     | Use `DataGenerator.randomEmail()` + cleanup fixture | `manage-test-data.md`       |
+| Network race       | `ResponseHelper.waitFor()` before assertion         | `use-helper-functions.md`   |
+| Mock not applied   | Register `page.route()` before `page.goto()`        | `mock-network.md`           |
+| Auth state missing | Use `storageState` pattern                          | `use-auth-state.md`         |
+| CI-specific        | Match viewport, use events not timers               | `docs/troubleshooting/`     |
 
 **Rules:**
-- Never fix flakiness with `page.waitForTimeout()` — find the synchronization point
-- Never fix strict-mode violations with `.first()` — scope the locator properly
-- Never increase global timeout to hide a timing issue — gate on the specific event
+
+-   Never fix flakiness with `page.waitForTimeout()` — find the synchronization point
+-   Never fix strict-mode violations with `.first()` — scope the locator properly
+-   Never increase global timeout to hide a timing issue — gate on the specific event
 
 ## Step 5: Verify
 
@@ -320,14 +329,14 @@ npm run lint
 
 ## Quick Reference: Error → Action
 
-| Error message contains        | First action                              |
-| ----------------------------- | ----------------------------------------- |
-| `Timeout.*waiting for`        | Check parent scoping, add `waitForPageLoad` |
-| `strict mode violation`       | Scope locator through parent container    |
-| `not attached to the DOM`     | Re-resolve after DOM change               |
-| `intercepted by`              | Wait for skeleton/overlay to hide         |
-| `Expected.*Received: ""`      | Gate on event (notification, response)    |
-| `401` / `403`                 | Check `setToken()` call                   |
-| `Cannot find module`          | Check path alias in `tsconfig.json`       |
-| Passes alone, fails in suite  | Data collision — use unique test data     |
-| Passes locally, fails in CI   | Download trace, match CI viewport         |
+| Error message contains       | First action                                |
+| ---------------------------- | ------------------------------------------- |
+| `Timeout.*waiting for`       | Check parent scoping, add `waitForPageLoad` |
+| `strict mode violation`      | Scope locator through parent container      |
+| `not attached to the DOM`    | Re-resolve after DOM change                 |
+| `intercepted by`             | Wait for skeleton/overlay to hide           |
+| `Expected.*Received: ""`     | Gate on event (notification, response)      |
+| `401` / `403`                | Check `setToken()` call                     |
+| `Cannot find module`         | Check path alias in `tsconfig.json`         |
+| Passes alone, fails in suite | Data collision — use unique test data       |
+| Passes locally, fails in CI  | Download trace, match CI viewport           |

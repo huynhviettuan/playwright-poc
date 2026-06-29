@@ -8,22 +8,23 @@ criteria that BA/PO read for sign-off.
 
 ## When NOT to Use
 
-| Situation                                     | Use instead                          |
-| --------------------------------------------- | ------------------------------------ |
-| Plain E2E test, no behavior narration needed  | `write-e2e-test.md`                  |
-| API contract / schema test                    | `write-api-test.md`                  |
-| Stakeholders **author** `.feature` files      | `write-bdd-test.md` (Gherkin)        |
-| Turning a user story into scenarios first      | `generate-test-cases.md`            |
+| Situation                                    | Use instead                   |
+| -------------------------------------------- | ----------------------------- |
+| Plain E2E test, no behavior narration needed | `write-e2e-test.md`           |
+| API contract / schema test                   | `write-api-test.md`           |
+| Stakeholders **author** `.feature` files     | `write-bdd-test.md` (Gherkin) |
+| Turning a user story into scenarios first    | `generate-test-cases.md`      |
 
-> Read [`docs/guidance/behavior-testing.md`](../../docs/guidance/behavior-testing.md) first — it explains *why* this
-> over Gherkin and the sign-off model. This skill is the *how*.
+> Read [`docs/guidance/behavior-testing.md`](../../docs/guidance/behavior-testing.md) first — it explains _why_ this
+> over Gherkin and the sign-off model. This skill is the _how_.
 
 ## Non-Negotiable Rules
 
-- **Import from `@fixtures/fixtures`** — never `@playwright/test`.
-- **Step bodies are glue only** — delegate to page objects; no raw locators, no business logic inside `given/when/then`.
-- **One assertion intent per `then`** — keeps the report readable and each step meaningful.
-- **Tag with the AC ID** — `@AC-<id>` in the test title links to the acceptance criterion in `docs/user-stories/`.
+-   **Import from `@fixtures/fixtures`** — never `@playwright/test`.
+-   **Step bodies are glue only** — delegate to page objects; no raw locators, no business logic inside
+    `given/when/then`.
+-   **One assertion intent per `then`** — keeps the report readable and each step meaningful.
+-   **Tag with the AC ID** — `@AC-<id>` in the test title links to the acceptance criterion in `docs/user-stories/`.
 
 ## One-Time Setup
 
@@ -118,7 +119,7 @@ export const authBehaviors = {
     signsIn: (signInPage: SignInPage, email: string) =>
         when(`the user signs in as "${email}"`, async () => {
             await signInPage.signIn(email);
-        }),
+        })
 };
 ```
 
@@ -140,18 +141,18 @@ The HTML report expands each test into its `Given/When/Then` tree — that is th
 
 ## Checklist
 
-- [ ] `src/behavior/bdd.ts` DSL helper present
-- [ ] `@behavior/*` alias added to `tsconfig.json`
-- [ ] Spec imports `test`/`expect` from `@fixtures/fixtures` and DSL from `@behavior/bdd`
-- [ ] Each step body delegates to a page object (no raw locators/logic)
-- [ ] Test title tagged with `@AC-<id>` linking to the user story
-- [ ] Repeated flows extracted to a typed `Behaviors` helper (no copy-paste)
-- [ ] Verified the step tree renders in `npx playwright show-report`
+-   [ ] `src/behavior/bdd.ts` DSL helper present
+-   [ ] `@behavior/*` alias added to `tsconfig.json`
+-   [ ] Spec imports `test`/`expect` from `@fixtures/fixtures` and DSL from `@behavior/bdd`
+-   [ ] Each step body delegates to a page object (no raw locators/logic)
+-   [ ] Test title tagged with `@AC-<id>` linking to the user story
+-   [ ] Repeated flows extracted to a typed `Behaviors` helper (no copy-paste)
+-   [ ] Verified the step tree renders in `npx playwright show-report`
 
 ## Related
 
-- [Behavior-Style Testing Guidance](../../docs/guidance/behavior-testing.md) — concepts, sign-off model, DSL rationale
-- [`write-e2e-test.md`](./write-e2e-test.md) — the patterns step bodies must follow
-- [`write-bdd-test.md`](./write-bdd-test.md) — Gherkin alternative, only if stakeholders author features
-- [`generate-test-cases.md`](./generate-test-cases.md) — produce scenarios from a user story
-- [`create-page-object.md`](./create-page-object.md) — the page objects steps delegate to
+-   [Behavior-Style Testing Guidance](../../docs/guidance/behavior-testing.md) — concepts, sign-off model, DSL rationale
+-   [`write-e2e-test.md`](./write-e2e-test.md) — the patterns step bodies must follow
+-   [`write-bdd-test.md`](./write-bdd-test.md) — Gherkin alternative, only if stakeholders author features
+-   [`generate-test-cases.md`](./generate-test-cases.md) — produce scenarios from a user story
+-   [`create-page-object.md`](./create-page-object.md) — the page objects steps delegate to

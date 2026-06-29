@@ -83,12 +83,12 @@ import { expect, test } from '@fixtures/fixtures';
 ```
 src/
 ├── pages/           # Page Objects
-├── elements/        # UI elements (Button, Input, Dropdown)
+├── elements/        # UI elements (Button, Input, Dropdown, CascadingDropdown)
 ├── components/      # Composite components (Table)
 ├── models/          # TypeScript interfaces
 ├── services/        # API services
-├── fixtures/        # Test fixtures (merged)
-├── helpers/         # Utility classes
+├── fixtures/        # Test fixtures (merged: role, pdf, word, a11y, db, …)
+├── helpers/         # Utility classes (Excel, PDF, Word, DateTime, DataGen, DB)
 ├── constants/       # Config and constants
 ├── enums/           # Enumerations
 ├── mail/            # Email utilities
@@ -102,19 +102,19 @@ tests/
 
 ## Path Aliases
 
-| Alias              | Maps To               | Usage            |
-| ------------------ | --------------------- | ---------------- |
-| `@pages/*`         | `src/pages/*`         | Page objects     |
-| `@elements/*`      | `src/elements/*`      | UI elements      |
-| `@components/*`    | `src/components/*`    | Components       |
-| `@models/*`        | `src/models/*`        | Types/interfaces |
-| `@services/*`      | `src/services/*`      | API services     |
-| `@fixtures/*`      | `src/fixtures/*`      | Test fixtures    |
-| `@helpers/*`       | `src/helpers/*`       | Utilities        |
-| `@constants/*`     | `src/constants/*`     | Config/constants |
-| `@enums/*`         | `src/enums/*`         | Enums            |
-| `@common/*`        | `src/common/*`        | Shared utilities |
-| `@notifications/*` | `src/notifications/*` | CI notifications |
+| Alias              | Maps To               | Usage                    |
+| ------------------ | --------------------- | ------------------------ |
+| `@pages/*`         | `src/pages/*`         | Page objects             |
+| `@elements/*`      | `src/elements/*`      | UI elements              |
+| `@components/*`    | `src/components/*`    | Components               |
+| `@models/*`        | `src/models/*`        | Types/interfaces         |
+| `@services/*`      | `src/services/*`      | API services             |
+| `@fixtures/*`      | `src/fixtures/*`      | Test fixtures            |
+| `@helpers/*`       | `src/helpers/*`       | Utilities                |
+| `@constants/*`     | `src/constants/*`     | Config/constants         |
+| `@enums/*`         | `src/enums/*`         | Enums                    |
+| `@common/*`        | `src/common/*`        | Shared utilities         |
+| `@notifications/*` | `src/notifications/*` | CI notifications         |
 | `@behavior/*`      | `src/behavior/*`      | Behavior DSL (test.step) |
 
 > ℹ️ `@behavior/*` is reserved for the behavior-style testing DSL (see
@@ -128,7 +128,7 @@ tests/
 -   **BaseControl** → Common operations (visibility, text, attributes)
 -   **Clickable** → Extends BaseControl for clickable elements
 -   **Editable** → Extends BaseControl for inputs
--   **Specialized** → Button, Input, Dropdown, Checkbox, etc.
+-   **Specialized** → Button, Input, Dropdown, CascadingDropdown, Checkbox, DatePicker, etc.
 
 ### Key Patterns
 
@@ -188,6 +188,24 @@ DataGenerator.randomName();
 DataGenerator.randomNumber(1, 100);
 ```
 
+### PdfHelper
+
+```ts
+PdfHelper.open('report.pdf').getText();
+PdfHelper.open('report.pdf').getTables();
+PdfHelper.open('report.pdf').getPageAsImage(1);
+PdfHelper.open('report.pdf').fillForm({ name: 'John' });
+```
+
+### WordHelper
+
+```ts
+WordHelper.open('doc.docx').getText();
+WordHelper.open('doc.docx').getHeadings();
+WordHelper.open('doc.docx').getTables();
+WordHelper.open('doc.docx').replacePlaceholders({ '{{name}}': 'John' });
+```
+
 ### ArrayHelper, StringHelper, ResponseHelper, FileHelper
 
 See `@helpers/*` for utility methods.
@@ -234,15 +252,23 @@ docs/
 │   ├── ADR-002-custom-fixtures.md
 │   ├── ADR-003-solid-principles-complex-elements.md
 │   └── ADR-004-yagni-kiss-dry-principles.md
+├── diagrams/              # Visual diagrams and architecture overviews
+│   └── framework-architecture.svg/png
 ├── guidance/              # Practical pattern guidance (one file per topic)
+│   ├── auth-storage.md    # Auth storageState + mid-test role switching
+│   ├── cascading-dropdown.md # Multi-level cascading menu element
 │   ├── expect.md          # Custom expect matchers
 │   ├── messages.md        # NotificationMessages constants
 │   ├── notifications.md   # Centralized notification fixture
+│   ├── pdf-testing.md     # PDF download, text, tables, forms, snapshots
 │   ├── sections.md        # Multi-section container pattern
-│   └── skeleton.md        # Skeleton loading element
-├── registry/              # Living inventory of pages & services
+│   ├── skeleton.md        # Skeleton loading element
+│   └── word-testing.md    # Word document testing
+├── registry/              # Living inventory of pages, services, elements, helpers
 │   ├── pages.md           # All page objects
-│   └── services.md        # All API services
+│   ├── services.md        # All API services
+│   ├── elements.md        # All UI elements
+│   └── helpers.md         # All helper classes
 ├── examples.md            # Quick-reference code snippets
 ├── user-stories/          # User stories (one .md per feature; source for generate-test-cases)
 ├── test-cases/            # Manual test cases (traces back to AC IDs in user-stories/)
@@ -306,3 +332,26 @@ Start at [`.claude/skills/README.md`](.claude/skills/README.md) for the skills i
 
 -   `refactor-code.md` - Repo-agnostic refactoring methodology + playwright-poc-specific recipes
 -   `refactor-code-follow-skills.md` - Systematic checklist to migrate legacy code to follow all skills
+
+## Custom Agents
+
+Start at [`.claude/agents/`](.claude/agents/) for specialized automation agents.
+
+| Agent             | Purpose                                                               |
+| ----------------- | --------------------------------------------------------------------- |
+| `test-writer`     | Generate E2E/API specs from page objects + test cases                 |
+| `page-builder`    | Discover locators on a live screen, scaffold page object + containers |
+| `api-service-gen` | Generate full service layer from Swagger/OpenAPI spec                 |
+
+## Rules
+
+Enforced rules live in [`.claude/rules/`](.claude/rules/). They apply automatically based on file glob patterns.
+
+| Rule                          | Scope                   | Enforces                                           |
+| ----------------------------- | ----------------------- | -------------------------------------------------- |
+| `01-read-skill-first`         | `src/`, `tests/`        | Read the relevant skill before writing code        |
+| `02-verify-after-changes`     | `src/`, `tests/`        | Run `tsc --noEmit` after every change              |
+| `03-register-everything`      | `src/`                  | Register new artifacts in fixtures + registry docs |
+| `04-parent-scoping`           | `pages/`, `components/` | Elements resolve through a parent Locator          |
+| `05-imports`                  | `src/`, `tests/`        | Path aliases + import from `@fixtures/fixtures`    |
+| `06-no-raw-locators-in-tests` | `tests/`                | Tests use page objects, never raw locators         |

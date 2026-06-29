@@ -1,0 +1,133 @@
+<svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <text x="30" y="28" font-size="10" fill="#888" font-weight="600" letter-spacing="1">TESTS</text>
+  <rect x="20" y="38" width="90" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="65" y="60" font-size="11" text-anchor="middle" fill="#334155">E2E Specs</text>
+  <rect x="120" y="38" width="90" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="165" y="60" font-size="11" text-anchor="middle" fill="#334155">API Specs</text>
+
+  <text x="30" y="108" font-size="10" fill="#888" font-weight="600" letter-spacing="1">FIXTURES</text>
+  <rect x="20" y="118" width="760" height="52" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4"/>
+  <rect x="30" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="66" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Hook</text>
+  <rect x="110" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="146" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Command</text>
+  <rect x="190" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="226" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Page</text>
+  <rect x="270" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="306" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Service</text>
+  <rect x="350" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="386" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Role</text>
+  <rect x="430" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="466" y="148" font-size="9" text-anchor="middle" fill="#3730a3">PDF</text>
+  <rect x="510" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="546" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Word</text>
+  <rect x="590" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="626" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Notification</text>
+  <rect x="670" y="128" width="72" height="32" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="706" y="148" font-size="9" text-anchor="middle" fill="#3730a3">Database</text>
+
+  <text x="30" y="205" font-size="10" fill="#888" font-weight="600" letter-spacing="1">PAGE OBJECTS</text>
+  <rect x="20" y="215" width="240" height="80" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="30" y="225" width="100" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+  <text x="80" y="243" font-size="9" text-anchor="middle" fill="#92400e">Header Section</text>
+  <rect x="30" y="257" width="100" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+  <text x="80" y="275" font-size="9" text-anchor="middle" fill="#92400e">Main Section</text>
+  <rect x="140" y="225" width="100" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+  <text x="190" y="243" font-size="9" text-anchor="middle" fill="#92400e">Footer Section</text>
+  <rect x="140" y="257" width="100" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+  <text x="190" y="275" font-size="9" text-anchor="middle" fill="#92400e">Form Component</text>
+
+  <text x="290" y="205" font-size="10" fill="#888" font-weight="600" letter-spacing="1">ELEMENTS</text>
+  <rect x="280" y="215" width="250" height="80" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="290" y="228" width="80" height="24" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="330" y="244" font-size="9" text-anchor="middle" fill="#334155">BaseControl</text>
+  <line x1="370" y1="240" x2="390" y2="232" stroke="#94a3b8" stroke-width="1.2"/>
+  <line x1="370" y1="240" x2="390" y2="252" stroke="#94a3b8" stroke-width="1.2"/>
+  <rect x="392" y="220" width="64" height="22" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="424" y="235" font-size="9" text-anchor="middle" fill="#334155">Clickable</text>
+  <rect x="392" y="244" width="64" height="22" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="424" y="259" font-size="9" text-anchor="middle" fill="#334155">Editable</text>
+  <rect x="290" y="262" width="50" height="22" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="315" y="277" font-size="8" text-anchor="middle" fill="#3730a3">Button</text>
+  <rect x="344" y="262" width="44" height="22" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="366" y="277" font-size="8" text-anchor="middle" fill="#3730a3">Input</text>
+  <rect x="392" y="262" width="58" height="22" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="421" y="277" font-size="8" text-anchor="middle" fill="#3730a3">Dropdown</text>
+  <rect x="454" y="262" width="58" height="22" rx="5" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="483" y="277" font-size="8" text-anchor="middle" fill="#3730a3">Cascading</text>
+
+  <text x="555" y="205" font-size="10" fill="#888" font-weight="600" letter-spacing="1">SERVICES</text>
+  <rect x="545" y="215" width="235" height="80" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="555" y="228" width="90" height="24" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="600" y="244" font-size="9" text-anchor="middle" fill="#334155">BaseService</text>
+  <line x1="645" y1="240" x2="660" y2="233" stroke="#94a3b8" stroke-width="1.2"/>
+  <line x1="645" y1="240" x2="660" y2="255" stroke="#94a3b8" stroke-width="1.2"/>
+  <rect x="662" y="222" width="105" height="22" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="714" y="237" font-size="8" text-anchor="middle" fill="#334155">UserOrganization</text>
+  <rect x="662" y="246" width="105" height="22" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="714" y="261" font-size="8" text-anchor="middle" fill="#334155">TokensService</text>
+  <rect x="555" y="262" width="90" height="24" rx="6" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="600" y="278" font-size="9" text-anchor="middle" fill="#334155">ApiCommands</text>
+
+  <text x="30" y="325" font-size="10" fill="#888" font-weight="600" letter-spacing="1">HELPERS</text>
+  <rect x="20" y="335" width="530" height="44" rx="8" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+  <rect x="30" y="343" width="68" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="64" y="360" font-size="8" text-anchor="middle" fill="#166534">DateTime</text>
+  <rect x="104" y="343" width="68" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="138" y="360" font-size="8" text-anchor="middle" fill="#166534">DataGen</text>
+  <rect x="178" y="343" width="56" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="206" y="360" font-size="8" text-anchor="middle" fill="#166534">Excel</text>
+  <rect x="240" y="343" width="50" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="265" y="360" font-size="8" text-anchor="middle" fill="#166534">PDF</text>
+  <rect x="296" y="343" width="52" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="322" y="360" font-size="8" text-anchor="middle" fill="#166534">Word</text>
+  <rect x="354" y="343" width="68" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="388" y="360" font-size="8" text-anchor="middle" fill="#166534">Database</text>
+  <rect x="428" y="343" width="68" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="462" y="360" font-size="8" text-anchor="middle" fill="#166534">TestData</text>
+  <rect x="502" y="343" width="40" height="26" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="522" y="360" font-size="8" text-anchor="middle" fill="#166534">File</text>
+
+  <text x="30" y="410" font-size="10" fill="#888" font-weight="600" letter-spacing="1">INFRASTRUCTURE</text>
+  <rect x="20" y="420" width="120" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="80" y="442" font-size="10" text-anchor="middle" fill="#334155">BrowserInstance</text>
+  <rect x="150" y="420" width="100" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="200" y="442" font-size="10" text-anchor="middle" fill="#334155">Config</text>
+  <rect x="260" y="420" width="100" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="310" y="442" font-size="10" text-anchor="middle" fill="#334155">Constants</text>
+  <rect x="370" y="420" width="80" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="410" y="442" font-size="10" text-anchor="middle" fill="#334155">Mail</text>
+  <rect x="460" y="420" width="100" height="36" rx="8" fill="#f0f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+  <text x="510" y="442" font-size="10" text-anchor="middle" fill="#334155">Notifications</text>
+
+  <line x1="65" y1="74" x2="65" y2="118" stroke="#6366f1" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <circle cx="65" cy="96" r="8" fill="#6366f1"/>
+  <text x="65" y="100" font-size="8" text-anchor="middle" fill="white" font-weight="600">1</text>
+
+  <line x1="80" y1="170" x2="80" y2="215" stroke="#6366f1" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <circle cx="80" cy="192" r="8" fill="#6366f1"/>
+  <text x="80" y="196" font-size="8" text-anchor="middle" fill="white" font-weight="600">2</text>
+
+  <line x1="260" y1="255" x2="280" y2="255" stroke="#6366f1" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <circle cx="270" cy="255" r="8" fill="#6366f1"/>
+  <text x="270" y="259" font-size="8" text-anchor="middle" fill="white" font-weight="600">3</text>
+
+  <line x1="306" y1="170" x2="600" y2="215" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4" marker-end="url(#arrow)"/>
+  <circle cx="453" cy="192" r="8" fill="#6366f1"/>
+  <text x="453" y="196" font-size="8" text-anchor="middle" fill="white" font-weight="600">4</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#6366f1" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <rect x="580" y="400" width="200" height="56" rx="8" fill="#fafafa" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="590" y="416" font-size="9" fill="#64748b" font-weight="600">LEGEND</text>
+  <line x1="590" y1="428" x2="610" y2="428" stroke="#6366f1" stroke-width="1.2"/>
+  <text x="616" y="432" font-size="8" fill="#475569">Sync dependency</text>
+  <line x1="590" y1="444" x2="610" y2="444" stroke="#6366f1" stroke-width="1.2" stroke-dasharray="4"/>
+  <text x="616" y="448" font-size="8" fill="#475569">API / async path</text>
+
+  <text x="400" y="505" font-size="12" text-anchor="middle" fill="#475569" font-weight="600">Playwright POC — Framework Architecture</text>
+</svg>

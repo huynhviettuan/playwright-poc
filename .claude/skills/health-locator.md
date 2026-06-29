@@ -7,12 +7,12 @@ health locator system for automatic fix suggestions.
 
 ## When NOT to Use
 
-| Situation                          | Use instead                             |
-| ---------------------------------- | --------------------------------------- |
-| Writing a new test from scratch    | `write-e2e-test.md` / `write-api-test.md` |
-| Building a new page object         | `create-page-object.md`                 |
-| Debugging non-locator failures     | `debug-tests.md`                        |
-| Exploring a screen for locators    | `explore-screens.md`                    |
+| Situation                       | Use instead                               |
+| ------------------------------- | ----------------------------------------- |
+| Writing a new test from scratch | `write-e2e-test.md` / `write-api-test.md` |
+| Building a new page object      | `create-page-object.md`                   |
+| Debugging non-locator failures  | `debug-tests.md`                          |
+| Exploring a screen for locators | `explore-screens.md`                      |
 
 ## Workflow
 
@@ -62,14 +62,14 @@ console.log(`Found ${entries.length} locators`);
 
 Each entry contains:
 
-| Field         | Description                                |
-| ------------- | ------------------------------------------ |
-| `filePath`    | Source file relative to pages directory     |
-| `className`   | Page object class name                     |
-| `propertyName`| Property or variable holding the locator   |
-| `selector`    | The actual selector string                 |
-| `strategy`    | `testid`, `role`, `text`, `css`, `xpath`   |
-| `parentChain` | Parent locators this is scoped under       |
+| Field          | Description                              |
+| -------------- | ---------------------------------------- |
+| `filePath`     | Source file relative to pages directory  |
+| `className`    | Page object class name                   |
+| `propertyName` | Property or variable holding the locator |
+| `selector`     | The actual selector string               |
+| `strategy`     | `testid`, `role`, `text`, `css`, `xpath` |
+| `parentChain`  | Parent locators this is scoped under     |
 
 ### What gets extracted
 
@@ -124,22 +124,25 @@ type HealthFixtures = {
 };
 
 export const test = base.extend<HealthFixtures>({
-    domSnapshot: [async ({ page }, use, testInfo) => {
-        let snapshot: DomSnapshot | null = null;
-        await use(snapshot);
+    domSnapshot: [
+        async ({ page }, use, testInfo) => {
+            let snapshot: DomSnapshot | null = null;
+            await use(snapshot);
 
-        // Capture on failure only
-        if (testInfo.status === 'failed') {
-            snapshot = await DomSnapshotCollector.capture(page, testInfo.title);
-            const snapshotPath = testInfo.outputPath('dom-snapshot.json');
-            await fs.promises.writeFile(snapshotPath, JSON.stringify(snapshot, null, 2));
-            testInfo.attachments.push({
-                name: 'dom-snapshot',
-                path: snapshotPath,
-                contentType: 'application/json',
-            });
-        }
-    }, { auto: true }],
+            // Capture on failure only
+            if (testInfo.status === 'failed') {
+                snapshot = await DomSnapshotCollector.capture(page, testInfo.title);
+                const snapshotPath = testInfo.outputPath('dom-snapshot.json');
+                await fs.promises.writeFile(snapshotPath, JSON.stringify(snapshot, null, 2));
+                testInfo.attachments.push({
+                    name: 'dom-snapshot',
+                    path: snapshotPath,
+                    contentType: 'application/json'
+                });
+            }
+        },
+        { auto: true }
+    ]
 });
 ```
 
@@ -148,7 +151,7 @@ export const test = base.extend<HealthFixtures>({
 ```ts
 import { test as healthTest } from './health-fixtures';
 
-export const test = mergeTests(baseTest, healthTest, /* ...other fixtures */);
+export const test = mergeTests(baseTest, healthTest /* ...other fixtures */);
 ```
 
 ## Step 4: Run the Health Check
@@ -179,11 +182,11 @@ console.log(`Broken: ${broken.length}`);
 
 ### Health statuses
 
-| Status     | Meaning                                    | Action                  |
-| ---------- | ------------------------------------------ | ----------------------- |
-| `healthy`  | Locator found an exact match in the DOM    | None                    |
-| `degraded` | Similar element found (distance < 0.3)     | Review — likely renamed |
-| `broken`   | No match found                             | Fix required            |
+| Status     | Meaning                                 | Action                  |
+| ---------- | --------------------------------------- | ----------------------- |
+| `healthy`  | Locator found an exact match in the DOM | None                    |
+| `degraded` | Similar element found (distance < 0.3)  | Review — likely renamed |
+| `broken`   | No match found                          | Fix required            |
 
 ## Step 5: Get RAG Fix Suggestions
 
@@ -215,10 +218,7 @@ Add the health reporter to `playwright.config.ts`:
 
 ```ts
 export default defineConfig({
-    reporter: [
-        ['html'],
-        ['./src/health/health-reporter.ts'],
-    ],
+    reporter: [['html'], ['./src/health/health-reporter.ts']]
 });
 ```
 
@@ -247,30 +247,30 @@ Add to `package.json`:
 - name: Run health check on failure
   if: failure()
   run: |
-    npm run health:index
-    npm run health:check
-    npm run health:fix > health-report.txt
+      npm run health:index
+      npm run health:check
+      npm run health:fix > health-report.txt
 
 - name: Upload health report
   if: failure()
   uses: actions/upload-artifact@v4
   with:
-    name: health-report
-    path: health-report.txt
+      name: health-report
+      path: health-report.txt
 ```
 
 ### GitLab CI
 
 ```yaml
 health-check:
-  stage: post-test
-  when: on_failure
-  script:
-    - npm run health:full > health-report.txt
-  artifacts:
-    paths:
-      - health-report.txt
+    stage: post-test
     when: on_failure
+    script:
+        - npm run health:full > health-report.txt
+    artifacts:
+        paths:
+            - health-report.txt
+        when: on_failure
 ```
 
 ## File Structure
@@ -287,19 +287,19 @@ src/health/
 
 ## Checklist
 
-- [ ] `chromadb` and `chromadb-default-embed` installed
-- [ ] `HEALTH_DB_PATH` configured (default `./.health-db`)
-- [ ] `.health-db/` added to `.gitignore`
-- [ ] Locator extractor covers all page object directories
-- [ ] DOM snapshot fixture registered in `fixtures.ts`
-- [ ] Health reporter added to `playwright.config.ts`
-- [ ] `ANTHROPIC_API_KEY` set (if using RAG fix suggestions)
-- [ ] npm scripts added to `package.json`
-- [ ] CI step added for post-failure health check
+-   [ ] `chromadb` and `chromadb-default-embed` installed
+-   [ ] `HEALTH_DB_PATH` configured (default `./.health-db`)
+-   [ ] `.health-db/` added to `.gitignore`
+-   [ ] Locator extractor covers all page object directories
+-   [ ] DOM snapshot fixture registered in `fixtures.ts`
+-   [ ] Health reporter added to `playwright.config.ts`
+-   [ ] `ANTHROPIC_API_KEY` set (if using RAG fix suggestions)
+-   [ ] npm scripts added to `package.json`
+-   [ ] CI step added for post-failure health check
 
 ## Related
 
-- [Health Locator Guidance](../../docs/guidance/health-locator-rag.md) — architecture, tech choices, code details
-- [`explore-screens.md`](./explore-screens.md) — manual locator discovery
-- [`debug-tests.md`](./debug-tests.md) — general test debugging workflow
-- [`create-page-object.md`](./create-page-object.md) — page object patterns the extractor parses
+-   [Health Locator Guidance](../../docs/guidance/health-locator-rag.md) — architecture, tech choices, code details
+-   [`explore-screens.md`](./explore-screens.md) — manual locator discovery
+-   [`debug-tests.md`](./debug-tests.md) — general test debugging workflow
+-   [`create-page-object.md`](./create-page-object.md) — page object patterns the extractor parses

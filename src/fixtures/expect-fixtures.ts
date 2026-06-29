@@ -1,4 +1,6 @@
 import { type BaseControl } from '@elements/base/base-control';
+import { PdfHelper } from '@helpers/pdf.helper';
+import { WordHelper } from '@helpers/word.helper';
 import { expect as baseExpect, type Locator } from '@playwright/test';
 import * as fs from 'fs/promises';
 import path from 'path';
@@ -118,12 +120,7 @@ export const expect = baseExpect.extend({
     },
 
     async toHaveCount(element: BaseControl, expected: number) {
-        return assertLocator(
-            element.element,
-            this.isNot,
-            (e) => e.toHaveCount(expected),
-            `to have count ${expected}`
-        );
+        return assertLocator(element.element, this.isNot, (e) => e.toHaveCount(expected), `to have count ${expected}`);
     },
 
     async toHaveCSS(element: BaseControl, name: string, value: string | RegExp) {
@@ -245,6 +242,67 @@ export const expect = baseExpect.extend({
         }
         return {
             message: () => `${filePath} not exist`,
+            pass: false
+        };
+    },
+
+    async toContainPdfText(pdf: PdfHelper, expected: string) {
+        const text = await pdf.getText();
+        const pass = text.includes(expected);
+        if (pass) {
+            return { message: () => `PDF contains "${expected}"`, pass: true };
+        }
+        return {
+            message: () => `Expected PDF to contain "${expected}" but got:\n${text.slice(0, 500)}`,
+            pass: false
+        };
+    },
+
+    async toHavePdfPageCount(pdf: PdfHelper, expected: number) {
+        const actual = await pdf.getPageCount();
+        const pass = actual === expected;
+        if (pass) {
+            return { message: () => `PDF has ${expected} pages`, pass: true };
+        }
+        return {
+            message: () => `Expected PDF to have ${expected} pages but got ${actual}`,
+            pass: false
+        };
+    },
+
+    async toContainWordText(doc: WordHelper, expected: string) {
+        const text = await doc.getText();
+        const pass = text.includes(expected);
+        if (pass) {
+            return { message: () => `Word document contains "${expected}"`, pass: true };
+        }
+        return {
+            message: () => `Expected Word document to contain "${expected}" but got:\n${text.slice(0, 500)}`,
+            pass: false
+        };
+    },
+
+    async toHaveWordHeading(doc: WordHelper, expected: string) {
+        const headings = await doc.getHeadings();
+        const pass = headings.some((h) => h.text.includes(expected));
+        if (pass) {
+            return { message: () => `Word document has heading "${expected}"`, pass: true };
+        }
+        return {
+            message: () =>
+                `Expected heading "${expected}" but found: ${headings.map((h) => h.text).join(', ') || 'none'}`,
+            pass: false
+        };
+    },
+
+    async toHaveWordTableCount(doc: WordHelper, expected: number) {
+        const tables = await doc.getTables();
+        const pass = tables.length === expected;
+        if (pass) {
+            return { message: () => `Word document has ${expected} tables`, pass: true };
+        }
+        return {
+            message: () => `Expected ${expected} tables but found ${tables.length}`,
             pass: false
         };
     }

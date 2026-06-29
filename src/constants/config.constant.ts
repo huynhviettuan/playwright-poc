@@ -23,7 +23,8 @@ export const Config = {
     },
     auth: {
         password: getEnv('PASSWORD'),
-        superAdminEmail: getEnv('SUPER_ADMIN_EMAIL')
+        superAdminEmail: getEnv('SUPER_ADMIN_EMAIL'),
+        standardUserEmail: getEnv('STANDARD_USER_EMAIL')
     },
     app: {
         baseUrl: getEnv('BASE_URL'),

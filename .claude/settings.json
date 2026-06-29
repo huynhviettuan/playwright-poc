@@ -1,0 +1,18 @@
+{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node -e \"let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d.trim());const f=j.tool_input?.file_path||j.tool_response?.filePath||'';if(f){require('child_process').execSync('npx prettier --write \"'+f+'\"',{stdio:'inherit'})}})\"",
+                        "shell": "bash",
+                        "timeout": 30,
+                        "statusMessage": "Running prettier..."
+                    }
+                ]
+            }
+        ]
+    }
+}

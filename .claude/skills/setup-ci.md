@@ -6,18 +6,18 @@ Use this skill when setting up or modifying CI/CD pipelines for running Playwrig
 
 ## When NOT to Use
 
-| Situation                              | Use instead                  |
-| -------------------------------------- | ---------------------------- |
-| Configuring test result notifications  | `configure-notifications.md` |
-| Debugging CI failures                  | `debug-tests.md`             |
-| Managing environment configs           | `manage-environments.md`     |
+| Situation                             | Use instead                  |
+| ------------------------------------- | ---------------------------- |
+| Configuring test result notifications | `configure-notifications.md` |
+| Debugging CI failures                 | `debug-tests.md`             |
+| Managing environment configs          | `manage-environments.md`     |
 
 ## Supported Platforms
 
-| Platform       | Template location      | Target location                    |
-| -------------- | ---------------------- | ---------------------------------- |
-| GitHub Actions | `docs/ci/github.yml`   | `.github/workflows/playwright.yml` |
-| GitLab CI      | `docs/ci/gitlab.yml`   | `.gitlab-ci.yml`                   |
+| Platform       | Template location    | Target location                    |
+| -------------- | -------------------- | ---------------------------------- |
+| GitHub Actions | `docs/ci/github.yml` | `.github/workflows/playwright.yml` |
+| GitLab CI      | `docs/ci/gitlab.yml` | `.gitlab-ci.yml`                   |
 
 ## Pipeline Architecture
 
@@ -36,6 +36,7 @@ Use this skill when setting up or modifying CI/CD pipelines for running Playwrig
 ```
 
 **Stages:**
+
 1. **Quality** — format check (`npm run check`) + lint (`npm run lint`)
 2. **API Tests** — runs after quality passes, no browser needed
 3. **E2E Tests** — runs after quality passes, installs Playwright browsers
@@ -57,26 +58,26 @@ cp docs/ci/github.yml .github/workflows/playwright.yml
 
 Go to **Settings → Secrets and variables → Actions → New repository secret**:
 
-| Secret               | Description                    | Example                          |
-| -------------------- | ------------------------------ | -------------------------------- |
-| `BASE_URL`           | App URL for E2E tests          | `https://staging.example.com`    |
-| `API_DOMAIN`         | API base URL                   | `https://api.staging.example.com`|
-| `SUPER_ADMIN_EMAIL`  | Test account email             | `admin@test.com`                 |
-| `PASSWORD`           | Test account password          | `Secret@123`                     |
-| `MAIL_DOMAIN`        | Email domain for verification  | `example.com`                    |
-| `REPORT_API_KEY`     | Report Portal API key          | `uuid-key`                       |
-| `REPORT_ENDPOINT`    | Report Portal URL              | `https://reportportal.io`        |
+| Secret              | Description                   | Example                           |
+| ------------------- | ----------------------------- | --------------------------------- |
+| `BASE_URL`          | App URL for E2E tests         | `https://staging.example.com`     |
+| `API_DOMAIN`        | API base URL                  | `https://api.staging.example.com` |
+| `SUPER_ADMIN_EMAIL` | Test account email            | `admin@test.com`                  |
+| `PASSWORD`          | Test account password         | `Secret@123`                      |
+| `MAIL_DOMAIN`       | Email domain for verification | `example.com`                     |
+| `REPORT_API_KEY`    | Report Portal API key         | `uuid-key`                        |
+| `REPORT_ENDPOINT`   | Report Portal URL             | `https://reportportal.io`         |
 
 #### Add database secrets (if using `db` fixture)
 
-| Secret         | Description        | Example     |
-| -------------- | ------------------ | ----------- |
-| `DB_HOST`      | Database host      | `db.example.com` |
-| `DB_PORT`      | Database port      | `5432`      |
-| `DB_NAME`      | Database name      | `myapp_staging` |
-| `DB_USER`      | Database user      | `postgres`  |
-| `DB_PASSWORD`  | Database password  | `secret`    |
-| `DB_SSL`       | Use SSL connection | `true`      |
+| Secret        | Description        | Example          |
+| ------------- | ------------------ | ---------------- |
+| `DB_HOST`     | Database host      | `db.example.com` |
+| `DB_PORT`     | Database port      | `5432`           |
+| `DB_NAME`     | Database name      | `myapp_staging`  |
+| `DB_USER`     | Database user      | `postgres`       |
+| `DB_PASSWORD` | Database password  | `secret`         |
+| `DB_SSL`      | Use SSL connection | `true`           |
 
 #### Add environment variables to workflow
 
@@ -245,8 +246,8 @@ Run tests on a schedule (e.g., nightly regression suite):
 ```yaml
 on:
     schedule:
-        - cron: '0 2 * * 1-5'  # Weekdays at 2 AM UTC
-    workflow_dispatch:           # Manual trigger
+        - cron: '0 2 * * 1-5' # Weekdays at 2 AM UTC
+    workflow_dispatch: # Manual trigger
 ```
 
 #### GitLab CI
@@ -266,12 +267,14 @@ Create the schedule in **CI/CD → Schedules**.
 Both templates upload reports automatically. Access them:
 
 #### GitHub Actions
-- Go to the workflow run → **Artifacts** section at the bottom
-- Download `e2e-playwright-report` or `api-playwright-report`
+
+-   Go to the workflow run → **Artifacts** section at the bottom
+-   Download `e2e-playwright-report` or `api-playwright-report`
 
 #### GitLab CI
-- Go to the pipeline → click the job → **Artifacts** section
-- Browse or download `playwright-report/` and `test-results/`
+
+-   Go to the pipeline → click the job → **Artifacts** section
+-   Browse or download `playwright-report/` and `test-results/`
 
 #### Viewing traces from CI failures
 
@@ -303,22 +306,26 @@ Or use the built-in notification reporter (see `configure-notifications.md`).
 ## Checklist
 
 ### Initial setup
+
 -   [ ] Template copied to correct location
 -   [ ] All secrets/variables configured in CI platform
 -   [ ] Playwright Docker image version matches project (GitLab)
 -   [ ] Pipeline runs successfully on push
 
 ### Multi-environment
+
 -   [ ] `TEST_ENV` set per job/environment
 -   [ ] Per-environment secrets configured
 -   [ ] Production tests skip destructive operations
 
 ### Performance
+
 -   [ ] Sharding configured for large test suites
 -   [ ] `npm ci` with cache enabled
 -   [ ] Playwright browser install cached where possible
 
 ### Monitoring
+
 -   [ ] Artifacts uploaded on failure (`if: always()`)
 -   [ ] Trace enabled on first retry
 -   [ ] Failure notifications configured (Slack/Teams/email)
@@ -326,12 +333,12 @@ Or use the built-in notification reporter (see `configure-notifications.md`).
 
 ## Troubleshooting CI
 
-| Problem                          | Fix                                                      |
-| -------------------------------- | -------------------------------------------------------- |
-| `Browser not found`              | Add `npx playwright install --with-deps` step            |
-| `Permission denied`              | Use `mcr.microsoft.com/playwright` Docker image (GitLab) |
-| Tests pass locally, fail in CI   | See `debug-tests.md` → "Passes locally, fails in CI"    |
-| Secrets not available            | Check secret names match exactly, check branch protection|
-| Pipeline too slow                | Add sharding, cache `node_modules`, parallelize jobs     |
-| Docker image version mismatch    | Match image tag to `npx playwright --version`            |
-| Report Portal not receiving data | Check `REPORT_API_KEY` and `REPORT_ENDPOINT` secrets     |
+| Problem                          | Fix                                                       |
+| -------------------------------- | --------------------------------------------------------- |
+| `Browser not found`              | Add `npx playwright install --with-deps` step             |
+| `Permission denied`              | Use `mcr.microsoft.com/playwright` Docker image (GitLab)  |
+| Tests pass locally, fail in CI   | See `debug-tests.md` → "Passes locally, fails in CI"      |
+| Secrets not available            | Check secret names match exactly, check branch protection |
+| Pipeline too slow                | Add sharding, cache `node_modules`, parallelize jobs      |
+| Docker image version mismatch    | Match image tag to `npx playwright --version`             |
+| Report Portal not receiving data | Check `REPORT_API_KEY` and `REPORT_ENDPOINT` secrets      |

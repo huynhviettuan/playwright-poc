@@ -10,3 +10,4 @@ test-results/*
 src/downloads
 .vscode
 docs/articles
+docs/diagrams/*.png

@@ -1,15 +1,15 @@
 # Prompt Library
 
-Reusable prompts for working on this repository with an AI assistant (Claude Code or similar). Each prompt is written
-to trigger the right [skill](../../.claude/skills/README.md) and respect the framework's non-negotiables (custom
-fixtures, parent-scoped locators, page objects, path aliases).
+Reusable prompts for working on this repository with an AI assistant (Claude Code or similar). Each prompt is written to
+trigger the right [skill](../../.claude/skills/README.md) and respect the framework's non-negotiables (custom fixtures,
+parent-scoped locators, page objects, path aliases).
 
 ## How to use
 
-- Copy a prompt, fill in the `<angle-bracket>` placeholders, and send it.
-- Prompts deliberately name the skill or doc to read first — this keeps output aligned with our conventions.
-- Keep the [CLAUDE.md](../../CLAUDE.md) rules in context; the assistant should always read the relevant skill before
-  writing code.
+-   Copy a prompt, fill in the `<angle-bracket>` placeholders, and send it.
+-   Prompts deliberately name the skill or doc to read first — this keeps output aligned with our conventions.
+-   Keep the [CLAUDE.md](../../CLAUDE.md) rules in context; the assistant should always read the relevant skill before
+    writing code.
 
 ---
 
@@ -166,17 +166,17 @@ ADRs are append-only — supersede, never edit accepted ones.
 
 ## Tips for good prompts in this repo
 
-- **Name the skill to read first** — e.g. "Read `.claude/skills/write-e2e-test.md`, then…". It anchors the output to our
-  conventions.
-- **State the non-negotiables you care about** — parent-scoped locators, `@fixtures/fixtures` imports, page-object
-  delegation. The assistant should follow these anyway, but repeating the high-risk ones reduces drift.
-- **Point at real examples** — "follow the pattern in `src/pages/sign-in.page.ts`" beats a generic description.
-- **Ask for a plan on anything non-trivial** — "plan it first" before multi-file changes so you can course-correct
-  cheaply.
-- **Use path aliases in your ask** — reference `@pages/*`, `@services/*`, etc., not relative paths.
+-   **Name the skill to read first** — e.g. "Read `.claude/skills/write-e2e-test.md`, then…". It anchors the output to
+    our conventions.
+-   **State the non-negotiables you care about** — parent-scoped locators, `@fixtures/fixtures` imports, page-object
+    delegation. The assistant should follow these anyway, but repeating the high-risk ones reduces drift.
+-   **Point at real examples** — "follow the pattern in `src/pages/sign-in.page.ts`" beats a generic description.
+-   **Ask for a plan on anything non-trivial** — "plan it first" before multi-file changes so you can course-correct
+    cheaply.
+-   **Use path aliases in your ask** — reference `@pages/*`, `@services/*`, etc., not relative paths.
 
 ## Related
 
-- [Skills index](../../.claude/skills/README.md) — the how-to recipes these prompts trigger
-- [CLAUDE.md](../../CLAUDE.md) — project rules and non-negotiable patterns
-- [Guidance index](./README.md) — pattern explanations
+-   [Skills index](../../.claude/skills/README.md) — the how-to recipes these prompts trigger
+-   [CLAUDE.md](../../CLAUDE.md) — project rules and non-negotiable patterns
+-   [Guidance index](./README.md) — pattern explanations

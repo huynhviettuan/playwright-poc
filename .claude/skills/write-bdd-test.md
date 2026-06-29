@@ -3,7 +3,7 @@
 ## When to Use
 
 > ⚠️ **Conditional option.** Reach for Gherkin **only when non-technical stakeholders author `.feature` files
-> themselves.** If BA/PO only *read* scenarios for sign-off, use [`write-behavior-test.md`](./write-behavior-test.md)
+> themselves.** If BA/PO only _read_ scenarios for sign-off, use [`write-behavior-test.md`](./write-behavior-test.md)
 > instead — same `Given/When/Then` output, no compile step, type-safe.
 
 Use this skill when writing behavior-driven tests in Gherkin (`.feature` files) that compile to Playwright specs via
@@ -11,22 +11,22 @@ Use this skill when writing behavior-driven tests in Gherkin (`.feature` files) 
 
 ## When NOT to Use
 
-| Situation                                | Use instead                          |
-| ---------------------------------------- | ------------------------------------ |
-| Standard E2E test, no Gherkin needed     | `write-e2e-test.md`                  |
-| API contract / schema test               | `write-api-test.md`                  |
-| Building the page object steps delegate to| `create-page-object.md`             |
-| Turning a user story into scenarios first | `generate-test-cases.md`            |
+| Situation                                  | Use instead              |
+| ------------------------------------------ | ------------------------ |
+| Standard E2E test, no Gherkin needed       | `write-e2e-test.md`      |
+| API contract / schema test                 | `write-api-test.md`      |
+| Building the page object steps delegate to | `create-page-object.md`  |
+| Turning a user story into scenarios first  | `generate-test-cases.md` |
 
-> Read [`docs/guidance/bdd.md`](../../docs/guidance/bdd.md) first — it explains *why* `playwright-bdd` and the
-> three-layer model. This skill is the *how*.
+> Read [`docs/guidance/bdd.md`](../../docs/guidance/bdd.md) first — it explains _why_ `playwright-bdd` and the
+> three-layer model. This skill is the _how_.
 
 ## Non-Negotiable Rules
 
-- **Steps import from `@fixtures/fixtures`** — never `playwright-bdd`'s bare test or `@playwright/test`.
-- **Steps contain glue only** — delegate to page objects; no raw locators, no business logic in step bodies.
-- **Feature files contain business language only** — no selectors, no code, no testids.
-- **Generated specs are git-ignored** — never edit `.features-gen/`; edit the `.feature` or `.steps.ts` source.
+-   **Steps import from `@fixtures/fixtures`** — never `playwright-bdd`'s bare test or `@playwright/test`.
+-   **Steps contain glue only** — delegate to page objects; no raw locators, no business logic in step bodies.
+-   **Feature files contain business language only** — no selectors, no code, no testids.
+-   **Generated specs are git-ignored** — never edit `.features-gen/`; edit the `.feature` or `.steps.ts` source.
 
 ## One-Time Setup
 
@@ -46,11 +46,11 @@ import { defineBddConfig } from 'playwright-bdd';
 const testDir = defineBddConfig({
     features: 'tests/bdd/features/**/*.feature',
     steps: 'tests/bdd/steps/**/*.steps.ts',
-    outputDir: '.features-gen',
+    outputDir: '.features-gen'
 });
 
 export default defineConfig({
-    testDir,
+    testDir
     // reuse your existing settings (reporters, use, projects) here
 });
 ```
@@ -119,9 +119,9 @@ Feature: Sign In
       | unknown@test.com  | Invalid credentials        |
 ```
 
-- Use **`Background`** for repeated `Given` setup.
-- Use **`Scenario Outline` + `Examples`** for data-driven variants — don't copy-paste scenarios.
-- Keep each step a single business intent so it stays reusable.
+-   Use **`Background`** for repeated `Given` setup.
+-   Use **`Scenario Outline` + `Examples`** for data-driven variants — don't copy-paste scenarios.
+-   Keep each step a single business intent so it stays reusable.
 
 ## Step 2: Implement Step Definitions
 
@@ -159,10 +159,10 @@ Then('the dashboard is visible', async ({ dashboardPage }) => {
 
 Key points:
 
-- `createBdd(test)` is fed the **custom** `test` from `@fixtures/fixtures`, so steps receive every page object,
-  service, and the `notification` fixture as destructured arguments.
-- Gherkin parameters (`{string}`, `{int}`) arrive as the trailing args after the fixtures object.
-- The step body delegates to `signInPage.signIn(...)` — the same method a plain E2E test would call.
+-   `createBdd(test)` is fed the **custom** `test` from `@fixtures/fixtures`, so steps receive every page object,
+    service, and the `notification` fixture as destructured arguments.
+-   Gherkin parameters (`{string}`, `{int}`) arrive as the trailing args after the fixtures object.
+-   The step body delegates to `signInPage.signIn(...)` — the same method a plain E2E test would call.
 
 ## Step 3: Extract Shared Steps
 
@@ -203,19 +203,19 @@ npx playwright test --config playwright.bdd.config.ts --grep @smoke
 
 ## Checklist
 
-- [ ] `playwright-bdd` installed
-- [ ] `playwright.bdd.config.ts` created with `defineBddConfig`
-- [ ] `.features-gen/` added to `.gitignore`
-- [ ] `bdd:gen` / `test:bdd` scripts added
-- [ ] Feature file uses business language only (no selectors/code)
-- [ ] Steps import `test`/`expect` from `@fixtures/fixtures`
-- [ ] Step bodies delegate to page objects (no raw locators/logic)
-- [ ] Shared steps extracted to `common.steps.ts`, no duplicate step text
-- [ ] `Background` / `Scenario Outline` used to avoid repetition
+-   [ ] `playwright-bdd` installed
+-   [ ] `playwright.bdd.config.ts` created with `defineBddConfig`
+-   [ ] `.features-gen/` added to `.gitignore`
+-   [ ] `bdd:gen` / `test:bdd` scripts added
+-   [ ] Feature file uses business language only (no selectors/code)
+-   [ ] Steps import `test`/`expect` from `@fixtures/fixtures`
+-   [ ] Step bodies delegate to page objects (no raw locators/logic)
+-   [ ] Shared steps extracted to `common.steps.ts`, no duplicate step text
+-   [ ] `Background` / `Scenario Outline` used to avoid repetition
 
 ## Related
 
-- [BDD Guidance](../../docs/guidance/bdd.md) — concepts, layer model, tool choice
-- [`write-e2e-test.md`](./write-e2e-test.md) — the patterns step bodies must follow
-- [`generate-test-cases.md`](./generate-test-cases.md) — produce scenarios from a user story
-- [`create-page-object.md`](./create-page-object.md) — the page objects steps delegate to
+-   [BDD Guidance](../../docs/guidance/bdd.md) — concepts, layer model, tool choice
+-   [`write-e2e-test.md`](./write-e2e-test.md) — the patterns step bodies must follow
+-   [`generate-test-cases.md`](./generate-test-cases.md) — produce scenarios from a user story
+-   [`create-page-object.md`](./create-page-object.md) — the page objects steps delegate to

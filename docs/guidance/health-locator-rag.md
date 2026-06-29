@@ -6,12 +6,12 @@ suggest fixes, and prevent flaky tests before they reach CI.
 
 ## Problem
 
-| Symptom                          | Root cause                                 |
-| -------------------------------- | ------------------------------------------ |
-| Test fails with "element not found" | `data-testid` renamed or removed          |
-| Locator matches wrong element    | DOM restructured, duplicate testids appear |
-| Flaky timeout on `waitFor`       | Element moved behind a new loading state   |
-| Bulk failures after UI upgrade   | Component library bump changes markup      |
+| Symptom                             | Root cause                                 |
+| ----------------------------------- | ------------------------------------------ |
+| Test fails with "element not found" | `data-testid` renamed or removed           |
+| Locator matches wrong element       | DOM restructured, duplicate testids appear |
+| Flaky timeout on `waitFor`          | Element moved behind a new loading state   |
+| Bulk failures after UI upgrade      | Component library bump changes markup      |
 
 Manual triage is slow — you read the error, open the app, inspect the DOM, update the locator, re-run. A health locator
 automates the first three steps and suggests the fix for the fourth.
@@ -42,30 +42,30 @@ automates the first three steps and suggests the fix for the fourth.
    number, selector strategy, parent chain).
 2. **DOM Snapshots** — after each test run (or on failure), the actual DOM is serialized and stored as embeddings.
 3. **Vector Database** — stores both locator embeddings and DOM embeddings for similarity search.
-4. **RAG Pipeline** — when a locator fails, queries the vector DB for the closest DOM match, then uses an LLM to
-   suggest a corrected locator.
+4. **RAG Pipeline** — when a locator fails, queries the vector DB for the closest DOM match, then uses an LLM to suggest
+   a corrected locator.
 
 ## Technology Choices
 
-| Component       | Recommended                     | Alternatives                    |
-| --------------- | ------------------------------- | ------------------------------- |
-| Vector DB       | ChromaDB (local, zero-config)   | Milvus, Pinecone, Weaviate      |
+| Component       | Recommended                                | Alternatives                            |
+| --------------- | ------------------------------------------ | --------------------------------------- |
+| Vector DB       | ChromaDB (local, zero-config)              | Milvus, Pinecone, Weaviate              |
 | Embedding model | `all-MiniLM-L6-v2` (sentence-transformers) | OpenAI `text-embedding-3-small`, Cohere |
-| LLM for fixes   | Claude (via Anthropic API)      | GPT-4, local Ollama model       |
-| Runner          | Node.js script / Playwright reporter | Python sidecar            |
+| LLM for fixes   | Claude (via Anthropic API)                 | GPT-4, local Ollama model               |
+| Runner          | Node.js script / Playwright reporter       | Python sidecar                          |
 
 ### Why ChromaDB for local development
 
-- Runs in-process (no Docker required for dev)
-- Python and JS/TS clients available
-- Persistent storage to disk
-- Free, open-source
+-   Runs in-process (no Docker required for dev)
+-   Python and JS/TS clients available
+-   Persistent storage to disk
+-   Free, open-source
 
 ### Why sentence-transformers for embeddings
 
-- Runs locally (no API key needed)
-- Fast enough for CI (~50ms per embedding)
-- Good semantic similarity for HTML/selector content
+-   Runs locally (no API key needed)
+-   Fast enough for CI (~50ms per embedding)
+-   Good semantic similarity for HTML/selector content
 
 ## Setup Guide
 
@@ -128,7 +128,7 @@ export class LocatorExtractor {
                 propertyName: LocatorExtractor.extractPropertyName(content, match.index),
                 selector: match[1],
                 strategy: 'testid',
-                parentChain: LocatorExtractor.extractParentChain(content, match.index),
+                parentChain: LocatorExtractor.extractParentChain(content, match.index)
             });
         }
 
@@ -139,7 +139,7 @@ export class LocatorExtractor {
                 propertyName: LocatorExtractor.extractPropertyName(content, match.index),
                 selector: match[0],
                 strategy: 'role',
-                parentChain: LocatorExtractor.extractParentChain(content, match.index),
+                parentChain: LocatorExtractor.extractParentChain(content, match.index)
             });
         }
 
@@ -190,43 +190,49 @@ export class VectorIndex {
     async initialize(): Promise<void> {
         this.collection = await this.client.getOrCreateCollection({
             name: 'locators',
-            metadata: { 'hnsw:space': 'cosine' },
+            metadata: { 'hnsw:space': 'cosine' }
         });
     }
 
     async indexLocators(entries: LocatorEntry[]): Promise<void> {
         const ids = entries.map((e, i) => `${e.filePath}:${e.propertyName}:${i}`);
         const documents = entries.map(
-            (e) => `${e.strategy}:${e.selector} in ${e.className}.${e.propertyName} ` +
-                   `parent:[${e.parentChain.join(' > ')}]`
+            (e) =>
+                `${e.strategy}:${e.selector} in ${e.className}.${e.propertyName} ` +
+                `parent:[${e.parentChain.join(' > ')}]`
         );
         const metadatas = entries.map((e) => ({
             filePath: e.filePath,
             className: e.className,
             propertyName: e.propertyName,
             strategy: e.strategy,
-            selector: e.selector,
+            selector: e.selector
         }));
 
         await this.collection.upsert({ ids, documents, metadatas });
     }
 
-    async findSimilar(query: string, topK: number = 5): Promise<Array<{
-        id: string;
-        document: string;
-        metadata: Record<string, string>;
-        distance: number;
-    }>> {
+    async findSimilar(
+        query: string,
+        topK: number = 5
+    ): Promise<
+        Array<{
+            id: string;
+            document: string;
+            metadata: Record<string, string>;
+            distance: number;
+        }>
+    > {
         const results = await this.collection.query({
             queryTexts: [query],
-            nResults: topK,
+            nResults: topK
         });
 
         return (results.ids[0] ?? []).map((id, i) => ({
             id,
             document: results.documents[0]?.[i] ?? '',
             metadata: (results.metadatas[0]?.[i] as Record<string, string>) ?? {},
-            distance: results.distances?.[0]?.[i] ?? 1,
+            distance: results.distances?.[0]?.[i] ?? 1
         }));
     }
 }
@@ -295,7 +301,7 @@ export class DomSnapshotCollector {
                     text: el.textContent?.trim().slice(0, 100) ?? undefined,
                     classes: Array.from(el.classList),
                     attributes: attrs,
-                    path: getPath(el),
+                    path: getPath(el)
                 });
             });
 
@@ -306,7 +312,7 @@ export class DomSnapshotCollector {
             testName,
             url: page.url(),
             timestamp: Date.now(),
-            elements,
+            elements
         };
     }
 }
@@ -358,8 +364,7 @@ export class HealthChecker {
         const query = `${locator.strategy}:${locator.selector} ${locator.className}`;
         const domDocuments = snapshot.elements
             .filter((el) => el.testId || el.role)
-            .map((el) => `${el.tagName} testid:${el.testId ?? 'none'} role:${el.role ?? 'none'} ` +
-                         `path:${el.path}`);
+            .map((el) => `${el.tagName} testid:${el.testId ?? 'none'} role:${el.role ?? 'none'} ` + `path:${el.path}`);
 
         const similar = await this.vectorIndex.findSimilar(query);
 
@@ -369,7 +374,7 @@ export class HealthChecker {
                 status: 'degraded',
                 confidence: 1 - similar[0].distance,
                 suggestion: `Possible rename: ${similar[0].metadata.selector} → check ${similar[0].metadata.filePath}`,
-                matchedElement: similar[0].document,
+                matchedElement: similar[0].document
             };
         }
 
@@ -377,8 +382,8 @@ export class HealthChecker {
             locator,
             status: 'broken',
             confidence: 0,
-            suggestion: `Locator "${locator.selector}" not found. Closest DOM elements: ` +
-                        domDocuments.slice(0, 3).join(', '),
+            suggestion:
+                `Locator "${locator.selector}" not found. Closest DOM elements: ` + domDocuments.slice(0, 3).join(', ')
         };
     }
 }
@@ -446,10 +451,7 @@ export default HealthReporter;
 ```ts
 // playwright.config.ts
 export default defineConfig({
-    reporter: [
-        ['html'],
-        ['./src/health/health-reporter.ts'],
-    ],
+    reporter: [['html'], ['./src/health/health-reporter.ts']]
 });
 ```
 
@@ -476,20 +478,17 @@ export class RagFixSuggester {
         const fixes = new Map<string, string>();
 
         for (const result of brokenResults.filter((r) => r.status === 'broken')) {
-            const context = await this.vectorIndex.findSimilar(
-                result.locator.selector, 10
-            );
+            const context = await this.vectorIndex.findSimilar(result.locator.selector, 10);
 
-            const contextText = context
-                .map((c) => `- ${c.document} (distance: ${c.distance.toFixed(3)})`)
-                .join('\n');
+            const contextText = context.map((c) => `- ${c.document} (distance: ${c.distance.toFixed(3)})`).join('\n');
 
             const response = await this.anthropic.messages.create({
                 model: 'claude-sonnet-4-6',
                 max_tokens: 500,
-                messages: [{
-                    role: 'user',
-                    content: `A Playwright locator broke. Suggest a fix.
+                messages: [
+                    {
+                        role: 'user',
+                        content: `A Playwright locator broke. Suggest a fix.
 
 Broken locator:
 - Strategy: ${result.locator.strategy}
@@ -502,13 +501,12 @@ ${contextText}
 
 ${result.matchedElement ? `Closest match: ${result.matchedElement}` : 'No close match found.'}
 
-Reply with ONLY the corrected TypeScript line. No explanation.`,
-                }],
+Reply with ONLY the corrected TypeScript line. No explanation.`
+                    }
+                ]
             });
 
-            const fix = response.content[0].type === 'text'
-                ? response.content[0].text
-                : '';
+            const fix = response.content[0].type === 'text' ? response.content[0].text : '';
 
             const key = `${result.locator.filePath}:${result.locator.propertyName}`;
             fixes.set(key, fix);
@@ -554,44 +552,44 @@ src/health/
 
 ## When to Use
 
-- **After a UI library upgrade** — run `health:check` to find all broken locators at once
-- **In CI on failure** — the reporter flags locator-related failures with fix suggestions
-- **During refactoring** — verify that locator changes don't miss renamed testids
-- **Periodic health scan** — schedule `health:index && health:check` as a CI job
+-   **After a UI library upgrade** — run `health:check` to find all broken locators at once
+-   **In CI on failure** — the reporter flags locator-related failures with fix suggestions
+-   **During refactoring** — verify that locator changes don't miss renamed testids
+-   **Periodic health scan** — schedule `health:index && health:check` as a CI job
 
 ## When NOT to Use
 
-- Tests failing due to logic errors (not locator issues)
-- Brand new pages with no prior locator history
-- Environments where LLM API calls are not allowed (use `health:check` without `health:fix`)
+-   Tests failing due to logic errors (not locator issues)
+-   Brand new pages with no prior locator history
+-   Environments where LLM API calls are not allowed (use `health:check` without `health:fix`)
 
 ## Configuration
 
 Environment variables:
 
-| Variable              | Default                | Description                      |
-| --------------------- | ---------------------- | -------------------------------- |
-| `HEALTH_DB_PATH`      | `./.health-db`         | ChromaDB storage directory       |
-| `HEALTH_SIMILARITY`   | `0.3`                  | Distance threshold for "degraded"|
-| `ANTHROPIC_API_KEY`   | —                      | Required for RAG fix suggestions |
-| `HEALTH_TOP_K`        | `5`                    | Number of similar results        |
+| Variable            | Default        | Description                       |
+| ------------------- | -------------- | --------------------------------- |
+| `HEALTH_DB_PATH`    | `./.health-db` | ChromaDB storage directory        |
+| `HEALTH_SIMILARITY` | `0.3`          | Distance threshold for "degraded" |
+| `ANTHROPIC_API_KEY` | —              | Required for RAG fix suggestions  |
+| `HEALTH_TOP_K`      | `5`            | Number of similar results         |
 
 ## Limitations
 
-- Embedding quality depends on the model — HTML structure is not natural language, so results may need tuning
-- ChromaDB in-process mode is single-threaded; for large projects consider a Milvus or Pinecone deployment
-- LLM suggestions are not guaranteed correct — always review before applying
-- DOM snapshots can be large; filter to interactive elements (`button`, `input`, `a`, `[data-testid]`) to reduce noise
+-   Embedding quality depends on the model — HTML structure is not natural language, so results may need tuning
+-   ChromaDB in-process mode is single-threaded; for large projects consider a Milvus or Pinecone deployment
+-   LLM suggestions are not guaranteed correct — always review before applying
+-   DOM snapshots can be large; filter to interactive elements (`button`, `input`, `a`, `[data-testid]`) to reduce noise
 
 ## Future Enhancements
 
-- **Auto-apply fixes** — pipe suggestions into `Edit` operations with human approval
-- **Historical tracking** — store locator health over time to identify fragile areas
-- **Visual regression tie-in** — combine with screenshot diffs for multi-signal detection
-- **Embedding fine-tuning** — train on project-specific HTML patterns for better similarity
+-   **Auto-apply fixes** — pipe suggestions into `Edit` operations with human approval
+-   **Historical tracking** — store locator health over time to identify fragile areas
+-   **Visual regression tie-in** — combine with screenshot diffs for multi-signal detection
+-   **Embedding fine-tuning** — train on project-specific HTML patterns for better similarity
 
 ## Related
 
-- [Page Object Pattern](../decisions/ADR-001-container-based-page-objects.md)
-- [Custom Fixtures](../decisions/ADR-002-custom-fixtures.md)
-- [Explore Screens Skill](../../.claude/skills/explore-screens.md)
+-   [Page Object Pattern](../decisions/ADR-001-container-based-page-objects.md)
+-   [Custom Fixtures](../decisions/ADR-002-custom-fixtures.md)
+-   [Explore Screens Skill](../../.claude/skills/explore-screens.md)

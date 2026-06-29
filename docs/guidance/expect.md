@@ -4,8 +4,8 @@ Custom expect matchers that work directly with element classes (Button, Input, e
 `.element`.
 
 All element matchers delegate to Playwright's native `expect(locator)` assertions internally, which means they
-**auto-retry** until the assertion passes or the timeout is reached — just like Playwright's built-in locator assertions.
-Both positive and negated (`.not`) forms retry correctly.
+**auto-retry** until the assertion passes or the timeout is reached — just like Playwright's built-in locator
+assertions. Both positive and negated (`.not`) forms retry correctly.
 
 ## Available Matchers
 
@@ -55,41 +55,41 @@ await expect(signInPage.main.listItems).toHaveCount(5);
 
 ### Element Matchers (accept `BaseControl`, auto-retry)
 
-| Matcher                                 | What it checks                                        |
-| --------------------------------------- | ----------------------------------------------------- |
-| `toBeAttached()`                        | Element is attached to the DOM                        |
-| `toBeChecked()`                         | Checkbox is checked                                   |
-| `toBeDisabled()`                        | Element is disabled                                   |
-| `toBeEditable()`                        | Element is editable                                   |
-| `toBeEmpty()`                           | Container is empty                                    |
-| `toBeEnabled()`                         | Element is enabled                                    |
-| `toBeFocused()`                         | Element is focused                                    |
-| `toBeHidden()`                          | Element is not visible                                |
-| `toBeInViewport()`                      | Element intersects viewport                           |
-| `toBeVisible()`                         | Element is visible                                    |
-| `toContainText(expected)`               | Element contains text                                 |
-| `toContainClass(expected)`              | Element has specified CSS classes                     |
-| `toHaveAccessibleDescription(expected)` | Element has matching accessible description           |
-| `toHaveAccessibleName(expected)`        | Element has matching accessible name                  |
-| `toHaveAttribute(name, value)`          | Element has a DOM attribute                           |
-| `toHaveClass(expected)`                 | Element has specified CSS class property              |
-| `toHaveCount(expected)`                 | List has exact number of children                     |
-| `toHaveCSS(name, value)`               | Element has CSS property                              |
-| `toHaveId(expected)`                    | Element has an ID                                     |
-| `toHaveJSProperty(name, value)`         | Element has a JavaScript property                     |
-| `toHaveRole(expected)`                  | Element has a specific ARIA role                      |
-| `toHaveText(expected)`                  | Element matches text                                  |
-| `toHaveValue(expected)`                 | Input has a value                                     |
-| `toHaveValues(expected[])`              | Select has options selected                           |
-| `toMatchAriaSnapshot(expected)`         | Element matches the Aria snapshot                     |
+| Matcher                                 | What it checks                              |
+| --------------------------------------- | ------------------------------------------- |
+| `toBeAttached()`                        | Element is attached to the DOM              |
+| `toBeChecked()`                         | Checkbox is checked                         |
+| `toBeDisabled()`                        | Element is disabled                         |
+| `toBeEditable()`                        | Element is editable                         |
+| `toBeEmpty()`                           | Container is empty                          |
+| `toBeEnabled()`                         | Element is enabled                          |
+| `toBeFocused()`                         | Element is focused                          |
+| `toBeHidden()`                          | Element is not visible                      |
+| `toBeInViewport()`                      | Element intersects viewport                 |
+| `toBeVisible()`                         | Element is visible                          |
+| `toContainText(expected)`               | Element contains text                       |
+| `toContainClass(expected)`              | Element has specified CSS classes           |
+| `toHaveAccessibleDescription(expected)` | Element has matching accessible description |
+| `toHaveAccessibleName(expected)`        | Element has matching accessible name        |
+| `toHaveAttribute(name, value)`          | Element has a DOM attribute                 |
+| `toHaveClass(expected)`                 | Element has specified CSS class property    |
+| `toHaveCount(expected)`                 | List has exact number of children           |
+| `toHaveCSS(name, value)`                | Element has CSS property                    |
+| `toHaveId(expected)`                    | Element has an ID                           |
+| `toHaveJSProperty(name, value)`         | Element has a JavaScript property           |
+| `toHaveRole(expected)`                  | Element has a specific ARIA role            |
+| `toHaveText(expected)`                  | Element matches text                        |
+| `toHaveValue(expected)`                 | Input has a value                           |
+| `toHaveValues(expected[])`              | Select has options selected                 |
+| `toMatchAriaSnapshot(expected)`         | Element matches the Aria snapshot           |
 
 ### Utility Matchers
 
-| Matcher                        | Accepts             | What it checks                  |
-| ------------------------------ | ------------------- | ------------------------------- |
-| `toBeOneOfValues(array)`       | any value           | `array.includes(received)`      |
+| Matcher                        | Accepts             | What it checks                    |
+| ------------------------------ | ------------------- | --------------------------------- |
+| `toBeOneOfValues(array)`       | any value           | `array.includes(received)`        |
 | `toBeSorted(direction)`        | `string[]`          | Checks ascending/descending order |
-| `toBeExistInDownloadsFolder()` | `string` (filename) | File exists in `src/downloads/` |
+| `toBeExistInDownloadsFolder()` | `string` (filename) | File exists in `src/downloads/`   |
 
 ## Complete Example
 

@@ -199,8 +199,9 @@ When a controller has many child routes (e.g. `/user-organization/auth`, `/user-
 `/user-organization/roles`), extract each group into a **child service** instead of cramming everything into one class.
 
 Pass the parent service to the child's constructor — `BaseService` automatically:
-- Composes the base path (`parent.basePath + childPath`)
-- Delegates `token` and `headers` to the parent (set once, shared by all children)
+
+-   Composes the base path (`parent.basePath + childPath`)
+-   Delegates `token` and `headers` to the parent (set once, shared by all children)
 
 ```ts
 // Child service — not exported, only accessed via parent
@@ -254,8 +255,9 @@ const { data: projects } = await projectsService.getAll();
 ```
 
 **When to use child services vs inline sub-resources:**
-- **1-2 sub-resource endpoints** → inline method with `this.endpoint()`
-- **3+ endpoints under a shared sub-path** → extract a child service class
+
+-   **1-2 sub-resource endpoints** → inline method with `this.endpoint()`
+-   **3+ endpoints under a shared sub-path** → extract a child service class
 
 ### Multipart Upload
 

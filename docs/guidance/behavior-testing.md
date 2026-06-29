@@ -1,23 +1,24 @@
 # Behavior-Style Testing (test.step + typed DSL)
 
 Behavior-style testing makes E2E specs read as `Given` / `When` / `Then` behavior — readable by BA/PO for sign-off —
-**without** a separate Gherkin layer. It uses Playwright's built-in [`test.step()`](https://playwright.dev/docs/api/class-test#test-step)
-wrapped in a tiny typed DSL. The step titles render in the HTML report and trace, which *is* the sign-off artifact.
+**without** a separate Gherkin layer. It uses Playwright's built-in
+[`test.step()`](https://playwright.dev/docs/api/class-test#test-step) wrapped in a tiny typed DSL. The step titles
+render in the HTML report and trace, which _is_ the sign-off artifact.
 
-This is the **recommended default** for behavior-driven scenarios in this framework. Use Gherkin
-([bdd.md](./bdd.md)) only in the narrower case where non-technical stakeholders actually **author** `.feature` files.
+This is the **recommended default** for behavior-driven scenarios in this framework. Use Gherkin ([bdd.md](./bdd.md))
+only in the narrower case where non-technical stakeholders actually **author** `.feature` files.
 
 ## Why this over Gherkin / playwright-bdd
 
-| Concern                  | Behavior DSL (`test.step`)            | Gherkin (`playwright-bdd`)              |
-| ------------------------ | ------------------------------------- | --------------------------------------- |
-| New dependency           | None — built into Playwright          | `playwright-bdd` + `bddgen`             |
-| Build / compile step     | None                                  | `.feature` → generated specs            |
-| Type safety              | Full — plain TS, IDE autocomplete     | Step text matched by regex, untyped     |
-| Refactor safety          | Rename = compiler catches it          | Rename step text → silent mismatch      |
-| Indirection              | One file: title + body together       | feature → step registry → page object   |
-| Sign-off artifact        | HTML report step tree                 | HTML report (after compile)             |
-| Stakeholder **authoring**| ❌ not for non-technical authors      | ✅ the one case where Gherkin wins      |
+| Concern                   | Behavior DSL (`test.step`)        | Gherkin (`playwright-bdd`)            |
+| ------------------------- | --------------------------------- | ------------------------------------- |
+| New dependency            | None — built into Playwright      | `playwright-bdd` + `bddgen`           |
+| Build / compile step      | None                              | `.feature` → generated specs          |
+| Type safety               | Full — plain TS, IDE autocomplete | Step text matched by regex, untyped   |
+| Refactor safety           | Rename = compiler catches it      | Rename step text → silent mismatch    |
+| Indirection               | One file: title + body together   | feature → step registry → page object |
+| Sign-off artifact         | HTML report step tree             | HTML report (after compile)           |
+| Stakeholder **authoring** | ❌ not for non-technical authors  | ✅ the one case where Gherkin wins    |
 
 Since BA/PO **read for sign-off but don't author**, the DSL gives the same readable output with far less machinery.
 
@@ -126,7 +127,7 @@ export const authBehaviors = {
     signsIn: (signInPage: SignInPage, email: string) =>
         when(`the user signs in as "${email}"`, async () => {
             await signInPage.signIn(email);
-        }),
+        })
 };
 ```
 
@@ -134,27 +135,27 @@ Specs then compose `await authBehaviors.onSignInPage()` — discoverable via IDE
 
 ## When to Use
 
-- A feature has business-facing acceptance criteria BA/PO want to **read** for sign-off
-- Scenarios trace back to user stories / AC IDs
-- You want living documentation in the report without a Gherkin toolchain
+-   A feature has business-facing acceptance criteria BA/PO want to **read** for sign-off
+-   Scenarios trace back to user stories / AC IDs
+-   You want living documentation in the report without a Gherkin toolchain
 
 ## When NOT to Use
 
-- Pure API contract / schema tests — keep as plain [write-api-test](../../.claude/skills/write-api-test.md)
-- Low-level technical edge cases with no business meaning (regex validation, retry timing) — plain E2E spec
-- Non-technical stakeholders genuinely **author** scenarios themselves → use Gherkin ([bdd.md](./bdd.md))
+-   Pure API contract / schema tests — keep as plain [write-api-test](../../.claude/skills/write-api-test.md)
+-   Low-level technical edge cases with no business meaning (regex validation, retry timing) — plain E2E spec
+-   Non-technical stakeholders genuinely **author** scenarios themselves → use Gherkin ([bdd.md](./bdd.md))
 
 ## Future Enhancements
 
-- **`src/behavior/bdd.ts` + alias** — add the DSL file and the `@behavior/*` path alias to `tsconfig.json` when first
-  implemented.
-- **Living-doc reporter** — an optional custom reporter that exports a markdown summary from step titles for offline
-  sign-off, if the HTML report isn't sufficient.
+-   **`src/behavior/bdd.ts` + alias** — add the DSL file and the `@behavior/*` path alias to `tsconfig.json` when first
+    implemented.
+-   **Living-doc reporter** — an optional custom reporter that exports a markdown summary from step titles for offline
+    sign-off, if the HTML report isn't sufficient.
 
 ## Related
 
-- [BDD with Gherkin (conditional option)](./bdd.md) — use only when stakeholders author `.feature` files
-- [Write a Behavior Test](../../.claude/skills/write-behavior-test.md) — step-by-step recipe
-- [Write an E2E Test](../../.claude/skills/write-e2e-test.md) — the underlying patterns step bodies must follow
-- [Generate Test Cases](../../.claude/skills/generate-test-cases.md) — user story → scenarios feed behavior specs
-- [Custom Fixtures (ADR-002)](../decisions/ADR-002-custom-fixtures.md) — why specs import from `@fixtures/fixtures`
+-   [BDD with Gherkin (conditional option)](./bdd.md) — use only when stakeholders author `.feature` files
+-   [Write a Behavior Test](../../.claude/skills/write-behavior-test.md) — step-by-step recipe
+-   [Write an E2E Test](../../.claude/skills/write-e2e-test.md) — the underlying patterns step bodies must follow
+-   [Generate Test Cases](../../.claude/skills/generate-test-cases.md) — user story → scenarios feed behavior specs
+-   [Custom Fixtures (ADR-002)](../decisions/ADR-002-custom-fixtures.md) — why specs import from `@fixtures/fixtures`

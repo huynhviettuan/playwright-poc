@@ -8,14 +8,14 @@ skill, not the command, when a pattern changes.
 
 ## Available commands
 
-| Command         | Does                                              | Delegates to skill                |
-| --------------- | ------------------------------------------------- | --------------------------------- |
-| `/new-page`     | Scaffold a container-based page object             | `create-page-object` (+ `explore-screens` if a URL is given) |
-| `/new-test`     | Write a behavior-style E2E test                    | `write-behavior-test` (or `write-e2e-test`) |
-| `/new-service`  | Create an API service extending `BaseService`      | `create-api-service` (+ `create-service-from-swagger`) |
-| `/test-cases`   | Turn a user story into manual test cases           | `generate-test-cases`             |
-| `/review-diff`  | Review the current diff against skills/conventions | `code-review`                     |
-| `/gen-diagram`  | Generate a flat SVG (+PNG) architecture diagram    | — (built-in prompt template)      |
+| Command        | Does                                               | Delegates to skill                                           |
+| -------------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| `/new-page`    | Scaffold a container-based page object             | `create-page-object` (+ `explore-screens` if a URL is given) |
+| `/new-test`    | Write a behavior-style E2E test                    | `write-behavior-test` (or `write-e2e-test`)                  |
+| `/new-service` | Create an API service extending `BaseService`      | `create-api-service` (+ `create-service-from-swagger`)       |
+| `/test-cases`  | Turn a user story into manual test cases           | `generate-test-cases`                                        |
+| `/review-diff` | Review the current diff against skills/conventions | `code-review`                                                |
+| `/gen-diagram` | Generate a flat SVG (+PNG) architecture diagram    | — (built-in prompt template)                                 |
 
 ## Examples
 
@@ -40,7 +40,7 @@ argument-hint: <what to type after the command>
 
 Read `.claude/skills/<relevant-skill>.md`, then <do the thing with> **$ARGUMENTS**.
 
-- State the high-risk non-negotiables (custom fixtures, parent-scoped locators, path aliases).
+-   State the high-risk non-negotiables (custom fixtures, parent-scoped locators, path aliases).
 ```
 
 Use `$ARGUMENTS` for everything after the command, or `$1`, `$2` for positional args. Keep the body short and point at a

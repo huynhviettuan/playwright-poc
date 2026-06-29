@@ -1,6 +1,9 @@
 import { test as a11yFixtures } from '@fixtures/accessibility-fixtures';
 import { test as databaseFixtures } from '@fixtures/database-fixtures';
 import { test as hookFixtures } from '@fixtures/hook-fixtures';
+import { test as pdfFixtures } from '@fixtures/pdf-fixtures';
+import { test as roleFixtures } from '@fixtures/role-fixtures';
+import { test as wordFixtures } from '@fixtures/word-fixtures';
 import { mergeExpects, mergeTests } from '@playwright/test';
 import { test as commandFixtures } from 'src/fixtures/command-fixtures';
 import { expect as expectFixtures } from 'src/fixtures/expect-fixtures';
@@ -15,6 +18,9 @@ export const test = mergeTests(
     notificationFixtures,
     hookFixtures,
     a11yFixtures,
-    databaseFixtures
+    databaseFixtures,
+    roleFixtures,
+    pdfFixtures,
+    wordFixtures
 );
 export const expect = mergeExpects(expectFixtures);
