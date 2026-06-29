@@ -86,9 +86,16 @@ src/
 ├── elements/        # UI elements (Button, Input, Dropdown, CascadingDropdown)
 ├── components/      # Composite components (Table)
 ├── models/          # TypeScript interfaces
+├── data/            # Test data, schemas, files
+│   ├── test-data/   # JSON test data by domain (users, products, …)
+│   ├── schemas/     # JSON schemas for API validation
+│   └── files/       # Upload test files
 ├── services/        # API services
 ├── fixtures/        # Test fixtures (merged: role, pdf, word, a11y, db, …)
-├── helpers/         # Utility classes (Excel, PDF, Word, DateTime, DataGen, DB)
+├── helpers/         # All helper utilities
+│   ├── functions/   # Pure utilities (DateTime, DataGen, Array, String)
+│   ├── services/    # File/external resource helpers (Excel, PDF, Word, DB, A11y)
+│   └── test-data/   # Domain-specific data helpers (BaseTestDataHelper + per-domain)
 ├── constants/       # Config and constants
 ├── enums/           # Enumerations
 ├── mail/            # Email utilities
@@ -205,6 +212,23 @@ WordHelper.open('doc.docx').getHeadings();
 WordHelper.open('doc.docx').getTables();
 WordHelper.open('doc.docx').replacePlaceholders({ '{{name}}': 'John' });
 ```
+
+### Test Data Helpers
+
+```ts
+const users = new UserDataHelper();
+users.getAll(); // all users
+users.getById('user-001'); // by id
+users.getByRole('admin'); // by role
+users.getAdmin(); // shortcut
+users.getActive(); // filtered
+users.findBy('email', 'a@b.c'); // generic find
+users.filterBy('status', 'active'); // generic filter
+```
+
+To add a new domain, create a JSON file in `src/data/test-data/`, an interface in
+`src/models/test-data/test-data.interface.ts`, and a helper extending `BaseTestDataHelper<T>` in
+`src/helpers/test-data/`.
 
 ### ArrayHelper, StringHelper, ResponseHelper, FileHelper
 

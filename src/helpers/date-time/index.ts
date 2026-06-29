@@ -1,1 +1,1 @@
-export { DateTimeHelper } from '@helpers/date-time-functions';
+export { DateTimeHelper } from '@helpers/functions/date-time';

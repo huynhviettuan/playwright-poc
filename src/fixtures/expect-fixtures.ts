@@ -1,6 +1,6 @@
 import { type BaseControl } from '@elements/base/base-control';
-import { PdfHelper } from '@helpers/pdf.helper';
-import { WordHelper } from '@helpers/word.helper';
+import { PdfHelper } from '@helpers/services/pdf.helper';
+import { WordHelper } from '@helpers/services/word.helper';
 import { expect as baseExpect, type Locator } from '@playwright/test';
 import * as fs from 'fs/promises';
 import path from 'path';

@@ -1,7 +1,7 @@
 import { Config } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
-import { DataGenerator } from '@helpers/generate-data-functions';
-import { validateJsonSchema } from '@helpers/validate-schema.helper';
+import { DataGenerator } from '@helpers/functions';
+import { validateJsonSchema } from '@helpers/services';
 import { type SignInRequest, type SignInResponse } from '@models/auth/user-organization.interface';
 import { StatusCodes } from 'http-status-codes';
 

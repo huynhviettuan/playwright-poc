@@ -10,7 +10,7 @@ import {
     subDays as dfnsSubDays
 } from 'date-fns';
 
-import { DataGenerator } from './generate-data-functions';
+import { DataGenerator } from './data-generator';
 
 const MOMENT_TO_DATEFNS: Record<string, string> = {
     DD: 'dd',

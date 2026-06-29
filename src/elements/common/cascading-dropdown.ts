@@ -1,5 +1,5 @@
 import { BrowserInstance } from '@common/browser';
-import { ArrayHelper } from '@helpers/helper-functions';
+import { ArrayHelper } from '@helpers/functions/helper-functions';
 import { type ISelect } from '@models/elements/multiselect.interface';
 import { type Locator } from '@playwright/test';
 

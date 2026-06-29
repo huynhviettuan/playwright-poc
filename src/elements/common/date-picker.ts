@@ -1,7 +1,7 @@
 import { BrowserInstance } from '@common/browser';
 import { $ } from '@common/element.function';
 import { DateFormats } from '@constants/common.constant';
-import { DateTimeHelper } from '@helpers/date-time-functions';
+import { DateTimeHelper } from '@helpers/functions/date-time';
 import { type IDatePicker } from '@models/elements/date-picker.interface';
 import { type Locator } from '@playwright/test';
 

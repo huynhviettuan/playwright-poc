@@ -1,8 +1,7 @@
 import { SUPER_ADMIN_EMAIL } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
-import { DataGenerator } from '@helpers/generate-data-functions';
-import { ArrayHelper } from '@helpers/helper-functions';
-import { validateJsonSchema } from '@helpers/validate-schema.helper';
+import { ArrayHelper, DataGenerator } from '@helpers/functions';
+import { validateJsonSchema } from '@helpers/services';
 import { StatusCodes } from 'http-status-codes';
 
 test.describe('Tokens Service', () => {

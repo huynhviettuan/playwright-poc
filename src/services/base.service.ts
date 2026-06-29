@@ -3,7 +3,7 @@ import { URLSearchParams } from 'node:url';
 import { BrowserInstance } from '@common/browser';
 import { LONG_TIMEOUT } from '@constants/common.constant';
 import { API_DOMAIN } from '@constants/config.constant';
-import { StringHelper } from '@helpers/helper-functions';
+import { StringHelper } from '@helpers/functions/helper-functions';
 import { type RequestArgs, type RequestOptions, type ServiceResponse } from '@models/requests/request.type';
 import { type APIRequestContext, type APIResponse } from '@playwright/test';
 

@@ -2,7 +2,7 @@ import { BrowserInstance } from '@common/browser';
 import { Endpoints } from '@constants/endpoints.constant';
 import { NotificationMessages } from '@constants/messages.constant';
 import { expect, test } from '@fixtures/fixtures';
-import { DataGenerator } from '@helpers/generate-data-functions';
+import { DataGenerator } from '@helpers/functions';
 
 test.describe('Sign In — Database Verification', () => {
     test.beforeEach(async ({ goto }) => {

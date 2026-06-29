@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { DateTimeHelper } from './date-time-functions';
+import { DateTimeHelper } from './date-time';
 
 export class DataGenerator {
     static randomString(length: number = 10): string {

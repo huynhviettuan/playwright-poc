@@ -2,7 +2,7 @@ import { BrowserInstance } from '@common/browser';
 import { Config } from '@constants/config.constant';
 import { Endpoints } from '@constants/endpoints.constant';
 import { expect, test } from '@fixtures/fixtures';
-import { AccessibilityHelper } from '@helpers/accessibility.helper';
+import { AccessibilityHelper } from '@helpers/services';
 
 test.describe('Sign In — Accessibility', () => {
     test.beforeEach(async ({ goto }) => {

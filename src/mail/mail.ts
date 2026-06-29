@@ -1,6 +1,6 @@
 import { BrowserInstance } from '@common/browser';
 import { Config } from '@constants/config.constant';
-import { StringHelper } from '@helpers/helper-functions';
+import { StringHelper } from '@helpers/functions/helper-functions';
 import { type IMail, type MailResponse } from '@models/mail/mail.interface';
 import { type APIResponse } from '@playwright/test';
 import * as cheerio from 'cheerio';

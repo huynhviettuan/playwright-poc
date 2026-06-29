@@ -1,7 +1,7 @@
 /* eslint-disable playwright/no-skipped-test */
 import { Config } from '@constants/config.constant';
 import { expect, test } from '@fixtures/fixtures';
-import { DataGenerator } from '@helpers/generate-data-functions';
+import { DataGenerator } from '@helpers/functions';
 
 test.describe('API Users — Database Integration', () => {
     test('TC-API-DB-001 — database-seeded user should be returned by API', async ({ db }) => {

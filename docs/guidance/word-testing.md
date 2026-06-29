@@ -14,7 +14,7 @@ Use the Word testing utilities when your test needs to:
 ### Opening a Document
 
 ```ts
-import { WordHelper } from '@helpers/word.helper';
+import { WordHelper } from '@helpers/services/word.helper';
 
 // From downloads folder
 const doc = WordHelper.open('report.docx');
@@ -130,6 +130,6 @@ test('API-generated contract is valid', async ({ getWordFromResponse }) => {
 
 ## Related
 
--   [PdfHelper](../../src/helpers/pdf.helper.ts) — similar pattern for PDF files
--   [ExcelHelper](../../src/helpers/excel.helper.ts) — similar pattern for Excel files
+-   [PdfHelper](../../src/helpers/services/pdf.helper.ts) — similar pattern for PDF files
+-   [ExcelHelper](../../src/helpers/services/excel.helper.ts) — similar pattern for Excel files
 -   [pdf-testing guidance](pdf-testing.md) — PDF testing patterns

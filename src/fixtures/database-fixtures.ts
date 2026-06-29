@@ -1,4 +1,4 @@
-import { DatabaseHelper } from '@helpers/database.helper';
+import { DatabaseHelper } from '@helpers/services/database.helper';
 import { test as base } from '@playwright/test';
 
 type DatabaseFixtures = {

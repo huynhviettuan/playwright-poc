@@ -1,4 +1,4 @@
-import { AccessibilityHelper } from '@helpers/accessibility.helper';
+import { AccessibilityHelper } from '@helpers/services/accessibility.helper';
 import { type A11yScanOptions } from '@models/accessibility/accessibility.interface';
 import { test as base } from '@playwright/test';
 

@@ -1,6 +1,6 @@
 import { BrowserInstance } from '@common/browser';
 import { $, $getByText } from '@common/element.function';
-import { ArrayHelper } from '@helpers/helper-functions';
+import { ArrayHelper } from '@helpers/functions/helper-functions';
 import { type ISelect } from '@models/elements/multiselect.interface';
 import { type Locator, type Page } from '@playwright/test';
 

@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import { createSchema } from 'genson-js';
 import path from 'path';
 
-import { FileWriter } from './helper-functions';
+import { FileWriter } from '@helpers/functions/helper-functions';
 
 const SCHEMAS_DIR = path.join('src', 'data', 'schemas');
 

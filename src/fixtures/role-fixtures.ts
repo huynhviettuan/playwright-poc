@@ -6,8 +6,8 @@ import { ApiCommands } from 'src/commands/api-commands';
 import { Commands } from 'src/commands/commands';
 
 const ROLE_EMAILS: Record<Role, string> = {
-    [Role.SuperAdmin]: Config.auth.superAdminEmail,
-    [Role.StandardUser]: Config.auth.standardUserEmail
+    [Role.SUPER_ADMIN]: Config.auth.superAdminEmail,
+    [Role.STANDARD_USER]: Config.auth.standardUserEmail
 };
 
 interface SwitchRoleOptions {

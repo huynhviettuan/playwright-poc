@@ -14,7 +14,7 @@ Use the PDF testing utilities when your test needs to:
 ### Opening a PDF
 
 ```ts
-import { PdfHelper } from '@helpers/pdf.helper';
+import { PdfHelper } from '@helpers/services/pdf.helper';
 
 // From downloads folder (after clicking a download button)
 const pdf = PdfHelper.open('report.pdf');
@@ -165,6 +165,6 @@ test('embedded PDF displays correctly', async ({ page, getPdfFromResponse }) => 
 
 ## Related
 
--   [ExcelHelper](../../src/helpers/excel.helper.ts) — similar pattern for Excel files
+-   [ExcelHelper](../../src/helpers/services/excel.helper.ts) — similar pattern for Excel files
 -   [expect guidance](../guidance/expect.md) — custom expect matchers
 -   [Clickable.download()](../../src/elements/base/clickable.ts) — underlying download mechanism

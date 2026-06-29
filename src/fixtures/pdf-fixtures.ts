@@ -1,7 +1,7 @@
 import { BrowserInstance } from '@common/browser';
 import { DOWNLOADS_PATH } from '@constants/common.constant';
 import { type Clickable } from '@elements/base/clickable';
-import { PdfHelper } from '@helpers/pdf.helper';
+import { PdfHelper } from '@helpers/services/pdf.helper';
 import { type Download } from '@playwright/test';
 import { test as base } from '@playwright/test';
 
